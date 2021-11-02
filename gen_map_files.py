@@ -70,7 +70,7 @@ def write_to_file(graphs, fname):
 
 if __name__ == '__main__':
     n = int(sys.argv[1])
-    fname = 'map{}'.format(n) if len(sys.argv) <=2 else sys.argv[2]
+    fname = 'map{}.txt'.format(n) if len(sys.argv) <=2 else sys.argv[2]
     graphs = gen_graphs(n)
     all_tourney_name = 'all_tourney{}.d6'.format(n)
     canon_tourney_name = 'canon{}.d6'.format(n)
