@@ -53,7 +53,7 @@ def process_output(outfile, loadfile, should_print=False):
     # check is valid
     with open(f"map{N}.txt") as f:
         data = [[int(x) for x in line.split()] for line in f]
-        graphs = {frozenset(line[1:]): line[0] for line in data}
+        graphs = {frozenset(line[1:-1]): line[0] for line in data}
 
     classes_total = set(v for k,v in graphs.items())
     classes_found = set()

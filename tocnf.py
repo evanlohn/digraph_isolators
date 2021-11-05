@@ -10,7 +10,7 @@ def main(n_verts, n_sbp_clauses, mapname, file_stub):
         data = [[int(x) for x in line.split()] for line in f]
 
     E = n_verts * (n_verts-1) // 2
-    graphs = {frozenset(line[1:]): line[0] for line in data if E not in line[1:]}
+    graphs = {frozenset(line[1:-1]): line[0] for line in data if E not in line[1:-1]}
     edges = range(1,E) # edge E is forced not present
 
     def atmostone(vs, fresh):

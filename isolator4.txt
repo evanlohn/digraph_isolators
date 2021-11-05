@@ -1,7 +1,7 @@
-0 5 is canonical for class 4
-0 3 5 is canonical for class 1
-0 4 5 is canonical for class 3
-0 3 4 5 is canonical for class 2
+5 is canonical for class 4
+3 5 is canonical for class 1
+4 5 is canonical for class 3
+3 4 5 is canonical for class 2
 
 clauses:
 -6 0
