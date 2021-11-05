@@ -30,6 +30,7 @@ def process_output(outfile, loadfile, should_print=False):
 
 
     print('clauses:')
+    print(-(edges[-1]+1))
     for c in range(C):
         for e in edges:
             if asn[vs['p',c,e]]: print(e,end=' ')
