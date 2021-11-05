@@ -6,7 +6,6 @@ from collections import defaultdict
 from itertools import combinations
 
 def main(n_verts, n_sbp_clauses, mapname, file_stub):
-
     with open(mapname, 'r') as f:
         data = [[int(x) for x in line.split()] for line in f]
 
@@ -61,6 +60,33 @@ def main(n_verts, n_sbp_clauses, mapname, file_stub):
 
     # ensure we don't have a positive and a negative
     cs += [[-vs['p',c,e],-vs['n',c,e]] for c in range(n_sbp_clauses) for e in edges]
+
+    guaranteed_true = fresh() # utility for consistency
+    cs += [[guaranteed_true]]
+    # ensure we have a lexicographic ordering of clauses
+    for c1,c2 in zip(range(n_sbp_clauses),range(1,n_sbp_clauses)):
+        # two empty sequences are equal
+        last_eq = guaranteed_true
+        for e in edges:
+            # lex on positive and negative
+            for kind in 'pn':
+                next_eq = fresh()
+                cs += [
+                    # if equal so far, we are not lex smaller
+                    [-last_eq, vs[kind,c1,e], -vs[kind,c2,e]],
+                    # if not equal, then remain not equal
+                    [last_eq, -next_eq],
+                    # if greater, then not equal
+                    [-vs[kind,c1,e], vs[kind,c2,e], -next_eq],
+                    # convert the above two and apply demorgans so we end up
+                    # with "not equal iff previously not equal or currently
+                    # greater"
+                    [next_eq, -last_eq, vs[kind,c1,e]],
+                    [next_eq, -last_eq, -vs[kind,c2,e]],
+                ]
+                last_eq = next_eq
+        # should not have two equal clauses
+        cs += [[-last_eq]]
 
     # dump as dimacs
     if file_stub is None:
