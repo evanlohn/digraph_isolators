@@ -1,2 +1,6 @@
--3
--1
+0 is canonical for class 1
+0 2 is canonical for class 2
+
+clauses:
+-3 0
+-1 0
