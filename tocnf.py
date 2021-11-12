@@ -1,28 +1,23 @@
 import argparse
 import pickle
 
+import util
 import sys
 from collections import defaultdict
 from itertools import combinations
 
+# TODO:
+# compute 6 (fully or incrementally (units only or all))
+#
+# add extension via graph filtering / base
+# allsat to enumerate all isolators on 4/5
+# require unit clause to erase all others
+
 def main(n_verts, n_sbp_clauses, mapname, file_stub):
-    with open(mapname, 'r') as f:
-        data = [[int(x) for x in line.split()] for line in f]
-
     E = n_verts * (n_verts-1) // 2
-    graphs = {frozenset(line[1:-1]): line[0] for line in data if E not in line[1:-1]}
+    graphs = util.map_graphs(n_verts)
+    graphs = {k:v for k,v in graphs.items() if E not in k}
     edges = range(1,E) # edge E is forced not present
-
-    def atmostone(vs, fresh):
-        dp = [[fresh() for _ in range(2)] for _ in vs]
-        cs = []
-        for i,x in enumerate(vs):
-            for j in range(2):
-                if i: cs += [[-dp[i-1][j], dp[i][j]]]
-                if not j: cs += [[-x, dp[i][j]]]
-                elif i: cs += [[-dp[i-1][j-1], -x, dp[i][j]]]
-        cs += [[-dp[-1][1]]]
-        return cs
 
     # sat variables and clauses:
     # 'k'ills,clause,graph
@@ -56,7 +51,7 @@ def main(n_verts, n_sbp_clauses, mapname, file_stub):
         # at least one
         cs += [[vs['c',i] for i in gs]]
         # at most one
-        cs += atmostone([vs['c',i] for i in gs], fresh)
+        cs += util.atmostone([vs['c',i] for i in gs], fresh)
 
     # ensure we don't have a positive and a negative
     cs += [[-vs['p',c,e],-vs['n',c,e]] for c in range(n_sbp_clauses) for e in edges]

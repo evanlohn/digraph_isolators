@@ -1,17 +1,6 @@
 import sys
 import pickle
-
-def naive_unitprop(cnf):
-    asn = {}
-    last_len = -1
-    while len(asn) > last_len:
-        try:
-            unit = next(c[0] for c in cnf if len(c) == 1)
-        except:
-            break
-        asn[abs(unit)] = unit > 0
-        cnf = [[l for l in c if l != -unit] for c in cnf if unit not in c]
-    return cnf + [[l] if v else [-l] for l,v in asn.items()]
+import util
 
 def process_output(outfile, loadfile, should_print=False):
     with open(outfile, 'r') as f:
@@ -48,7 +37,7 @@ def process_output(outfile, loadfile, should_print=False):
             elif asn[vs['n',c,e]]: cur += [-e]
         clauses += [cur]
 
-    clauses = naive_unitprop(clauses)
+    clauses = util.naive_unitprop(clauses)
 
     # check is valid
     with open(f"map{N}.txt") as f:
