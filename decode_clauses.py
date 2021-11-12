@@ -22,57 +22,44 @@ def process_output(outfile, loadfile, should_print=False):
 
     with open(loadfile, 'rb') as f:
         pkl_dct = pickle.load(f)
-        C, N, vs, edges = pkl_dct['C'], pkl_dct['N'], pkl_dct['vs'], pkl_dct['edges'], 
+        C, N, cnf, edges = pkl_dct['C'], pkl_dct['N'], pkl_dct['cnf'], pkl_dct['edges'], 
         use_last = 'last_isolator' in pkl_dct
 
-    if should_print:
-        print()
 
-        for i,j in sorted(vs.items()):
-            print(i, asn[j])
-
-    clauses = []
+    clauses = util.CNF()
     for c in range(C):
         cur = []
         for e in edges:
-            if asn[vs['p',c,e]]: cur += [e]
-            elif asn[vs['n',c,e]]: cur += [-e]
+            if asn[cnf['p',c,e]]: cur += [e]
+            elif asn[cnf['n',c,e]]: cur += [-e]
         clauses += [cur]
+    for e in edges:
+        if asn[cnf['u','p',e]]: clauses += [[e]]
+        if asn[cnf['u','n',e]]: clauses += [[-e]]
 
     if use_last:
-        clauses += pkl_dct['last_isolator']
+        clauses += pkl_dct['last_isolator'].clauses
     else:
         clauses += [[-(edges[-1]+1)]]
-    clauses = util.naive_unitprop(clauses)
-
-
-    if should_print:
-        print()
-        print('clauses:')
-        for cl in clauses: print(*cl,0)
+    clauses = clauses.naive_unitprop()
 
     # check is valid
-    with open(f"map{N}.txt") as f:
-        data = [[int(x) for x in line.split()] for line in f]
-        graphs = {frozenset(line[1:-1]): line[0] for line in data}
+    graphs = util.map_graphs(N)
 
     classes_total = set(v for k,v in graphs.items())
     classes_found = set()
-    for graph, class_ in graphs.items():
-        for cl in clauses:
-            good = False
-            for lit in cl:
-                if lit < 0 and abs(lit) not in graph: good = True
-                if lit > 0 and abs(lit) in graph: good = True
-            if not good:
-                break
-        else:
-            if should_print:
-                print(*graph,"is canonical for class",class_)
+
+    for graph,class_ in graphs.items():
+        if clauses.satisfies(util.Indexer(lambda i: i in graph)):
+            print(*graph,"is canonical for class",class_)
+
             assert class_ not in classes_found
             classes_found.add(class_)
     assert classes_total == classes_found
-
+    if should_print:
+        print()
+        print('clauses:')
+        for cl in clauses.clauses: print(*cl,0)
 
     return clauses
 
