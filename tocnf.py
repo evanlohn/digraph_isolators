@@ -6,13 +6,6 @@ import sys
 from collections import defaultdict
 from itertools import combinations
 
-# TODO:
-# compute 6 (fully or incrementally (units only or all))
-#
-# add extension via graph filtering / base
-# allsat to enumerate all isolators on 4/5
-# require unit clause to erase all others
-
 def main(n_verts, n_sbp_clauses, mapname, file_stub):
     E = n_verts * (n_verts-1) // 2
     graphs = util.map_graphs(n_verts)
