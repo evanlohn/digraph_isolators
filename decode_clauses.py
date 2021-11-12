@@ -21,7 +21,9 @@ def process_output(outfile, loadfile, should_print=False):
     asn = {abs(x):x>0 for x in soln}
 
     with open(loadfile, 'rb') as f:
-        C, N, vs, edges = pickle.load(f)
+        pkl_dct = pickle.load(f)
+        C, N, vs, edges = pkl_dct['C'], pkl_dct['N'], pkl_dct['vs'], pkl_dct['edges'], 
+        use_last = 'last_isolator' in pkl_dct
 
     if should_print:
         print()
@@ -29,7 +31,7 @@ def process_output(outfile, loadfile, should_print=False):
         for i,j in sorted(vs.items()):
             print(i, asn[j])
 
-    clauses = [[-(edges[-1]+1)]]
+    clauses = []
     for c in range(C):
         cur = []
         for e in edges:
@@ -37,7 +39,17 @@ def process_output(outfile, loadfile, should_print=False):
             elif asn[vs['n',c,e]]: cur += [-e]
         clauses += [cur]
 
+    if use_last:
+        clauses += pkl_dct['last_isolator']
+    else:
+        clauses += [[-(edges[-1]+1)]]
     clauses = util.naive_unitprop(clauses)
+
+
+    if should_print:
+        print()
+        print('clauses:')
+        for cl in clauses: print(*cl,0)
 
     # check is valid
     with open(f"map{N}.txt") as f:
@@ -46,7 +58,7 @@ def process_output(outfile, loadfile, should_print=False):
 
     classes_total = set(v for k,v in graphs.items())
     classes_found = set()
-    for graph,class_ in graphs.items():
+    for graph, class_ in graphs.items():
         for cl in clauses:
             good = False
             for lit in cl:
@@ -55,17 +67,20 @@ def process_output(outfile, loadfile, should_print=False):
             if not good:
                 break
         else:
-            print(*graph,"is canonical for class",class_)
+            if should_print:
+                print(*graph,"is canonical for class",class_)
             assert class_ not in classes_found
             classes_found.add(class_)
     assert classes_total == classes_found
 
-    print()
-    print('clauses:')
-    for cl in clauses: print(*cl,0)
+
+    return clauses
+
+def main(fname_stub, should_print=False):
+    outfile = fname_stub + '.out'
+    loadfile = fname_stub + '.pkl'
+    return process_output(outfile, loadfile, should_print=should_print)
 
 if __name__ == '__main__':
     fname_stub = sys.argv[1]
-    outfile = fname_stub + '.out'
-    loadfile = fname_stub + '.pkl'
-    process_output(outfile, loadfile)
+    main(fname_stub, should_print=True)

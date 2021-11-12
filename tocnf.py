@@ -13,11 +13,18 @@ from itertools import combinations
 # allsat to enumerate all isolators on 4/5
 # require unit clause to erase all others
 
-def main(n_verts, n_sbp_clauses, mapname, file_stub):
+def main(n_verts, n_sbp_clauses, use_last, mapname, file_stub):
     E = n_verts * (n_verts-1) // 2
-    graphs = util.map_graphs(n_verts)
-    graphs = {k:v for k,v in graphs.items() if E not in k}
-    edges = range(1,E) # edge E is forced not present
+    graphs = util.map_graphs(n_verts, mapname=mapname)
+    if use_last:
+        last_isolator = util.isolator_clauses(n_verts - 1)
+        graphs = util.filter_graphs(graphs, last_isolator)
+
+        n_sbp_clauses -= len(last_isolator)
+        edges = range(1,E+1)
+    else:
+        graphs = {k:v for k,v in graphs.items() if E not in k}
+        edges = range(1,E) # edge E is forced not present
 
     # sat variables and clauses:
     # 'k'ills,clause,graph
@@ -97,15 +104,20 @@ def main(n_verts, n_sbp_clauses, mapname, file_stub):
             f.writelines(lines)
     with open(pkl_file, 'wb') as f:
         static_vs = {x:vs[x] for x in vs}
-        pickle.dump((n_sbp_clauses, n_verts, static_vs, edges), f)
+        pkl_dct = {'C':n_sbp_clauses, 'N':n_verts, 'vs':static_vs, 'edges': edges}
+        if use_last:
+            pkl_dct['last_isolator'] = last_isolator
+        pickle.dump(pkl_dct, f)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='produce cnf for complete digraph perfect SBP')
     parser.add_argument('N', type=int, help='vertices in the graph')
     parser.add_argument('C', type=int, help='clauses in the SBP (Symmetry Breaking Predicate)')
+    parser.add_argument('--use-last', action='store_true', help='build the isolator for N off the isolator for N-1 from isolator{N-1}.txt')
     parser.add_argument('--mapname', type=str, default=None, help='map file produced by gen_map_files.py. default is map\\{N\\}.txt')
     parser.add_argument('--filename', type=str, default=None, help='stub name for output files. default to stdout')
     args = parser.parse_args()
     if args.mapname is None:
         args.mapname = f'map{args.N}.txt'
-    main(args.N, args.C, args.mapname, args.filename)
+    main(args.N, args.C, args.use_last, args.mapname, args.filename)
+
