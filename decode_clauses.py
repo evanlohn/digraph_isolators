@@ -21,7 +21,7 @@ def process_output(outfile, loadfile, should_print=False):
     asn = {abs(x):x>0 for x in soln}
 
     with open(loadfile, 'rb') as f:
-        C, N, vs, edges = pickle.load(f)
+        C, N, cnf, edges = pickle.load(f)
 
     if should_print:
         print()
@@ -29,32 +29,29 @@ def process_output(outfile, loadfile, should_print=False):
         for i,j in sorted(vs.items()):
             print(i, asn[j])
 
-    clauses = [[-(edges[-1]+1)]]
+    clauses = util.CNF()
+    clauses += [[-(edges[-1]+1)]]
     for c in range(C):
         cur = []
         for e in edges:
-            if asn[vs['p',c,e]]: cur += [e]
-            elif asn[vs['n',c,e]]: cur += [-e]
+            if asn[cnf['p',c,e]]: cur += [e]
+            elif asn[cnf['n',c,e]]: cur += [-e]
         clauses += [cur]
+    for e in edges:
+        if asn[cnf['u','p',e]]: clauses += [[e]]
+        if asn[cnf['u','n',e]]: clauses += [[-e]]
 
-    clauses = util.naive_unitprop(clauses)
+    print(clauses)
+
+    clauses = clauses.naive_unitprop()
 
     # check is valid
-    with open(f"map{N}.txt") as f:
-        data = [[int(x) for x in line.split()] for line in f]
-        graphs = {frozenset(line[1:-1]): line[0] for line in data}
+    graphs = util.map_graphs(N)
 
     classes_total = set(v for k,v in graphs.items())
     classes_found = set()
     for graph,class_ in graphs.items():
-        for cl in clauses:
-            good = False
-            for lit in cl:
-                if lit < 0 and abs(lit) not in graph: good = True
-                if lit > 0 and abs(lit) in graph: good = True
-            if not good:
-                break
-        else:
+        if clauses.satisfies(util.Indexer(lambda i: i in graph)):
             print(*graph,"is canonical for class",class_)
             assert class_ not in classes_found
             classes_found.add(class_)
@@ -62,7 +59,7 @@ def process_output(outfile, loadfile, should_print=False):
 
     print()
     print('clauses:')
-    for cl in clauses: print(*cl,0)
+    print(clauses)
 
 if __name__ == '__main__':
     fname_stub = sys.argv[1]
