@@ -1,10 +1,13 @@
-def isolator_clauses(n):
+def isolator_clauses(n, only_units=False):
     with open(f"isolator{n}.txt") as f:
         cs = []
         in_clauses = False
         for line in f:
             if in_clauses:
-                cs += [[int(x) for x in line.split()[:-1]]]
+                c = [int(x) for x in line.split()[:-1]]
+                if only_units and len(c) > 1:
+                    continue
+                cs += [c]
             else: in_clauses = line.strip() == "clauses:"
     return CNF(cs)
 
@@ -55,6 +58,9 @@ class CNF:
         return self
     def __len__(self):
         return len(self.clauses)
+
+    def non_units(self):
+        return len([x for x in self.clauses if len(x) > 1])
     def true(self):
         if self.unit is None:
             self.unit = self.var["unit"]
@@ -99,7 +105,8 @@ class CNF:
     def __str__(self):
         nvars = max([0] + [abs(lit) for clause in self.clauses for lit in clause])
         header = f"p cnf {nvars} {len(self.clauses)}"
-        comments = [f"c {k} => {v}" for k,v in self.var.items()]
+        #comments = [f"c {k} => {v}" for k,v in self.var.items()]
+        comments = []
         clauses = [" ".join(str(x) for x in clause + [0]) for clause in self.clauses]
         return "\n".join([header]+comments+clauses)
 

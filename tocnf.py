@@ -3,6 +3,7 @@ import pickle
 
 import util
 import sys
+import os
 from collections import defaultdict
 from itertools import combinations
 
@@ -13,14 +14,17 @@ from itertools import combinations
 # allsat to enumerate all isolators on 4/5
 # require unit clause to erase all others
 
-def main(n_verts, n_sbp_clauses, use_last, mapname, file_stub):
+def main(args, out_dir='./'):
+    n_verts, n_sbp_clauses = args.N, args.C
+    use_last, use_last_units = args.use_last, args.use_last_units
+    mapname, file_stub = args.mapname, args.filename
     E = n_verts * (n_verts-1) // 2
     graphs = util.map_graphs(n_verts, mapname=mapname)
     if use_last:
-        last_isolator = util.isolator_clauses(n_verts - 1)
+        last_isolator = util.isolator_clauses(n_verts - 1, only_units=use_last_units)
         graphs = util.filter_graphs(graphs, last_isolator)
 
-        n_sbp_clauses -= len(last_isolator)
+        n_sbp_clauses -= last_isolator.non_units()
         edges = range(1,E+1)
     else:
         graphs = {k:v for k,v in graphs.items() if E not in k}
@@ -105,8 +109,8 @@ def main(n_verts, n_sbp_clauses, use_last, mapname, file_stub):
         print(f"{str(cnf)}\n")
         pkl_file = 'tmp.pkl'
     else:
-        pkl_file = file_stub + '.pkl'
-        cnf_file = file_stub + '.cnf'
+        pkl_file = os.path.join(out_dir,file_stub + '.pkl')
+        cnf_file = os.path.join(out_dir, file_stub + '.cnf')
         with open(cnf_file, 'w') as f:
             f.write(str(cnf)+"\n")
     with open(pkl_file, 'wb') as f:
@@ -118,12 +122,13 @@ def main(n_verts, n_sbp_clauses, use_last, mapname, file_stub):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='produce cnf for complete digraph perfect SBP')
     parser.add_argument('N', type=int, help='vertices in the graph')
-    parser.add_argument('C', type=int, help='clauses in the SBP (Symmetry Breaking Predicate)')
+    parser.add_argument('C', type=int, help='non-unit clauses in the SBP (Symmetry Breaking Predicate)')
     parser.add_argument('--use-last', action='store_true', help='build the isolator for N off the isolator for N-1 from isolator{N-1}.txt')
+    parser.add_argument('--use-last-units', action='store_true', help='use only the unit clauses from the last isolator')
     parser.add_argument('--mapname', type=str, default=None, help='map file produced by gen_map_files.py. default is map\\{N\\}.txt')
     parser.add_argument('--filename', type=str, default=None, help='stub name for output files. default to stdout')
     args = parser.parse_args()
     if args.mapname is None:
         args.mapname = f'map{args.N}.txt'
-    main(args.N, args.C, args.use_last, args.mapname, args.filename)
+    main(args)
 
