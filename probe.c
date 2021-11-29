@@ -129,6 +129,8 @@ void printClause (int posMask, int negMask) {
 
   printf("0\n"); }
 
+// same as filter, but returns a count of the number of graphs matching
+// the clauses instead of removing them from the data structures.
 int seive (int posMask, int negMask) {
   int i, removed = 0;
   for (i = 1; i <= nClass; i++) red_count[i] = 0;
@@ -156,6 +158,7 @@ int seive (int posMask, int negMask) {
 static unsigned long long cover_updates = 0;
 static unsigned long long cover_hits = 0;
 
+// the ith cover is the & of all graphs sharing edge i, except the cover doesnt include i.
 void updateCover ( ) {
   cover_updates++;
   int i, j;
@@ -165,6 +168,8 @@ void updateCover ( ) {
       if ((mask[j] & (1 << i)))
         cover[i] &= mask[j]; } } }
 
+// reshuffle sthe graphs so the ones not admitted by the masks are at the end.
+// returns the index of the first excluded graph.
 int moveActive (int posMask, int negMask) {
   int i, out = 0;
 
@@ -272,8 +277,10 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
   if (posMask & negMask) return; // skip tautologies
 
   if (depth == 0) {
-    if (posMask == 0) return;
-    if (negMask == 0) return;
+    //CHANGE: allow units
+    //if (posMask == 0) return;
+    //if (negMask == 0) return;
+    if (posMask == 0) && (negMask == 0) return;
     int removed;
     for (i = 0; i < nEdge; i++) {
       if ((posMask & (1 << i)) && (negMask & cover[i])) {
