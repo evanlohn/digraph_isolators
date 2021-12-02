@@ -277,10 +277,9 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
   if (posMask & negMask) return; // skip tautologies
 
   if (depth == 0) {
-    //CHANGE: allow units
-    //if (posMask == 0) return;
+    //CHANGE: allow positive units
+    if (posMask == 0) return;
     //if (negMask == 0) return;
-    if (posMask == 0) && (negMask == 0) return;
     int removed;
     for (i = 0; i < nEdge; i++) {
       if ((posMask & (1 << i)) && (negMask & cover[i])) {
@@ -447,10 +446,11 @@ int main (int argc, char** argv) {
   for (i = 1; i <= nClass; i++) count[i] = 0;
   for (i = 0; i <  nGraph; i++) count[eqcl[i]]++;
 
-  if ((nEdge ==  6) && (nClass !=   11)) { printf("ERROR: not all classes present\n"); goto end; }
-  if ((nEdge == 10) && (nClass !=   34)) { printf("ERROR: not all classes present\n"); goto end; }
-  if ((nEdge == 15) && (nClass !=  156)) { printf("ERROR: not all classes present\n"); goto end; }
-  if ((nEdge == 21) && (nClass != 1044)) { printf("ERROR: not all classes present\n"); goto end; }
+  // CHANGE: num classes per nEdges
+  if ((nEdge ==  6) && (nClass !=   4)) { printf("ERROR: not all classes present\n"); goto end; }
+  if ((nEdge == 10) && (nClass !=   12)) { printf("ERROR: not all classes present\n"); goto end; }
+  if ((nEdge == 15) && (nClass !=  56)) { printf("ERROR: not all classes present\n"); goto end; }
+  if ((nEdge == 21) && (nClass != 456)) { printf("ERROR: not all classes present\n"); goto end; }
 
   if (nEdge ==  6) nNode = 4;
   if (nEdge == 10) nNode = 5;
