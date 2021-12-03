@@ -21,7 +21,9 @@
 
 #define HASH
 
-#define COMMENTS
+// #define COMMENTS
+
+#define CLAUSES
 
 //#define CANON
 
@@ -286,8 +288,9 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
         cover_hits++;
         return; } }
 
-    if (popCount (posMask) + popCount (negMask) <= 3) removed = 1;
-    else removed = seive (posMask, negMask);
+    // CHANGE: removed sus if
+    //if (popCount (posMask) + popCount (negMask) <= 3) removed = 1;
+    removed = seive (posMask, negMask);
 
 
     if (removed <  0) ncount++;
@@ -451,7 +454,7 @@ int main (int argc, char** argv) {
   if ((nEdge == 10) && (nClass !=   12)) { printf("ERROR: not all classes present\n"); goto end; }
   if ((nEdge == 15) && (nClass !=  56)) { printf("ERROR: not all classes present\n"); goto end; }
   if ((nEdge == 21) && (nClass != 456)) { printf("ERROR: not all classes present\n"); goto end; }
-
+  
   if (nEdge ==  6) nNode = 4;
   if (nEdge == 10) nNode = 5;
   if (nEdge == 15) nNode = 6;
@@ -526,6 +529,13 @@ int main (int argc, char** argv) {
   cList = (struct clause*) malloc (sizeof (struct clause) * allocatedClauses);
   bloom = (unsigned  int*) malloc (sizeof (unsigned  int) * allocatedClauses);
 
+
+  ncount = ecount = pcount = 0;
+  makeClauseRec(2, 0, 0, 1);
+#ifdef COMMENTS
+  printf("c counts: %i %i %i %i (sum %i)\n", maxDepth, ncount, ecount, pcount, ncount + ecount + pcount);
+#endif
+
   ncount = ecount = pcount = 0;
   makeClauseRec(2, 0, 0, 2);
 #ifdef COMMENTS
@@ -547,7 +557,9 @@ while (1) {
   }
 
   if (flag) {
+    #ifdef COMMENTS
     printf("\t%i\t%i\t%i\n", nClause, nLit, seed);
+    #endif
     goto end; }
 
 #ifdef COMMENTS
@@ -631,7 +643,7 @@ while (1) {
   int removed = seive (posMask, negMask);
 
   if (removed > 0) {
-#ifdef COMMENTS
+#ifdef CLAUSES
     printClause (posMask, negMask);
 #endif
   }
@@ -649,7 +661,9 @@ while (1) {
 
 
   end:
+  #ifdef COMMENTS
  printf("c cover updated %llu times, hit %llu times\n", cover_updates, cover_hits);
+ #endif
   free (listPos);
   free (listNeg);
   free (listMin);
