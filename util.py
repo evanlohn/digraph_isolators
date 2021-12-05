@@ -1,3 +1,5 @@
+import sys
+
 def isolator_clauses(n, only_units=False):
     with open(f"isolator{n}.txt") as f:
         cs = []
@@ -25,13 +27,14 @@ def filter_graphs(graphs, clauses):
     filt_graphs = {g: graphs[g] for g in graphs if clauses.satisfies(Indexer(lambda i: i in g))}
     filt_classes = set (filt_graphs.values())
     if len(prev_classes) != len(filt_classes):
-        print('using {} isolator deletes equivalence classes:')
+        print(f'using given isolator deletes equivalence classes:')
         for c in prev_classes:
             if c in filt_classes:
                 continue
             for g in graphs:
-                if graphs[g] == c:
+                if graphs[g] == c and g not in filt_graphs:
                     print(f'class {c}, example graph {list(g)}')
+                    break
         assert False
     return filt_graphs
 
@@ -115,3 +118,23 @@ class Indexer:
         self.fcn = fcn
     def __getitem__(self, key):
         return self.fcn(key)
+
+if __name__ == '__main__':
+    map_file = sys.argv[1]
+    filter_cnf = sys.argv[2]
+    fcnf = CNF()
+
+    # filter cnf clauses are expected to be inverted as compared to the unit clauses that are part of the isolator
+    with open(filter_cnf, 'r') as f:
+        lines = f.readlines()[1:]
+        fcnf += [[-int(x) for x in line.strip().split(' ')[:-1]] for line in lines]
+    #fcnf += [[17]]
+    graphs = map_graphs(0, mapname=map_file)
+    gs = filter_graphs(graphs, fcnf)
+    print(len(gs))
+    for g in gs:
+        print(f'{list(g)} is canonical for class {gs[g]}')
+    #print(fcnf)
+
+
+

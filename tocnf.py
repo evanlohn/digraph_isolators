@@ -27,8 +27,8 @@ def main(args, out_dir='./'):
         n_sbp_clauses -= last_isolator.non_units()
         edges = range(1,E+1)
     else:
-        graphs = {k:v for k,v in graphs.items() if E not in k}
-        edges = range(1,E) # edge E is forced not present
+        #graphs = {k:v for k,v in graphs.items() if E not in k}
+        edges = range(1,E+1)
 
     # sat variables and clauses:
     # 'k'ills,clause,graph
@@ -74,10 +74,19 @@ def main(args, out_dir='./'):
                 [-cnf['u','n',e], -cnf['p',c,e]],
                 [-cnf['u','p',e], -cnf['n',c,e]],
                 [-cnf['u','n',e], -cnf['n',c,e]],
+                
             ]
+
+    for e in edges:
+        cnf += [[-cnf['u','n',e]]] # no negative units allowed 
+        
 
     # ensure we don't have a positive and a negative
     cnf += [[-cnf['p',c,e],-cnf['n',c,e]] for c in range(n_sbp_clauses) for e in edges]
+
+    # at least one positive literal per clause
+    for c in range(n_sbp_clauses):
+        cnf += [[cnf['p', c, e] for e in edges]]
 
     # ensure we have a lexicographic ordering of clauses
     for c1,c2 in zip(range(n_sbp_clauses),range(1,n_sbp_clauses)):

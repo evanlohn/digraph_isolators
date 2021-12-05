@@ -3,23 +3,28 @@ import sys
 from collections import Counter
 import time
 
+n_eq_classes = {3: 2, 4:4, 5: 12, 6: 56, 7: 456}
 
 if __name__ == '__main__':
     N = int(sys.argv[1])
     num_experiments = int(sys.argv[2])
     start = 0 if len(sys.argv) <=3 else int(sys.argv[3])
+    mapfile = f'map{N}.txt' if len(sys.argv) <=4  else sys.argv[4]
     n_clauses_counts = Counter()
     examples = {}
     probe_time = 0
     io_time = 0
     for i in range(start, num_experiments + start):
         s = time.time()
-        os.system(f'./probe map{N}.txt {i} > sus.cnf')
-        os.system(f'./filter map{N}.txt sus.cnf > sus.out')
+        os.system(f'./probe {mapfile} {i} > sus.cnf')
+        os.system(f'./filter {mapfile} sus.cnf > sus.out')
         s2 = time.time()
         probe_time += s2 -s
         with open('sus.out', 'r') as f:
-            for line in f.readlines():
+            lines = f.readlines()
+            if len(lines) > n_eq_classes[N]:
+                print(f'isolator not perfect! {len(lines)} matching graphs found')
+            for line in lines:
                 if 'ERROR' in line:
                     print(f'found a bug: experiment {i}')
         with open('sus.cnf', 'r') as f:
@@ -28,6 +33,8 @@ if __name__ == '__main__':
             examples[n_clauses] = (i, lines)
             n_clauses_counts[n_clauses] += 1
         io_time += time.time() - s2
+        if num_experiments >= 10 and (i+1) % (num_experiments//10) == 0:
+            print(f'finished experiment {i+1 - start}/{num_experiments}, average time per experiment {(io_time + probe_time)/(i+1 - start)}')
     counts_ordered = [(k, n_clauses_counts[k]) for k in n_clauses_counts]
     counts_ordered.sort(key=lambda kvp: kvp[0])
     print(counts_ordered)
@@ -36,5 +43,5 @@ if __name__ == '__main__':
         seed, ex = examples[n_clauses]
         print(f'length {n_clauses} seed {seed}')
         for line in ex:
-            print(line)
+            print(line[:-1])
         print()

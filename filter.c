@@ -34,9 +34,6 @@ int filter (int posMask, int negMask) {
 
   //printf("filter %i %i\n", posMask, negMask);
   //CHANGE: shouldn't we be filtering out graphs that _don't_ satisfy the clause?
-  int flip = posMask;
-  posMask = negMask;
-  negMask = flip;
 
   for (i = 0; i < nGraph; i++) {
     int a = mask[i] & posMask;

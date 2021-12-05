@@ -8,13 +8,12 @@ def extract_kissat(fd):
         if line[0] == 's':
             result = line.split(' ')[1]
             if result.strip() != 'SATISFIABLE':
-                if should_print:
-                    print('solver returned {}'.format(result))
+                print('solver returned {}'.format(result))
                 return None
         if line[0] != 'v':
             continue
-        for lit in line.strip().split()[:1:]:
-            soln[abs(lit)] = lit > 0
+        for lit in line.strip().split()[1:]:
+            soln[abs(int(lit))] = int(lit) > 0
     return soln
 
 def extract_allsat(fd):
@@ -45,8 +44,6 @@ def from_asn(asn, pkl_dct, should_print=False):
 
     if use_last:
         clauses += pkl_dct['last_isolator'].clauses
-    else:
-        clauses += [[-(edges[-1]+1)]]
     clauses = clauses.naive_unitprop()
 
     # check is valid
@@ -131,10 +128,12 @@ def process_allsat(outfile, loadfile):
 def process_output(outfile, loadfile, should_print=False):
     with open(outfile) as fd:
         asn = extract_kissat(fd)
-
+    if asn is None:
+        return 
+    
     with open(loadfile, 'rb') as f:
         pkl_dct = pickle.load(f)
-    return from_asn(asn, loadfile)
+    return from_asn(asn, pkl_dct, should_print=should_print)
 
 def main(fname_stub, do_allsat):
     outfile = fname_stub + '.out'
