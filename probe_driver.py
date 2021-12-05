@@ -33,7 +33,7 @@ if __name__ == '__main__':
             examples[n_clauses] = (i, lines)
             n_clauses_counts[n_clauses] += 1
         io_time += time.time() - s2
-        if num_experiments >= 10 and (i+1) % (num_experiments//10) == 0:
+        if num_experiments >= 10 and (i+1 - start) % (num_experiments//10) == 0:
             print(f'finished experiment {i+1 - start}/{num_experiments}, average time per experiment {(io_time + probe_time)/(i+1 - start)}')
     counts_ordered = [(k, n_clauses_counts[k]) for k in n_clauses_counts]
     counts_ordered.sort(key=lambda kvp: kvp[0])
