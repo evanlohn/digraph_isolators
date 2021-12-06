@@ -1,10 +1,10 @@
-5 is canonical for class 4
-3 5 is canonical for class 1
-4 5 is canonical for class 3
-3 4 5 is canonical for class 2
+1 3 4 6 is canonical for class 3
+1 2 3 4 6 is canonical for class 2
+1 3 4 5 6 is canonical for class 4
+1 2 3 4 5 6 is canonical for class 1
 
 clauses:
--6 0
--1 0
-5 0
--2 0
+1 0
+3 0
+4 0
+6 0
