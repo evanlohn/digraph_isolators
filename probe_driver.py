@@ -14,9 +14,10 @@ if __name__ == '__main__':
     examples = {}
     probe_time = 0
     io_time = 0
-    for i in range(start, num_experiments + start):
+    for i in range(num_experiments):
         s = time.time()
-        os.system(f'./probe {mapfile} {i} > sus.cnf')
+        seed = i + start
+        os.system(f'./probe {mapfile} {seed} > sus.cnf')
         os.system(f'./filter {mapfile} sus.cnf > sus.out')
         s2 = time.time()
         probe_time += s2 -s
@@ -26,15 +27,15 @@ if __name__ == '__main__':
                 print(f'isolator not perfect! {len(lines)} matching graphs found')
             for line in lines:
                 if 'ERROR' in line:
-                    print(f'found a bug: experiment {i}')
+                    print(f'found a bug: experiment {seed}')
         with open('sus.cnf', 'r') as f:
             lines = f.readlines()
             n_clauses = len(lines)
-            examples[n_clauses] = (i, lines)
+            examples[n_clauses] = (seed, lines)
             n_clauses_counts[n_clauses] += 1
         io_time += time.time() - s2
-        if num_experiments >= 10 and (i+1 - start) % (num_experiments//10) == 0:
-            print(f'finished experiment {i+1 - start}/{num_experiments}, average time per experiment {(io_time + probe_time)/(i+1 - start)}')
+        if num_experiments >= 10 and (i+1) % (num_experiments//10) == 0:
+            print(f'finished experiment {i+1}/{num_experiments}, average time per experiment {(io_time + probe_time)/(i+1)}')
     counts_ordered = [(k, n_clauses_counts[k]) for k in n_clauses_counts]
     counts_ordered.sort(key=lambda kvp: kvp[0])
     print(counts_ordered)
