@@ -21,20 +21,20 @@ def map_graphs(n, mapname=None):
     graphs = {frozenset(line[1:-1]): line[0] for line in data}
     return graphs
 
-def filter_graphs(graphs, clauses):
-
+def filter_graphs(graphs, clauses, do_print=True):
     prev_classes = set(graphs.values())
     filt_graphs = {g: graphs[g] for g in graphs if clauses.satisfies(Indexer(lambda i: i in g))}
-    filt_classes = set (filt_graphs.values())
+    filt_classes = set(filt_graphs.values())
     if len(prev_classes) != len(filt_classes):
-        print(f'using given isolator deletes equivalence classes:')
-        for c in prev_classes:
-            if c in filt_classes:
-                continue
-            for g in graphs:
-                if graphs[g] == c and g not in filt_graphs:
-                    print(f'class {c}, example graph {list(g)}')
-                    break
+        if do_print:
+            print(f'using given isolator deletes equivalence classes:')
+            for c in prev_classes:
+                if c in filt_classes:
+                    continue
+                for g in graphs:
+                    if graphs[g] == c and g not in filt_graphs:
+                        print(f'class {c}, example graph {list(g)}')
+                        break
         assert False
     return filt_graphs
 
@@ -212,6 +212,4 @@ def filter_map_file():
 if __name__ == '__main__':
     # filter_map_file()
     count_degrees()
-
-
 
