@@ -50,7 +50,7 @@ def visualize_graphs(graphs, units, n, n_to_plot):
             pos2[v] = pos[v2]
 
         #print(pos)
-        nx.draw(g, pos2, with_labels = True, edge_color=e_colors)
+        nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white')
         nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=0.75)
     plt.show()
 

@@ -64,6 +64,10 @@ class CNF:
 
     def non_units(self):
         return len([x for x in self.clauses if len(x) > 1])
+
+    def get_units(self):
+        return sum([ c for c in self.clauses if len(c) == 1], [])
+        
     def true(self):
         if self.unit is None:
             self.unit = self.var["unit"]
@@ -119,22 +123,95 @@ class Indexer:
     def __getitem__(self, key):
         return self.fcn(key)
 
-if __name__ == '__main__':
+def convert_edge_ind(n):
+    ctr = 0
+    ret = {}
+    for end in range(1, n):
+        for start in range(end):
+            ctr += 1
+            ret[ctr] = (start+1, end+1)
+            ret[-ctr] = (end+1, start+1)
+    return ret
+
+def edge2ind(e):
+    v, w = e
+    if (v > w):
+        v, w = w, v
+
+    return (w - 2) * (w - 1) // 2 + v
+
+def from_edge_inds(n, edges):
+    edge_verts = convert_edge_ind(n)
+    edges = list(edges)
+    for e_ind in range(1, n*(n-1)//2 + 1):
+        if e_ind not in edges:
+            edges.append(-e_ind)
+
+    
+
+    return [edge_verts[e] for e in edges]
+
+def print_degree_counts(graphs, n):
+    counts = defaultdict(lambda: (0, set()))
+    max_iso_class = 1
+    for graph in graphs:
+        edges = from_edge_inds(n, graph)
+        local_degrees = defaultdict(lambda: 0)
+        for source, _ in edges:
+            local_degrees[source] += 1
+        key = defaultdict(lambda: 0)
+        for i in range(1, n+1):
+            key[local_degrees[i]] += 1
+        key = [(k, v) for k, v in key.items()]
+        key.sort(key=lambda pair: pair[0])
+        key = tuple(key)
+        #print(key)
+        
+        n_seen, iso_classes = counts[key]
+        iso_classes.add(graphs[graph])
+        counts[key] = (n_seen + 1, iso_classes)
+        max_iso_class = max(max_iso_class, graphs[graph])
+    print(f'num degree classes: {len(counts)}')
+    print(f'num iso classes: {max_iso_class}')
+
+    sus_classes = 0
+    for deg_class in counts:
+        seen, classes = counts[deg_class]
+        if len(classes) > 1:
+            sus_classes += 1
+            #print(deg_class, seen, len(classes))
+            print(f'{seen} graphs in degree class, containing {len(classes)} isomorphism classes')
+    print(f'{sus_classes} degree classes contain multiple iso classes')
+
+def count_degrees():
+    map_file = sys.argv[1]
+    n = int(map_file[3])
+    graphs = map_graphs(n, mapname=map_file)
+    print_degree_counts(graphs, n)
+
+def filter_map_file():
     map_file = sys.argv[1]
     filter_cnf = sys.argv[2]
     fcnf = CNF()
 
-    # filter cnf clauses are expected to be inverted as compared to the unit clauses that are part of the isolator
     with open(filter_cnf, 'r') as f:
         lines = f.readlines()[1:]
-        fcnf += [[-int(x) for x in line.strip().split(' ')[:-1]] for line in lines]
+        fcnf += [[int(x) for x in line.strip().split(' ')[:-1]] for line in lines]
     #fcnf += [[17]]
-    graphs = map_graphs(0, mapname=map_file)
+    n = int(map_file[3])
+    graphs = map_graphs(n, mapname=map_file)
+    
+
+
     gs = filter_graphs(graphs, fcnf)
     print(len(gs))
     for g in gs:
         print(f'{list(g)} is canonical for class {gs[g]}')
     #print(fcnf)
+
+if __name__ == '__main__':
+    # filter_map_file()
+    count_degrees()
 
 
 

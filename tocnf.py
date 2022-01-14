@@ -128,6 +128,107 @@ def main(args, out_dir='./'):
             pkl_dct['last_isolator'] = last_isolator
         pickle.dump(pkl_dct, f)
 
+def from_examples(n_verts):
+    n_edges = n_verts * (n_verts-1) // 2
+    ex_file = f'examples{n_verts}.txt'
+    graphs = []
+    with open(ex_file, 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip()
+            assert len(line) == n_edges
+            ind = 0
+            edges = []
+            for start in range(1, n_verts):
+                for end in range(start + 1, n_verts + 1):
+                    c = line[ind]
+                    if c == '1':
+                        edges.append(util.edge2ind((start, end)))
+                    ind += 1
+            graphs.append(frozenset(edges))
+    print(graphs)
+
+    edges = range(1,E+1)
+
+    # sat variables and clauses:
+    # 'k'ills,clause,graph
+    # 'c'anon,graph
+    # 'p'ositive literal,clause,edge
+    # 'n'egative literal,clause,edge
+    # 'u'nit,'p/n'os/neg,edge
+    cnf = util.CNF()
+
+    for i,g in enumerate(graphs):
+        for c in range(n_sbp_clauses):
+            # for a canon example, each clause must contain at least one edge from each graph
+            cnf += [cnf[('p' if e in g else 'n'),c,e] for e in edges]
+
+        # each canon graph disallows all units it doesnt have
+        for e in edges:
+            cnf += [-cnf['u',('p' if e in g else 'n'),e]]
+
+    # ensure that if a unit exists we don't have it in a clause
+    for c in range(n_sbp_clauses):
+        for e in edges:
+            cnf += [
+                [-cnf['u','p',e], -cnf['p',c,e]],
+                [-cnf['u','n',e], -cnf['p',c,e]],
+                [-cnf['u','p',e], -cnf['n',c,e]],
+                [-cnf['u','n',e], -cnf['n',c,e]],
+                
+            ]
+
+    #for e in edges:
+    #    cnf += [[-cnf['u','n',e]]] # no negative units allowed 
+        
+
+    # ensure we don't have a positive and a negative
+    #cnf += [[-cnf['p',c,e],-cnf['n',c,e]] for c in range(n_sbp_clauses) for e in edges]
+
+    # at least one positive literal per clause
+    #for c in range(n_sbp_clauses):
+    #    cnf += [[cnf['p', c, e] for e in edges]]
+
+    # ensure we have a lexicographic ordering of clauses
+    for c1,c2 in zip(range(n_sbp_clauses),range(1,n_sbp_clauses)):
+        # two empty sequences are equal
+        last_eq = cnf.true()
+        for e in edges:
+            # lex on positive and negative
+            for kind in 'pn':
+                next_eq = cnf.fresh()
+                cnf += [
+                    # if equal so far, we are not lex smaller
+                    [-last_eq, cnf[kind,c1,e], -cnf[kind,c2,e]],
+                    # if not equal, then remain not equal
+                    [last_eq, -next_eq],
+                    # if greater, then not equal
+                    [-cnf[kind,c1,e], cnf[kind,c2,e], -next_eq],
+                    # convert the above two and apply demorgans so we end up
+                    # with "not equal iff previously not equal or currently
+                    # greater"
+                    [next_eq, -last_eq, cnf[kind,c1,e]],
+                    [next_eq, -last_eq, -cnf[kind,c2,e]],
+                ]
+                last_eq = next_eq
+        # should not have two equal clauses
+        cnf += [[-last_eq]]
+
+    # dump as dimacs
+    if file_stub is None:
+        print(f"{str(cnf)}\n")
+        pkl_file = 'tmp.pkl'
+    else:
+        pkl_file = os.path.join(out_dir,file_stub + '.pkl')
+        cnf_file = os.path.join(out_dir, file_stub + '.cnf')
+        with open(cnf_file, 'w') as f:
+            f.write(str(cnf)+"\n")
+    with open(pkl_file, 'wb') as f:
+        pkl_dct = {'C':n_sbp_clauses, 'N':n_verts, 'cnf':cnf, 'edges': edges}
+        if use_last:
+            pkl_dct['last_isolator'] = last_isolator
+        pickle.dump(pkl_dct, f)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='produce cnf for complete digraph perfect SBP')
     parser.add_argument('N', type=int, help='vertices in the graph')
@@ -135,9 +236,13 @@ if __name__ == '__main__':
     parser.add_argument('--use-last', action='store_true', help='build the isolator for N off the isolator for N-1 from isolator{N-1}.txt')
     parser.add_argument('--use-last-units', action='store_true', help='use only the unit clauses from the last isolator')
     parser.add_argument('--mapname', type=str, default=None, help='map file produced by gen_map_files.py. default is map\\{N\\}.txt')
+    parser.add_argument('--examples', action='store_true', help='generate example-based sat problem')
     parser.add_argument('--filename', type=str, default=None, help='stub name for output files. default to stdout')
     args = parser.parse_args()
-    if args.mapname is None:
-        args.mapname = f'map{args.N}.txt'
-    main(args)
+    if args.examples:
+        from_examples(args.N)
+    else:
+        if args.mapname is None:
+            args.mapname = f'map{args.N}.txt'
+        main(args)
 
