@@ -37,7 +37,7 @@ def visualize_graphs(graphs, units, n, n_to_plot):
     w = int(N**0.5)
     h = w if w*w == N else w + 1
 
-    print(units)
+    print(h,w,units)
     for ind, g in enumerate(graphs[:N]):
         edges= list(g.edges())
         e_colors = [('red' if (edge2ind(e) in units or -edge2ind(e) in units) else 'black') for e in edges]
