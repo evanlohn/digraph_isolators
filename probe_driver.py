@@ -3,7 +3,7 @@ import sys
 from collections import Counter
 import time
 
-n_eq_classes = {3: 2, 4:4, 5: 12, 6: 56, 7: 456}
+n_eq_classes = {3: 2, 4:4, 5: 12, 6: 56, 7: 456, 8: 6880}
 
 if __name__ == '__main__':
     N = int(sys.argv[1])
