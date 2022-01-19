@@ -3,6 +3,7 @@ import os
 import argparse
 import util
 import numpy as np
+import random
 
 
 def nauty_R(bits):
@@ -78,6 +79,19 @@ def edges_from_graph(adj_mat):
             ctr += 1
     return edges
 
+def adj_mat_from_edges(edges, n):
+    adj_mat = np.array([['0' for _ in range(n)] for _ in range(n)])
+    ctr = 1
+    for end in range(1, n):
+        for start in range(end):
+            if ctr in edges:
+                adj_mat[start][end] = '1'
+            else:
+                # implicitly -ctr in edges, but we allow for edges to contain only positives
+                adj_mat[end][start] = '1'
+            ctr += 1
+    return adj_mat
+
 
 def gen_graphs(n, units):
     n_edges = n*(n-1)//2
@@ -116,11 +130,40 @@ def produce_map_file(n, all_tourney_name, canon_tourney_name, fname, units):
     with open(fname, 'w') as f:
         f.writelines(results)
 
+def find_hamiltonian_path(adj_mat):
+    def edge_from_to(src, dest):
+        return adj_mat[src][dest] == '1'
+
+    def build_path_up_to(curr_path, new_ind):
+        if edge_from_to(new_ind, curr_path[0]):
+            curr_path.insert(0, new_ind)
+        elif edge_from_to(curr_path[-1], new_ind):
+            curr_path.append(new_ind)
+        else:
+            #first edge is "down". last is "up". Find the first "up" edge
+            # to know where the new index fits into the path.
+            for vert_ind in range(1, len(curr_path)):
+                if edge_from_to(new_ind, curr_path[vert_ind]):
+                    curr_path.insert(vert_ind, new_ind)
+                    break
+    path = [0]
+    for new_ind in range(1, len(adj_mat)):
+        build_path_up_to(path, new_ind)
+    return path
+
+def permute_by(adj_mat, perm):
+    return adj_mat[:, perm][perm, :]
+
 def fix_backbone(canon_tourneys):
     n = len(canon_tourneys[0])
+    ret = []
     for adj_mat in canon_tourneys:
-        
+        hpath = find_hamiltonian_path(adj_mat)
+        ret.append(permute_by(adj_mat, hpath))
+    return ret
 
+def improve_canon_reps(canon_tourneys):
+    return fix_backbone(canon_tourneys)
 
 def produce_canon_reps(n):
     canon_base = f'canon_base_{n}.txt'
@@ -130,8 +173,23 @@ def produce_canon_reps(n):
     canon_tourneys = [np.array(nauty_R_inv(nauty_tourney, n)) for nauty_tourney in canon_tourneys_base_raw]
 
     # do things to make the tourneys better
+    canon_tourneys = improve_canon_reps(canon_tourneys)
 
-    return [edges_from_graph(adj_mat) for adj_mat in canon_tourneys]
+    return canon_tourneys
+
+def produce_canon_reps_from_map(n):
+    all_graphs = util.map_graphs(n)
+    n_eq_classes = {3: 2, 4:4, 5: 12, 6: 56, 7: 456, 8: 6880}
+    rand_p = n_eq_classes[n]/len(all_graphs)
+    canon_tourneys = [None for _ in range(n_eq_classes[n])]
+    for eset in all_graphs:
+        eq_class = all_graphs[eset] - 1
+        if canon_tourneys[eq_class] is None:
+            canon_tourneys[eq_class] = eset
+        else:
+            if random.random() < rand_p:
+                canon_tourneys[eq_class] = eset
+    return [adj_mat_from_edges(eset, n) for eset in canon_tourneys]
 
 def eval_canon_set(canon_tourneys):
     n_edges = len(canon_tourneys[0])
@@ -160,7 +218,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
     n = args.N
     if args.canon_reps:
-        canon_tourneys = produce_canon_reps(n)
+
+        # manual generation of arbitrary canon set from map file for when gentourng is unavailable
+        canon_tourneys = produce_canon_reps_from_map(n)
+
+        #canon_tourneys = produce_canon_reps(n)
+
+        canon_tourneys = improve_canon_reps(canon_tourneys)
+
+        canon_tourneys = [edges_from_graph(adj_mat) for adj_mat in canon_tourneys]
         print(eval_canon_set(canon_tourneys))
         canon_tourneys = [' '.join([str(x) for x in tourney if x > 0]) for tourney in canon_tourneys]
         print(canon_tourneys)
