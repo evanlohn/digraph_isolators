@@ -1,0 +1,27 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{ref_heule}
+Heule, M.J.: Optimal symmetry breaking for graph problems. Mathematics in
+  Computer Science  \textbf{13}(4),  533--548 (2019)
+
+\bibitem{ref_nauty}
+McKay, B.D., Piperno, A.: Practical graph isomorphism, ii. Journal of symbolic
+  computation  \textbf{60},  94--112 (2014)
+
+\bibitem{directedramsey}
+Neiman, D., Mackey, J., Heule, M.: Tighter bounds on directed ramsey number r
+  (7). arXiv preprint arXiv:2011.00683  (2020)
+
+\bibitem{ref_sinz}
+Sinz, C.: Towards an optimal cnf encoding of boolean cardinality constraints.
+  In: International conference on principles and practice of constraint
+  programming. pp. 827--831. Springer (2005)
+
+\bibitem{ref_tseitin}
+Tseitin, G.S.: On the complexity of derivation in propositional calculus. In:
+  Automation of reasoning, pp. 466--483. Springer (1983)
+
+\end{thebibliography}
