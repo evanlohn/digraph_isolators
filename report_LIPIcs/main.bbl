@@ -1,0 +1,29 @@
+\begin{thebibliography}{1}
+
+\bibitem{ref_heule}
+Marijn~JH Heule.
+\newblock Optimal symmetry breaking for graph problems.
+\newblock {\em Mathematics in Computer Science}, 13(4):533--548, 2019.
+
+\bibitem{ref_nauty}
+Brendan~D McKay and Adolfo Piperno.
+\newblock Practical graph isomorphism, ii.
+\newblock {\em Journal of symbolic computation}, 60:94--112, 2014.
+
+\bibitem{directedramsey}
+David Neiman, John Mackey, and Marijn Heule.
+\newblock Tighter bounds on directed ramsey number r (7).
+\newblock {\em arXiv preprint arXiv:2011.00683}, 2020.
+
+\bibitem{ref_sinz}
+Carsten Sinz.
+\newblock Towards an optimal cnf encoding of boolean cardinality constraints.
+\newblock In {\em International conference on principles and practice of
+  constraint programming}, pages 827--831. Springer, 2005.
+
+\bibitem{ref_tseitin}
+Grigori~S Tseitin.
+\newblock On the complexity of derivation in propositional calculus.
+\newblock In {\em Automation of reasoning}, pages 466--483. Springer, 1983.
+
+\end{thebibliography}
