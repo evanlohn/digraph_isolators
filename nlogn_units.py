@@ -34,7 +34,7 @@ def plot_unit_counts(upto=100000):
 	ys = [tab_naive[x] for x in xs]
 	
 	met1 = lambda x: x * (math.log(x,2) - 2)/2
-	met2 = lambda x: tab_naive[x-1] + math.log(x,2)/4 - 5
+	met2 = lambda x: tab_naive[x-1] + math.log(x,2) - 7
 
 	sampler = lambda lst: [x for i, x in enumerate(lst) if i %(len(lst)//1000) == 0]
 
@@ -57,7 +57,7 @@ def compare_bounds(upto=1000000):
 	pct_correct = 0
 	tab = tab_naive
 	for i in range(2, upto):
-		lb = tab[i-1] + math.log(i,2)/4 - 5 # doesn't actually work: need to increase 5 as upto increases
+		lb = tab[i-1] + math.log(i,4) -5 # doesn't actually work: need to increase 5 as upto increases
 		#lb = i * (math.log(i,2) - 2)/2 # works up to 8,000,000
 		at = at and lb <= tab[i]
 		pct_correct += 1 if lb <= tab[i] else 0
@@ -70,5 +70,5 @@ def compare_bounds(upto=1000000):
 	print(f'pct satisfying lower bound: {pct_correct/(upto-2)}')
 
 if __name__ == '__main__':
-	#compare_bounds(100000)
-	plot_unit_counts(200)
+	compare_bounds(100000)
+	#plot_unit_counts(20000)

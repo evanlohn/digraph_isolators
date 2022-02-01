@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.1.19)  24 JAN 2022 13:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.1.19)  30 JAN 2022 22:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -303,55 +303,56 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
  [4] [5]
-[6] [7]
-<iso_4.png, id=41, 396.7623pt x 317.2653pt>
+[6] [7] [8] [9]
+<iso_4.png, id=47, 396.7623pt x 317.2653pt>
 File: iso_4.png Graphic file (type png)
 <use iso_4.png>
-Package pdftex.def Info: iso_4.png  used on input line 168.
+Package pdftex.def Info: iso_4.png  used on input line 243.
 (pdftex.def)             Requested size: 208.27623pt x 166.54741pt.
-<iso6.png, id=43, 323.7696pt x 247.8861pt>
+<iso6.png, id=49, 323.7696pt x 247.8861pt>
 File: iso6.png Graphic file (type png)
 <use iso6.png>
-Package pdftex.def Info: iso6.png  used on input line 173.
+Package pdftex.def Info: iso6.png  used on input line 248.
 (pdftex.def)             Requested size: 138.84729pt x 106.30525pt.
- [8 <./iso_4.png> <./iso6.png>]
-<iso_5.png, id=49, 618.6312pt x 822.4326pt>
+ [10 <./iso_4.png>]
+<iso_5.png, id=54, 618.6312pt x 822.4326pt>
 File: iso_5.png Graphic file (type png)
 <use iso_5.png>
-Package pdftex.def Info: iso_5.png  used on input line 199.
+Package pdftex.def Info: iso_5.png  used on input line 274.
 (pdftex.def)             Requested size: 312.40906pt x 415.33147pt.
- [9] [10 <./iso_5.png>] (./main.bbl)
-[11] (./main.aux) ) 
+ [11 <./iso6.png>] [12 <./iso_5.png>]
+(./main.bbl) [13] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 2800 strings out of 478994
- 36430 string characters out of 5858184
- 340269 words of memory out of 5000000
- 20267 multiletter control sequences out of 15000+600000
+ 2801 strings out of 478994
+ 36438 string characters out of 5858184
+ 340272 words of memory out of 5000000
+ 20268 multiletter control sequences out of 15000+600000
  410740 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 68i,7n,74p,1111b,237s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/cm-super
-/cm-super-ts1.enc}</usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmbx10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmbx9.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmex10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmmi10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmmi5.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-mi7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr1
-0.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.p
-fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb>
-</usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></u
-sr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></us
-r/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/
-local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/lo
-cal/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/loc
-al/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr
-/local/texlive/2021/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb>
-Output written on main.pdf (11 pages, 394754 bytes).
+ 68i,7n,74p,1223b,237s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2021/texmf-dist/fonts/enc/d
+vips/cm-super/cm-super-ts1.enc}</usr/local/texlive/2021/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmex10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmmi7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr5.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr9.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9
+.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.
+pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/msa
+m10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/cm-super/sfrm090
+0.pfb>
+Output written on main.pdf (13 pages, 406805 bytes).
 PDF statistics:
- 116 PDF objects out of 1000 (max. 8388607)
- 79 compressed objects within 1 object stream
+ 123 PDF objects out of 1000 (max. 8388607)
+ 84 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
