@@ -38,6 +38,22 @@ def filter_graphs(graphs, clauses, do_print=True):
         assert False
     return filt_graphs
 
+def dnf2cnf(dnf):
+    vset = set()
+    for clause in dnf:
+        for v in clause:
+            vset.add(abs(v))
+    ret = CNF(var={v:v for v in vset})
+    ctvs = [ret.fresh() for _ in range(len(dnf))]
+    for clause, ctv in zip(dnf, ctvs):
+        # ctv -> each var in clause
+        ret += [[-ctv, clause_v] for clause_v in clause]
+        # clause -> ctv
+        ret += [[-clause_v for clause_v in clause] + [ctv]]
+    # one of the disjuncts holds
+    ret += [ctvs]
+    return ret
+
 from collections import defaultdict
 
 
@@ -104,6 +120,7 @@ class CNF:
                 elif i: cs += [[-dp[i-1][j-1], -x, dp[i][j]]]
         cs += [[-dp[-1][n]]]
         return cs
+
     def satisfies(self, assignment):
         return all(
             any(assignment[abs(lit)] == (lit > 0) for lit in clause)
@@ -131,6 +148,17 @@ def convert_edge_ind(n):
             ctr += 1
             ret[ctr] = (start+1, end+1)
             ret[-ctr] = (end+1, start+1)
+    return ret
+
+def shift_cnf(cnf, n, shift):
+    i2e = convert_edge_ind(n)
+    def shift_var(v):
+        sign = -1 if v < 0 else 1
+        edge = i2e[v]
+        return sign * edge2ind((edge[0] + shift, edge[1] + shift))
+
+    ret = CNF()
+    ret += [[shift_var(v) for v in clause] for clause in cnf.clauses]
     return ret
 
 def edge2ind(e):

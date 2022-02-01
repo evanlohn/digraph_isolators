@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ALLOC   10000000
+#define ALLOC   400000000
 
 #define POS(c,e)   ((c) * 2 * nEdge + (e) + 1)
 #define NEG(c,e)   ((c) * 2 * nEdge + (e) + 1 + nEdge)
@@ -19,62 +19,74 @@
 
 //#define BASESIX
 
-int deadStart, aliveStart;
+long deadStart, aliveStart;
 
-int nCls;
-int nNode, nEdge, nGraph, nClass;
-int allone;
+long nCls;
+long nNode, nEdge, nGraph, nClass;
+long allone;
 
-int *mask, *eqcl;
-int *count;
+long *mask, *eqcl;
+long *count;
 
-int filter (int posMask, int negMask) {
-  int i;
-  int removed = 0;
+long filter (long posMask, long negMask) {
+  long i;
+  long removed = 0;
 
   //printf("filter %i %i\n", posMask, negMask);
   //CHANGE: shouldn't we be filtering out graphs that _don't_ satisfy the clause?
 
   for (i = 0; i < nGraph; i++) {
-    int a = mask[i] & posMask;
-    int b = (mask[i] ^ allone) & negMask;
-    int c = eqcl[i];
+    long a = mask[i] & posMask;
+    long b = (mask[i] ^ allone) & negMask;
+    long c = eqcl[i];
+    if (0) {
+      printf("beginning filter for graph %ld. Equiv class %ld, with %ld remaining in eq class.\n", i, c, count[c]);
+      printf("graph mask: %lx \n", mask[i]);
+      printf("positive clauses mask: %lx \n", posMask);
+      printf("bitwise AND of graph and pos clauses (matching posMask necessary for removal): %lx \n", a);
+      printf("\n");
+      printf("allone: %ld nEdges: %ld \n", allone, nEdge);
+      printf("graph ^ allone: %lx \n", mask[i] ^ allone);
+      printf("negative clauses mask: %lx \n", negMask);
+      printf("bitwise AND of last two (matching negMask necessary for removal): %lx \n", b);
+      printf("\n\n");
+    }
     if ((a == posMask) && (b == negMask)) {
       nGraph--;
-      int tmp = mask[i];
+      long tmp = mask[i];
       mask[i] = mask[nGraph];
       mask[nGraph] = tmp;
       eqcl[i] = eqcl[nGraph];
       eqcl[nGraph] = c;
       count[c]--;
       if (count[c] == 0) {
-        printf ("c class %i is eliminated\n", c);
+        printf ("c class %ld is eliminated\n", c);
         return -1; // ERROR!!!
       }
       i--; } }
 
   return removed; }
 
-int main (int argc, char** argv) {
-  int *thisClass, size;
-  int *minSub;
+long main (long argc, char** argv) {
+  long *thisClass, size;
+  long *minSub;
 
-  int i, j, k;
+  long i, j, k;
 
   nGraph = 0;
   nClass = 0;
   nEdge  = 0;
 
-  eqcl = (int*) malloc (sizeof(int) * ALLOC);
-  mask = (int*) malloc (sizeof(int) * ALLOC);
+  eqcl = (long*) malloc (sizeof(long) * ALLOC);
+  mask = (long*) malloc (sizeof(long) * ALLOC);
 
   FILE *map;
   map = fopen(argv[1], "r");
 
-  int nat, cClass, cMask;
-  int first = 1;
+  long nat, cClass, cMask;
+  long first = 1;
   while (1) {
-    int tmp = fscanf (map, " %i ", &nat);
+    long tmp = fscanf (map, " %ld ", &nat);
     if (tmp == EOF) break;
 
     if (first == 1) {
@@ -82,7 +94,7 @@ int main (int argc, char** argv) {
       cClass = nat;
       if (nat > nClass) nClass = nat; }
     else if (nat > 0) {
-      cMask |= 1 << (nat - 1);
+      cMask |= (long)(1) << (nat - 1);
       if (nat > nEdge) nEdge = nat; }
 
     first = 0;
@@ -94,7 +106,7 @@ int main (int argc, char** argv) {
 
   fclose(map);
 
-  allone = (1 << nEdge) - 1;
+  allone = ((long)(1) << nEdge) - 1;
 
                    nNode = 0;
   if (nEdge ==  3) nNode = 3;
@@ -102,7 +114,7 @@ int main (int argc, char** argv) {
   if (nEdge == 10) nNode = 5;
   if (nEdge == 15) nNode = 6;
 
-  count  = (int*) malloc (sizeof(int) * (nClass+1));
+  count  = (long*) malloc (sizeof(long) * (nClass+1));
 
   for (i = 1; i <= nClass; i++) count[i] = 0;
   for (i = 0; i <  nGraph; i++) count[eqcl[i]]++;
@@ -120,20 +132,20 @@ int main (int argc, char** argv) {
   FILE *cnf;
   cnf = fopen (argv[2], "r");
 
-  int lit, a, b;
-  int posMask = 0;
-  int negMask = 0;
-  int tmp = fscanf(cnf, " p cnf %i %i ", &a, &b);
+  long lit, a, b;
+  long posMask = 0;
+  long negMask = 0;
+  long tmp = fscanf(cnf, " p cnf %ld %ld ", &a, &b);
   while (1) {
-    tmp = fscanf (cnf, " %i ", &lit);
+    tmp = fscanf (cnf, " %ld ", &lit);
     if (tmp == EOF) break;
 
-    if (lit > 0) posMask |= 1 << (lit - 1);
+    if (lit > 0) posMask |= (long)(1) << (lit - 1);
 
-    if (lit < 0) negMask |= 1 << (-lit - 1);
+    if (lit < 0) negMask |= (long)(1) << (-lit - 1);
 
     if (lit == 0) {
-      int removed = filter (posMask, negMask);
+      long removed = filter (posMask, negMask);
       if (removed == -1) {
         printf("ERROR: at least one class was eliminated\n");
         exit(0); }
@@ -142,9 +154,9 @@ int main (int argc, char** argv) {
   fclose (cnf);
 
   for (i = 0; i < nGraph; i++) {
-    printf("%i ", eqcl[i]);
+    printf("%ld ", eqcl[i]);
     for (j = 0; j < nEdge; j++) {
-      if (mask[i] & (1 << j))
-        printf("%i ", j + 1); }
+      if (mask[i] & ((long)(1) << j))
+        printf("%ld ", j + 1); }
     printf("0\n"); }
 }

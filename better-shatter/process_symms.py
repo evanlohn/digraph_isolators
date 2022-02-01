@@ -74,12 +74,14 @@ if __name__ == '__main__':
 	if max_var is None:
 		max_var = max([max(var_occur) for _, var_occur in symms])
 	symm_pairs = generate_symm_break_pairs(symms, max_var)
-	next_var = max_var
-	def fresh_var():
-		nonlocal next_var
-		next_var += 1
-		return next_var
-	clauses = generate_symm_break_clauses(symm_pairs, fresh_var)
+        def fresh_var_maker():
+            next_var = max_var
+            def fresh_var():
+                    nonlocal next_var
+                    next_var += 1
+                    return next_var
+            return fresh_var
+	clauses = generate_symm_break_clauses(symm_pairs, fresh_var_maker())
 	output_clauses(clauses)
 
 

@@ -165,15 +165,12 @@ def fix_backbone(canon_tourneys):
 def improve_canon_reps(canon_tourneys):
     return fix_backbone(canon_tourneys)
 
-def produce_canon_reps(n):
+def produce_canon_reps_from_gentourng(n):
     canon_base = f'canon_base_{n}.txt'
     os.system(f'gentourng {n} -z -q -l > {canon_base}')
     with open(canon_base, 'r') as ctf:
         canon_tourneys_base_raw = ctf.readlines()
     canon_tourneys = [np.array(nauty_R_inv(nauty_tourney, n)) for nauty_tourney in canon_tourneys_base_raw]
-
-    # do things to make the tourneys better
-    canon_tourneys = improve_canon_reps(canon_tourneys)
 
     return canon_tourneys
 
@@ -191,6 +188,19 @@ def produce_canon_reps_from_map(n):
                 canon_tourneys[eq_class] = eset
     return [adj_mat_from_edges(eset, n) for eset in canon_tourneys]
 
+def produce_canon_reps_from_isolator(n):
+    n_edges = n * (n-1)//2
+    adj_mats = []
+    with open(f'isolator{n}.txt', 'r') as f:
+        for line in f.readlines():
+            ind = line.find('is canonical')
+            if ind != -1:
+                canon_rep_raw = line[:ind].strip()
+                canon_rep = [] if len(canon_rep_raw) == 0 else [int(x) for x in canon_rep_raw.split(' ')]
+                adj_mats.append(adj_mat_from_edges(canon_rep, n))
+    return adj_mats
+
+
 def eval_canon_set(canon_tourneys):
     n_edges = len(canon_tourneys[0])
     n_classes = len(canon_tourneys)
@@ -203,6 +213,14 @@ def eval_canon_set(canon_tourneys):
         score += abs(n_classes/2 - num_pos)
     return score
 
+def canon_set_to_bica_cnf(canon_tourneys_edges, n):
+    n_edges = n * (n-1)//2
+    #canon_tourneys_edges is a DNF; each member list is a clause 
+    canon_cnf = util.dnf2cnf(canon_tourneys_edges)
+    return str(canon_cnf) + f'\nc n orig vars {n_edges}'
+    
+def canon_set_to_bica_cnf_neg(canon_tourneys_edges):
+    return str(util.CNF([[-v for v in clause] for clause in canon_tourneys_edges]))
 
 def write_to_file(graphs, fname):
     with open(fname, 'w') as f:
@@ -212,6 +230,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='generate a map file')
     parser.add_argument('N', type=int, help='vertices in the graph')
     parser.add_argument('--use-last-units', action='store_true', help='only use graphs matching the units from the last isolator')
+    parser.add_argument('--use-arbitrary-units', type=str, default=None, help='filename of units to filter by when producing map file')
     parser.add_argument('--filename', type=str, default=None, help='stub name for output files. default to stdout')
     parser.add_argument('--canon-reps', action='store_true', help='instead of a map file, generate a file of canon reps')
 
@@ -220,21 +239,41 @@ if __name__ == '__main__':
     if args.canon_reps:
 
         # manual generation of arbitrary canon set from map file for when gentourng is unavailable
-        canon_tourneys = produce_canon_reps_from_map(n)
+        #canon_tourneys = produce_canon_reps_from_map(n)
 
-        #canon_tourneys = produce_canon_reps(n)
+        # use nauty's gentourng tool to produce the graphs (most general approach, should work for n <=9)
+        canon_tourneys = produce_canon_reps_from_gentourng(n)
 
+        # if we have an isolator produced by decode_clauses.py, use its canon set. Mostly for testing, works for n <=6
+        #canon_tourneys = produce_canon_reps_from_isolator(n)
+
+        # do things (permutations) to make the tourneys better
         canon_tourneys = improve_canon_reps(canon_tourneys)
 
-        canon_tourneys = [edges_from_graph(adj_mat) for adj_mat in canon_tourneys]
-        print(eval_canon_set(canon_tourneys))
-        canon_tourneys = [' '.join([str(x) for x in tourney if x > 0]) for tourney in canon_tourneys]
-        print(canon_tourneys)
-        write_to_file(canon_tourneys, f'canon_reps_{n}.txt')
+        canon_tourneys_edges = [edges_from_graph(adj_mat) for adj_mat in canon_tourneys]
+        print(eval_canon_set(canon_tourneys_edges))
+        
+        canon_reps_lines = [' '.join([str(x) for x in tourney if x > 0]) + '\n' for tourney in canon_tourneys_edges]
+        print(canon_reps_lines)
+        write_to_file(canon_reps_lines, f'canon_reps_{n}.txt')
+
+        cnf_str = canon_set_to_bica_cnf(canon_tourneys_edges, n)
+        with open(f'bica_canon_{n}.cnf', 'w') as f:
+            f.write(cnf_str)
+
+        cnf_neg_str = canon_set_to_bica_cnf_neg(canon_tourneys_edges)
+        with open(f'bica_canon_{n}_neg.cnf', 'w') as f:
+            f.write(cnf_neg_str)
     else:
         fname = 'map{}.txt'.format(n) if args.filename is None else args.filename
         units = util.isolator_clauses(n - 1, only_units=True).get_units() if args.use_last_units else []
-        print(units)
+        if args.use_arbitrary_units is not None:
+            with open(args.use_arbitrary_units, 'r') as f:
+                lines = f.readlines()
+                for line in lines[1:]:
+                    units.append(int(line.split(' ')[0]))
+        print('using units: ', units)
+        #exit()
         graphs = gen_graphs(n, units)
         all_tourney_name = 'all_tourney{}.d6'.format(n)
         canon_tourney_name = 'canon{}.d6'.format(n)
