@@ -7,21 +7,28 @@ def read_symms(fname, max_var):
     with open(fname, 'r') as f:
         lines = f.readlines()[1:-1] # cut off [ and ]
 
-    regex = '\(((\d+,)*\d+)\)'
+    regex = r'\(((\d+,)*\d+)\)'
     symms = []
+    new_symm = True
     for line in lines:
-        matches = re.findall(line, regex)
-        var_occur = {}
-        all_nums = []
-        for match_ind, match in enumerate(matches):
-            nums = [int(x) if int(x) <= max_var else -(int(x) - max_var) for x in match[1:-1].split(',') if int(x) <= 2*max_var]
+        matches = re.findall(regex, line)
+        matches = [x[0] for x in matches]
+        if new_symm:
+            var_occur = {}
+            all_nums = []
+        for match in matches:
+            nums = [int(x) if int(x) <= max_var else -(int(x) - max_var) for x in match.split(',') if int(x) <= 2*max_var]
+            match_ind = len(all_nums)
             for i, num in enumerate(nums):
                 if abs(num) not in var_occur:
                     var_occur[abs(num)] = [(match_ind, i)]
                 else:
                     var_occur[abs(num)].append((match_ind, i))
             all_nums.append(nums)
-        symms.append((all_nums, var_occur))
+        new_symm = line[-2] == ','
+        if new_symm:
+            symms.append((all_nums, var_occur))
+    symms.append((all_nums, var_occur))
     return symms
 
 def generate_symm_break_pairs(symms, max_var):
@@ -29,18 +36,31 @@ def generate_symm_break_pairs(symms, max_var):
     symm_pairs = []
     for all_nums, var_occur in symms:
         used = set()
+        def seen_before(a, b):
+            return (abs(a), abs(b)) in used or (abs(b),abs(a)) in used
+        tmp = []
         for var in range(1, max_var+1):
-            if var in var_occur and var not in used: # variable is part of some symmetries and symm not yet broken on it.
+            if var in var_occur: # variable is part of some symmetries and symm not yet broken on it.
                 ind_lst = var_occur[var]
                 for match_ind, var_ind in ind_lst:
                     signed_var = all_nums[match_ind][var_ind]
+                    assert abs(signed_var) == var
                     next_ind = (var_ind + 1) % len(all_nums[match_ind])
                     next_var = all_nums[match_ind][next_ind]
-                    if next_var not in used:
-                        used.add(var)
-                        used.add(abs(next_var))
-                        symm_pairs.append((signed_var, next_var))
+                    if signed_var < 0:
+                        signed_var, next_var = -signed_var, -next_var
+
+                    #if abs(next_var) not in used:
+                    if not seen_before(signed_var, next_var) and (next_var < 0 or signed_var < next_var):
+                        used.add((var, abs(next_var)))
+                        #used.add(abs(next_var))
+                        tmp.append((signed_var, next_var))
                         break
+                if abs(var) == abs(next_var):
+                    break
+
+        symm_pairs.append(tmp)
+        print(''.join([f'({v1},{v2})' for v1, v2 in tmp]))
     return symm_pairs
 
 def generate_symm_break_clauses(symm_pairs, fresh_var):
@@ -69,20 +89,23 @@ def output_clauses(clauses):
 
 if __name__ == '__main__':
     fname = sys.argv[1]
-    max_var = None if len(sys.argv) <= 2 else int(sys.argv[2])
-    symms = read_symms(fname)
+    max_var = int(sys.argv[2])
+    symms = read_symms(fname, max_var)
     if max_var is None:
         max_var = max([max(var_occur) for _, var_occur in symms])
-    symm_pairs = generate_symm_break_pairs(symms, max_var)
-        def fresh_var_maker():
-            next_var = max_var
-            def fresh_var():
-                    nonlocal next_var
-                    next_var += 1
-                    return next_var
-            return fresh_var
-    clauses = generate_symm_break_clauses(symm_pairs, fresh_var_maker())
-    output_clauses(clauses)
+    all_symm_pairs = generate_symm_break_pairs(symms, max_var)
+    def fresh_var_maker():
+        next_var = max_var
+        def fresh_var():
+                nonlocal next_var
+                next_var += 1
+                return next_var
+        return fresh_var
+    fresh_var = fresh_var_maker()
+    clauses = []
+    for symm_pairs in all_symm_pairs:
+        clauses += generate_symm_break_clauses(symm_pairs, fresh_var)
+    #output_clauses(clauses)
 
 
 
