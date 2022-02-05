@@ -1,9 +1,24 @@
 import os
+import subprocess
+import signal
 import sys
 from collections import Counter
 import time
 
+
 n_eq_classes = {3: 2, 4:4, 5: 12, 6: 56, 7: 456, 8: 6880}
+
+def output_current_isos(n_clauses_counts, probe_time, io_time):
+    counts_ordered = [(k, n_clauses_counts[k]) for k in n_clauses_counts]
+    counts_ordered.sort(key=lambda kvp: kvp[0])
+    print(counts_ordered)
+    print(f'probe time: {probe_time}, io_time:{io_time}')
+    for n_clauses, ct in counts_ordered[:3]:
+        seed, ex = examples[n_clauses]
+        print(f'length {n_clauses} seed {seed}')
+        for line in ex:
+            print(line[:-1])
+        print()
 
 if __name__ == '__main__':
     N = int(sys.argv[1])
@@ -14,11 +29,20 @@ if __name__ == '__main__':
     examples = {}
     probe_time = 0
     io_time = 0
+    def signal_handler(signal, frame):
+        print(f'Terminated early with {i} experiments done')
+        output_current_isos(n_clauses_counts, probe_time, io_time)
+        sys.exit(0)
+    signal.signal(signal.SIGINT, signal_handler)
     for i in range(num_experiments):
         s = time.time()
         seed = i + start
-        os.system(f'./probe {mapfile} {seed} > sus.cnf')
-        os.system(f'./filter {mapfile} sus.cnf > sus.out')
+        #os.system(f'./probe {mapfile} {seed} > sus.cnf')
+        with open('sus.cnf', 'w') as f:
+            subprocess.run(['./probe', f'{mapfile}', f'{seed}'], stdout=f)
+        #os.system(f'./filter {mapfile} sus.cnf > sus.out')
+        with open('sus.out', 'w') as f:
+            subprocess.run(['./filter', f'{mapfile}', 'sus.cnf'], stdout=f)
         s2 = time.time()
         probe_time += s2 -s
         with open('sus.out', 'r') as f:
@@ -36,13 +60,5 @@ if __name__ == '__main__':
         io_time += time.time() - s2
         if num_experiments >= 10 and (i+1) % (num_experiments//10) == 0:
             print(f'finished experiment {i+1}/{num_experiments}, average time per experiment {(io_time + probe_time)/(i+1)}')
-    counts_ordered = [(k, n_clauses_counts[k]) for k in n_clauses_counts]
-    counts_ordered.sort(key=lambda kvp: kvp[0])
-    print(counts_ordered)
-    print(f'probe time: {probe_time}, io_time:{io_time}')
-    for n_clauses, ct in counts_ordered[:3]:
-        seed, ex = examples[n_clauses]
-        print(f'length {n_clauses} seed {seed}')
-        for line in ex:
-            print(line[:-1])
-        print()
+    output_current_isos(n_clauses_counts, probe_time, io_time)
+
