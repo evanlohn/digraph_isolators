@@ -46,10 +46,13 @@ def bin_int(x, n_edges):
     return format(x,'0{}b'.format(n_edges))[::-1]
 
 def matches_units_pred(g_bin_int, units):
-    return all([g_bin_int[unit - 1] == '1' for unit in units])
+    if units[0] > 0:
+        return all([g_bin_int[unit - 1] == '1' for unit in units])
+    else:
+        return not any([g_bin_int[-unit - 1] == '1' for unit in units])
 
 def get_all_binary_graphs(n_edges, units=[]):
-    assert all([unit > 0 for unit in units])
+    assert all([unit > 0 for unit in units]) or all([unit < 0 for unit in units])
     return [bin_int(x, n_edges) for x in range(2**n_edges) if matches_units_pred(bin_int(x, n_edges), units)]
 
 def graph_from_int(g_int, n):
