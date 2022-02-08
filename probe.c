@@ -4,7 +4,7 @@
 
 // this code is a slightly modified version of https://github.com/marijnheule/isolator/blob/master/probe_orig.c
 
-#define ALLOC     10000000
+#define ALLOC     300000000
 #define MAXMAX       10000
 #define LISTSIZE        30
 #define PRIME     16777619

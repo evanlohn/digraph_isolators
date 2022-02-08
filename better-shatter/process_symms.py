@@ -60,7 +60,7 @@ def generate_symm_break_pairs(symms, max_var):
                     break
 
         symm_pairs.append(tmp)
-        print(''.join([f'({v1},{v2})' for v1, v2 in tmp]))
+        #print(''.join([f'({v1},{v2})' for v1, v2 in tmp]))
     return symm_pairs
 
 def generate_symm_break_clauses(symm_pairs, fresh_var):
@@ -89,7 +89,10 @@ def output_clauses(clauses):
 
 if __name__ == '__main__':
     fname = sys.argv[1]
-    max_var = int(sys.argv[2])
+    max_var = int(sys.argv[2]) if len(sys.argv) > 2 else None
+    if max_var is None:
+        n = int(fname.split('_')[1])
+        max_var = n * (n-1) // 2
     symms = read_symms(fname, max_var)
     if max_var is None:
         max_var = max([max(var_occur) for _, var_occur in symms])
@@ -105,7 +108,7 @@ if __name__ == '__main__':
     clauses = []
     for symm_pairs in all_symm_pairs:
         clauses += generate_symm_break_clauses(symm_pairs, fresh_var)
-    #output_clauses(clauses)
+    output_clauses(clauses)
 
 
 
