@@ -139,7 +139,7 @@ long main (long argc, char** argv) {
   long posMask = 0;
   long negMask = 0;
   long tmp = fscanf(cnf, " p cnf %ld %ld ", &a, &b);
-  int meh = 0;
+  //int meh = 0;
   while (1) {
     tmp = fscanf (cnf, " %ld ", &lit);
     if (tmp == EOF) break;
@@ -151,10 +151,11 @@ long main (long argc, char** argv) {
 
     if (lit == 0) {
       long removed = filter (posMask, negMask);
+      /*
       if (meh == 0) {
 	printf("removed: %ld\n", removed);
 	meh = 1;
-      }
+      }*/
       if (removed == -1) {
         printf("ERROR: at least one class was eliminated\n");
         exit(0); }
