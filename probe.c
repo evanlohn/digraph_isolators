@@ -21,7 +21,7 @@
 
 #define HASH
 
-#define COMMENTS
+//#define COMMENTS
 
 #define CLAUSES
 
@@ -492,7 +492,7 @@ int main (int argc, char** argv) {
 
   out = (int*) malloc (sizeof (int) * (nEdge + 1));
   for (i = 1; i <= nEdge; i++) out [i] = 0;
-  printf("nNode: %i nEdge: %i nGraph: %i \n", nNode, nEdge, nGraph);
+  //printf("nNode: %i nEdge: %i nGraph: %i \n", nNode, nEdge, nGraph);
 /*
   implied = (int**) malloc (sizeof (int*) * (nEdge + 1));
   for (i = 1; i <= nEdge; i++) implied[i] = malloc (sizeof(int) * (nEdge + 1));
