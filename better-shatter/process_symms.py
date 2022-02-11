@@ -18,6 +18,8 @@ def read_symms(fname, max_var):
             all_nums = []
         for match in matches:
             nums = [int(x) if int(x) <= max_var else -(int(x) - max_var) for x in match.split(',') if int(x) <= 2*max_var]
+            if len(nums) <= 1:
+                continue
             match_ind = len(all_nums)
             for i, num in enumerate(nums):
                 if abs(num) not in var_occur:
@@ -93,6 +95,8 @@ if __name__ == '__main__':
     if max_var is None:
         n = int(fname.split('_')[1])
         max_var = n * (n-1) // 2
+    print(max_var)
+    exit()
     symms = read_symms(fname, max_var)
     if max_var is None:
         max_var = max([max(var_occur) for _, var_occur in symms])
@@ -107,8 +111,14 @@ if __name__ == '__main__':
     fresh_var = fresh_var_maker()
     clauses = []
     for symm_pairs in all_symm_pairs:
+        if len(symm_pairs) == 0:
+            continue
         clauses += generate_symm_break_clauses(symm_pairs, fresh_var)
-    output_clauses(clauses)
+
+    if len(clauses) == 0:
+        print('no symms found')
+    else:
+        output_clauses(clauses)
 
 
 
