@@ -14,7 +14,7 @@
 %\pdfoutput=1 %uncomment to ensure pdflatex processing (mandatatory e.g. to submit to arXiv)
 %\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
 \usepackage{graphicx}
-\usepackage{amsmath, amssymb}
+%\usepackage{amsmath, amssymb}
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
@@ -72,7 +72,9 @@
 
 %
 \begin{abstract}
-In the field of satisfiability, symmetry breaking is a crucial technique needed to assist the solver in disregarding redundant candidate solutions.  As such, much work has gone into discovering `symmetry-breaking predicates' for common problems in satisfiability.  We extend prior work on undirected graphs to construct short, perfect symmetry breaking predicates on small tournaments.
+
+Isolators are a useful tool for reducing the computation needed to solve graph existence problems via SAT.  We extend techniques for creating isolators for undirected graphs to the tournament (complete, directed) case, noting several parallels in properties of isolators for the two classes. We further present an algorithm for constructing $n$-vertex tournament isolators with $\Omega(n \log n)$ unit clauses. Finally, we show the utility of our new isolators in computations of tournament Ramsey numbers.
+%In the field of satisfiability, symmetry breaking is a crucial technique needed to assist the solver in disregarding redundant candidate solutions.  As such, much work has gone into discovering `symmetry-breaking predicates' for common problems in satisfiability.  We extend prior work on undirected graphs to construct short, perfect symmetry breaking predicates on small tournaments.
 
 \keywords{Satisfiability  \and Symmetry-breaking \and Directed-graphs}
 \end{abstract}
@@ -202,74 +204,26 @@ If a $TT_k$ is known to exist within every member of the class of $n$-vertex tou
 
 Let $units(n)$ be the function that returns the maximum possible number of units that can be added to an isolator when using the TT-fixing method on $n$-vertex tournaments. Our goal is to prove a lower bound on $units(n)$. Unfortunately, exact tournament Ramsey numbers are non-trivial to calculate (only up to $R(6) = 28$ is known). However, from Erd{\"o}s and Moser \textbf{CITE} we have that $R(k) \leq 2^{k-1}$, i.e. that a $TT_{k}$ must exist when considering any tournament on $2^{k-1}$ or more vertices. Erd{\"o}s and Moser's bound can thus be used with TT-fixing to lower-bound $units(n)$.
 
+We claim that $units(n) \geq \sum\limits_{i=1}^n \frac{1}{2} \lfloor \log_2(i) \rfloor$. We proceed via induction, with step $n$ depending on step $n-k$, with $k=\lfloor \log_2(n)\rfloor + 1$. The proposition is true for $n=1$ because $0 \geq 0$, $n=2$ because $ 1 \geq 0.5$.  By definition of TT-fixing, for a graph with $n$ vertices we have 
 
-For a tournament on $n > 1$ vertices, we can express $n = 2^{k-1} + xk - c$ for some $x,k,c$ where $xk < 2^{k-1}$, $x>0$ and $0<c\leq k$. Intuitively, this rewrite makes explicit the largest power of 2 less than $n$ (calling that power $k-1$) and also makes explicit $x$, the number of times $k$ can be subtracted from $n$ before going below $2^{k-1}$. We note that each $TT_k$ fixed by TT-fixing corresponds to adding $\frac{1}{2}k(k-1)$ units, one for each edge in a $TT_k$. Also, the maximum number of units from TT-fixing is yielded by the greedy strategy of fixing the largest possible subtournaments first.
+\begin{equation}\label{unitsndef}
+units(n) = \frac{k(k-1)}{2}  + units(n-k)
+\end{equation} 
 
-\begin{proof}
-Assume for contradiction the existence of a class of tournaments that can be TT-fixed optimally without fixing the largest possible subtournament at each step. Consider in this TT-fixing result $F$ the first transitive subtournament $TT_s$ that is fixed with size $s$ and is smaller than $k$, the size of the largest possible subtournament that could have been fixed in $F$ at that step. Consider the partial result of TT-fixing up to but not including the insertion of $TT_s$ in $F$. At this step, continue a new TT-fixing $F'$ with a $TT_k$ instead of $TT_s$. Now, let $TT_s, TT_{s2}, TT_{s3},... TT_{sn}$ be the sequence of transitive tournaments fixed in $F$ defined by $TT_{sn}$ being the first fixed subtournament in $F$ for which the total fixed vertices up to and including $TT_{sn}$ reaches or exceeds the total vertices fixed so far in $F'$. All tournaments after $TT_s$ in $F$ must have $k$ or fewer vertices, because the maximum tournament size that can be fixed can never increase with any TT-fixing step and this size was $k$ when $TT_s$ was fixed. Therefore, $F$ up to $TT_{sn}$ exceeds the number of fixed vertices of $F'$ by at most $k-1$. \textbf{finish this? omit?}
-\end{proof}
+By the inductive hypothesis,
 
+ \begin{equation}\label{unitsIH}
+ units(n-k) \geq \sum\limits_{i=1}^{n-k} \lfloor \log_2(i)\rfloor/2
+ \end{equation}
+ 
+ Next, we have that 
+ \begin{equation}\label{unitsk}
+ k\frac{k-1}{2} =  \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(n)\rfloor/2 \geq \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(i)\rfloor/2
+ \end{equation}
+ 
+ Combining the two lower bounds ((\ref{unitsIH}) and (\ref{unitsk})) for the terms of \cref{unitsndef} completes the proof: $units(n) = \frac{k(k-1)}{2} + units(n-k) \geq \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(i)\rfloor/2 + \sum\limits_{i=1}^{n-k} \lfloor \log_2(i)\rfloor/2 = \sum\limits_{i=1}^{n} \lfloor \log_2(i)\rfloor/2$ as desired.
 
- Therefore $units(n) = units(2^{k-1} + xk - c) = \frac{1}{2}xk(k-1) + units(2^{k-1} - c)$.
-
-We now seek to bound $units(2^{k-1} - c)$. $c \leq k$ and $units$ is monotonically non-decreasing (it is always possible to use at least the last fixing of transitive subtournaments via TT-fixing as $n$ increases), so $units(2^{k-1} - c) \geq units(2^{k-1} - k) $. Here we again rewrite the argument of $units$: $2^{k-1} - k = 2^{k-2} + x_1(k-1) - c_1$ with the analogous properties $x_1(k-1) < 2^{k-2}$, $x_1>0$ and $0<c_1\leq k-1$. We note that this rewriting procedure can be repeated until the introduction of $x_{k-1}$ \textbf{need to somehow mention this only works while $k>3$?}. In particular, 
-
-\begin{equation}
-2^{k-i} - (k - i) - 1= 2^{k-i-1} + x_i(k-i) - c_i  
-\end{equation}
-
-
-Analogously generalizing the number of units produced at ``step i'' (i.e. when the number of non-fixed vertices exceeds $2^{k-i-1}$) gives
-
-\begin{equation}
-units(2^{k-i-1} + x_i(k-i) - c_i) = \frac{1}{2}x_i(k-i)(k-i-1) + units(2^{k-i-1} - c_i)
-\end{equation}
-with proper restrictions on $x_i, c_i$. 
-
-We can also use the equation that introduces $x_i$ to express it in terms of $i, c_i$ as follows: 
-
-\begin{equation}
-x_i = \frac{2^{k-i-1} + c_i - (k - i)}{k-i}
-\end{equation}
-
-Therefore, we express 
-\begin{equation}
-units(2^{k-1} - k) = \sum\limits_{i=1}^{k-1}\frac{1}{2}x_i(k-i)(k-i-1)
-\end{equation}
-
-Substituting $x_i$ and cleaning up the summation yields the following:
-
-\begin{equation}
-units(2^{k-1} - k) = \sum\limits_{i=1}^{k_1}\frac{1}{2}(2^{k_1-i} + c_i - (k_1 - i + 1))(k_1-i)
-\end{equation}
-
-where $k_1 = k - 1$. In general each $1\leq c_i\leq k - i$, and increasing $c_i$ increases $units(...)$, so we set $c_i = 1$ for the lower bound:
-
-\begin{equation}
-units(2^{k-1} - k) \geq \sum\limits_{i=1}^{k_1}\frac{1}{2}(2^{k_1-i} - (k_1 - i))(k_1-i)
-\end{equation}
-
-This summation can be split as follows:
-\begin{equation}
-units(2^{k-1} - k) \geq \frac{1}{2}\sum\limits_{i=1}^{k_1}(2^{k_1-i})(k_1-i) - \frac{1}{2}\sum\limits_{i=1}^{k_1}(k_1-i)^2
-\end{equation}
-
-And further rewritten for simplicity:
-
-\begin{equation}
-units(2^{k-1} - k) \geq \frac{1}{2}\sum\limits_{j=1}^{k-2}j(2^{j}) - \frac{1}{2}\sum\limits_{j=1}^{k-2}j^2
-\end{equation}
-
-At which point, it becomes clear that the sums have the following closed form:
-% see https://math.stackexchange.com/questions/11464/how-to-compute-the-formula-sum-limits-r-1d-r-cdot-2r?noredirect=1&lq=1
-% https://www.cuemath.com/algebra/sum-of-squares/
-\begin{equation}
-units(2^{k-1} - k) \geq (k-3)2^{k-2} + 1 - \frac{1}{12}(k-2)(k-1)(2k - 3)
-\end{equation}
-
-From here on out I use my highly suspect understanding of complexity theory...
-
-Because we expressed $n = 2^{k-1} + xk + c$, we have $(k-3)2^{k-2} \in \Theta(n\log(n))$ and  $\frac{1}{12}(k-2)(k-1)(2k - 3) \in \Theta(\log(n)^3)$. Also, $units(n) \geq units(2^{k-1} - k)$ because $n \geq 2^{k-1} - k$. We conclude that an asymptotic lower bound on $units(n)$ is therefore $units(n) \in \Omega(n\log(n))$
+Additionally, there is a long-known result from graph theory that implies that there are at most $O(n\log n)$ units possible. By the orbit-stabilizer theorem \textbf{need to cite? or just explain more why it applies probably}, the size of the equivalence class of a graph $G$ on $n$ vertices is $\frac{n!}{|Aut(G)|}$, where $Aut(G)$ s the set of distinct automorphisms of $G$. In 1963 Erd\"os and Renyi \textbf{CITE} proved that as $n$ approaches infinity, the proportion of graphs of size $n$ with with multiple automorphisms approaches 0. Therefore, a proportion of graphs approaching 1 have equivalence classes of size $n!$, so the number of equivalence classes is approximately $\frac{2^{n \choose 2}}{n!} \simeq \frac{2^{n \choose 2}}{2^{n\log n}} = 2^{{n \choose 2} - n\log n}$. An isolator with $k$ unit clauses for $n$-vertex graphs admits at most $2^{{n \choose 2} - k}$ equivalence class representatives, so the number of units is also asymptotically upper-bounded by $n \log n$.
 
 \section{Results}
 
