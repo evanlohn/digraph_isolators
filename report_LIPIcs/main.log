@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.1.19)  31 JAN 2022 16:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.1.19)  11 FEB 2022 04:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -789,7 +789,7 @@ nput line 72.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/fontawesome5/ufontawesomefree1.fd
 )
-<orcid.pdf, id=83, 256.96pt x 256.96pt>
+<orcid.pdf, id=7, 256.96pt x 256.96pt>
 File: orcid.pdf Graphic file (type pdf)
 <use orcid.pdf>
 Package pdftex.def Info: orcid.pdf  used on input line 72.
@@ -817,17 +817,23 @@ Package pdftex.def Info: orcid.pdf  used on input line 72.
 (pdftex.def)             Requested size: 8.99843pt x 9.0pt.
 \openout3 = `main.vtc'.
 
-<cc-by.pdf, id=90, 88.33pt x 31.11626pt>
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <9> on input line 76.
+
+
+LaTeX Warning: Citation `ref_heule' on page 1 undefined on input line 94.
+
+<cc-by.pdf, id=13, 88.33pt x 31.11626pt>
 File: cc-by.pdf Graphic file (type pdf)
 <use cc-by.pdf>
 Package pdftex.def Info: cc-by.pdf  used on input line 99.
 (pdftex.def)             Requested size: 39.74274pt x 14.0pt.
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 9
 9.
- (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
+(/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<lipics-logo-bw.pdf, id=93, 591.44762pt x 144.42657pt>
+<lipics-logo-bw.pdf, id=16, 591.44762pt x 144.42657pt>
 File: lipics-logo-bw.pdf Graphic file (type pdf)
 <use lipics-logo-bw.pdf>
 Package pdftex.def Info: lipics-logo-bw.pdf  used on input line 99.
@@ -835,47 +841,107 @@ Package pdftex.def Info: lipics-logo-bw.pdf  used on input line 99.
  [1.1
 
 {/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./cc-by
-.pdf> <./orcid.pdf> <./lipics-logo-bw.pdf>] [2.2] [3.3] [4.4]
+.pdf> <./orcid.pdf> <./lipics-logo-bw.pdf>]
+
+LaTeX Warning: Reference `tab:smallest_isolators_found' on page 2 undefined on 
+input line 103.
+
+
+LaTeX Warning: Citation `ref_nauty' on page 2 undefined on input line 108.
+
+
+LaTeX Warning: Citation `ref_heule' on page 2 undefined on input line 116.
+
+[2.2]
+
+LaTeX Warning: Citation `ref_tseitin' on page 3 undefined on input line 118.
+
+
+LaTeX Warning: Citation `ref_sinz' on page 3 undefined on input line 135.
+
+[3.3] [4.4]
 Package hyperref Info: bookmark level for unknown theorem defaults to 0 on inpu
-t line 169.
- [5.5] [6.6] [7.7] [8.8]
-<iso_4.png, id=207, 396.7623pt x 317.2653pt>
+t line 171.
+ [5.5]
+
+LaTeX Warning: Citation `ref_heule' on page 6 undefined on input line 199.
+
+[6.6]
+
+LaTeX Warning: Reference `unitsIH' on page 7 undefined on input line 224.
+
+
+LaTeX Warning: Reference `unitsk' on page 7 undefined on input line 224.
+
+
+LaTeX Warning: Reference `unitsndef' on page 1 undefined on input line 224.
+
+
+Package amsmath Warning: Foreign command \atopwithdelims;
+(amsmath)                \frac or \genfrac should be used instead
+(amsmath)                 on input line 226.
+
+[7.7]
+
+LaTeX Warning: Reference `fig1' on page 8 undefined on input line 232.
+
+
+LaTeX Warning: Reference `fig2' on page 8 undefined on input line 232.
+
+
+LaTeX Warning: Reference `fig3' on page 8 undefined on input line 232.
+
+<iso_4.png, id=120, 396.7623pt x 317.2653pt>
 File: iso_4.png Graphic file (type png)
 <use iso_4.png>
-Package pdftex.def Info: iso_4.png  used on input line 281.
+Package pdftex.def Info: iso_4.png  used on input line 235.
 (pdftex.def)             Requested size: 239.00557pt x 191.1207pt.
-<iso6.png, id=209, 323.7696pt x 247.8861pt>
+<iso6.png, id=122, 323.7696pt x 247.8861pt>
 File: iso6.png Graphic file (type png)
 <use iso6.png>
-Package pdftex.def Info: iso6.png  used on input line 286.
+Package pdftex.def Info: iso6.png  used on input line 240.
 (pdftex.def)             Requested size: 159.333pt x 121.98721pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+LaTeX Warning: Reference `tab:smallest_isolators_found' on page 8 undefined on 
+input line 247.
 
- [9.9 <./iso_4.png> <./iso6.png>]
-<iso_5.png, id=220, 618.6312pt x 822.4326pt>
+<iso_5.png, id=123, 618.6312pt x 822.4326pt>
 File: iso_5.png Graphic file (type png)
 <use iso_5.png>
-Package pdftex.def Info: iso_5.png  used on input line 312.
+Package pdftex.def Info: iso_5.png  used on input line 266.
 (pdftex.def)             Requested size: 358.50227pt x 476.60966pt.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 313.
- [10.10] [11.11 <./iso_5.png>] (./main.bbl) [12.12]
-(./main.aux)
-Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: C12CBAD2E8F873F416780C35A8900905;3410.
+[8.8 <./iso_4.png>] [9.9 <./iso6.png>] [10.10 <./iso_5.png>]
+
+LaTeX Warning: Citation `directedramsey' on page 11 undefined on input line 286
+.
+
+(./main.bbl) [11.11] (./main.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `main.out':
+(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
+(rerunfilecheck)             After:  C12CBAD2E8F873F416780C35A8900905;3410.
  ) 
 Here is how much of TeX's memory you used:
- 21932 strings out of 478994
- 369639 string characters out of 5858184
- 715433 words of memory out of 5000000
- 38693 multiletter control sequences out of 15000+600000
- 535443 words of font info for 249 fonts, out of 8000000 for 9000
+ 21904 strings out of 478994
+ 369256 string characters out of 5858184
+ 714433 words of memory out of 5000000
+ 38680 multiletter control sequences out of 15000+600000
+ 535106 words of font info for 245 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 98i,12n,102p,1223b,464s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 98i,12n,102p,1111b,468s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/lo
-cal/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/20
-21/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2021/texmf-dist/
+cal/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/20
+21/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2021/texmf-dist/
 fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/
 dvips/lm/lm-mathex.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/l
 m-ts1.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/fontawesome5/fa5f
@@ -887,23 +953,23 @@ fonts/type1/public/lm/lmbx10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type
 m/lmex10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi10.p
 fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi5.pfb></usr/lo
 cal/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi7.pfb></usr/local/texlive
-/2021/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2021/texmf
--dist/fonts/type1/public/lm/lmr5.pfb></usr/local/texlive/2021/texmf-dist/fonts/
-type1/public/lm/lmr6.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public
-/lm/lmr7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr8.pfb
-></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr9.pfb></usr/local
-/texlive/2021/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2
-021/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/texlive/2021/texmf-d
-ist/fonts/type1/public/lm/lmss8.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
-ype1/public/lm/lmssbx10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/pub
-lic/lm/lmsy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lms
-y7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></us
-r/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-
-Output written on main.pdf (12 pages, 739246 bytes).
+/2021/texmf-dist/fonts/type1/public/lm/lmmi9.pfb></usr/local/texlive/2021/texmf
+-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2021/texmf-dist/fonts
+/type1/public/lm/lmr5.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/publi
+c/lm/lmr6.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr7.pf
+b></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/loca
+l/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr9.pfb></usr/local/texlive/20
+21/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2021/texmf-d
+ist/fonts/type1/public/lm/lmri9.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
+ype1/public/lm/lmss8.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public
+/lm/lmssbx10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy
+10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></us
+r/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy9.pfb></usr/local/tex
+live/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
+Output written on main.pdf (11 pages, 740162 bytes).
 PDF statistics:
- 334 PDF objects out of 1000 (max. 8388607)
- 278 compressed objects within 3 object streams
- 57 named destinations out of 1000 (max. 500000)
- 75965 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 257 PDF objects out of 1000 (max. 8388607)
+ 201 compressed objects within 3 object streams
+ 50 named destinations out of 1000 (max. 500000)
+ 75813 words of extra memory for PDF output out of 89155 (max. 10000000)
 

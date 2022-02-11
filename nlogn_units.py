@@ -56,8 +56,11 @@ def compare_bounds(upto=1000000):
 	avg_diff = 0
 	pct_correct = 0
 	tab = tab_naive
+	log_upto_i = 0
 	for i in range(2, upto):
-		lb = tab[i-1] + math.log(i,4) -5 # doesn't actually work: need to increase 5 as upto increases
+		log_upto_i += int(math.log(i,2))/2
+		lb = log_upto_i
+		#lb = tab[i-1] + math.log(i,4) -5 # doesn't actually work: need to increase 5 as upto increases
 		#lb = i * (math.log(i,2) - 2)/2 # works up to 8,000,000
 		at = at and lb <= tab[i]
 		pct_correct += 1 if lb <= tab[i] else 0
@@ -70,5 +73,5 @@ def compare_bounds(upto=1000000):
 	print(f'pct satisfying lower bound: {pct_correct/(upto-2)}')
 
 if __name__ == '__main__':
-	compare_bounds(100000)
+	compare_bounds(1000000)
 	#plot_unit_counts(20000)
