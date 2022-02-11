@@ -39,19 +39,20 @@ long filter (long posMask, long negMask) {
     long a = mask[i] & posMask;
     long b = (mask[i] ^ allone) & negMask;
     long c = eqcl[i];
-    if (0) {
+    if (i==0 && posMask==1 && negMask==4194306) {
+    //if (0) {
       printf("beginning filter for graph %ld. Equiv class %ld, with %ld remaining in eq class.\n", i, c, count[c]);
       printf("graph mask: %lx \n", mask[i]);
       printf("positive clauses mask: %lx \n", posMask);
       printf("bitwise AND of graph and pos clauses (matching posMask necessary for removal): %lx \n", a);
       printf("\n");
-      printf("allone: %ld nEdges: %ld \n", allone, nEdge);
+      printf("allone: %lx nEdges: %ld \n", allone, nEdge);
       printf("graph ^ allone: %lx \n", mask[i] ^ allone);
-      printf("negative clauses mask: %lx \n", negMask);
+      printf("negative clauses mask: %ld \n", negMask);
       printf("bitwise AND of last two (matching negMask necessary for removal): %lx \n", b);
       printf("\n\n");
     }
-    if ((a == posMask) && (b == negMask)) {
+    if ((a == 0) && (b == 0)) {
       nGraph--;
       long tmp = mask[i];
       mask[i] = mask[nGraph];
@@ -113,6 +114,7 @@ long main (long argc, char** argv) {
   if (nEdge ==  6) nNode = 4;
   if (nEdge == 10) nNode = 5;
   if (nEdge == 15) nNode = 6;
+  if (nEdge == 21) nNode = 7;
 
   count  = (long*) malloc (sizeof(long) * (nClass+1));
 
@@ -123,6 +125,7 @@ long main (long argc, char** argv) {
   if ((nEdge == 10) && (nClass !=   12)) { printf("ERROR: not all classes are present\n"); exit (0); }
   if ((nEdge == 15) && (nClass !=  56)) { printf("ERROR: not all classes are present\n"); exit (0); }
   if ((nEdge == 21) && (nClass != 456)) { printf("ERROR: not all classes are present\n"); exit (0); }
+  if ((nEdge == 28) && (nClass != 6880)) { printf("ERROR: not all classes are present\n"); exit (0); }
 
   //CHANGE: Double free??
   //fclose(map);
@@ -136,6 +139,7 @@ long main (long argc, char** argv) {
   long posMask = 0;
   long negMask = 0;
   long tmp = fscanf(cnf, " p cnf %ld %ld ", &a, &b);
+  //int meh = 0;
   while (1) {
     tmp = fscanf (cnf, " %ld ", &lit);
     if (tmp == EOF) break;
@@ -144,8 +148,14 @@ long main (long argc, char** argv) {
 
     if (lit < 0) negMask |= (long)(1) << (-lit - 1);
 
+
     if (lit == 0) {
       long removed = filter (posMask, negMask);
+      /*
+      if (meh == 0) {
+	printf("removed: %ld\n", removed);
+	meh = 1;
+      }*/
       if (removed == -1) {
         printf("ERROR: at least one class was eliminated\n");
         exit(0); }

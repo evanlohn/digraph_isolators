@@ -4,7 +4,7 @@
 
 // this code is a slightly modified version of https://github.com/marijnheule/isolator/blob/master/probe_orig.c
 
-#define ALLOC     10000000
+#define ALLOC     300000000
 #define MAXMAX       10000
 #define LISTSIZE        30
 #define PRIME     16777619
@@ -21,7 +21,7 @@
 
 #define HASH
 
-// #define COMMENTS
+//#define COMMENTS
 
 #define CLAUSES
 
@@ -78,7 +78,7 @@ void setCanon (unsigned int gMask) {
 
   printf("c WARNING did not find canon graph %u\n", gMask); }
 
-// num pos edges?
+// num literals in mask
 int popCount (int mask) {
   int pcount = 0;
   while (mask) {
@@ -99,7 +99,7 @@ int filter (int posMask, int negMask) {
     int a = mask[i] & posMask; 
     int b = (mask[i] ^ allone) & negMask;
     int c = eqcl[i];
-    if ((a == posMask) && (b == negMask)) { 
+    if ((a == 0) && (b == 0)) { 
       // if the current mask (mask[i]) has all the positives from posMask
       //    and all the negatives (zeros) from negmask:...
       nGraph--;
@@ -141,7 +141,12 @@ int seive (int posMask, int negMask) {
     int a = mask[i] & posMask;
     int b = (mask[i] ^ allone) & negMask;
     int c = eqcl[i];
-    if ((a == posMask) && (b == negMask)) {
+    if ((a == 0) && (b == 0)) {
+	  /*
+	  if (removed == 0 && posMask==1 && negMask==4194306) {
+		  printf("graph %d removed? graph: %d eqcl: %d\n", i, mask[i], c);
+		  printf("a: %x, b: %x, negMask: %x\n", a, b, negMask);
+	  }*/
       removed++; red_count[c]++;
       if (count[c] == red_count[c]) {
         return -1;
@@ -155,6 +160,11 @@ int seive (int posMask, int negMask) {
         eqcl[0] = c;
         return -1; } } }
 
+  /*
+  if (posMask==1 && negMask==4194306) {
+	printf("1 -2 -23 removal: %d\n", removed);
+	exit(0);
+  }*/
   return removed; }
 
 static unsigned long long cover_updates = 0;
@@ -178,7 +188,7 @@ int moveActive (int posMask, int negMask) {
   for (i = 0; i < nGraph - out; i++) {
     int a = mask[i] & posMask;
     int b = (mask[i] ^ allone) & negMask;
-    if ((a == posMask) && (b == negMask)) continue;
+    if ((a == 0) && (b == 0)) continue;
     out++;
     int tmp = eqcl[i];
     eqcl[i] = eqcl[nGraph - out];
@@ -284,6 +294,8 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
     //if (negMask == 0) return;
     int removed;
     for (i = 0; i < nEdge; i++) {
+      // if edge i is a literal in the clause and all remaining graphs with edge i have some edge j while -j is a literal in the clause, throw the clause out.
+      // I believe this is just an optimization, since having -j is an unnecessary addition to the clause.
       if ((posMask & (1 << i)) && (negMask & cover[i])) {
         cover_hits++;
         return; } }
@@ -436,11 +448,17 @@ int main (int argc, char** argv) {
     if (nat == 0) {
       eqcl[nGraph] = cClass;
       mask[nGraph] = cMask;
+      /*if (nGraph == 0 || nGraph == 131071 || cMask == 185619117) {
+	printf("graph ind: %d\n", nGraph);
+	printf("graph hex int: %x\n", cMask);
+	printf("graph class: %d\n", cClass);
+      }*/
       nGraph++;
       first = 1;
     }
   }
 
+  //printf("done reading map file \n");
   allone = (1 << nEdge) - 1;
 
   count      = (int*) malloc (sizeof(int) * (nClass+1));
@@ -454,11 +472,13 @@ int main (int argc, char** argv) {
   if ((nEdge == 10) && (nClass !=   12)) { printf("ERROR: not all classes present\n"); goto end; }
   if ((nEdge == 15) && (nClass !=  56)) { printf("ERROR: not all classes present\n"); goto end; }
   if ((nEdge == 21) && (nClass != 456)) { printf("ERROR: not all classes present\n"); goto end; }
+  if ((nEdge == 28) && (nClass != 6880)) { printf("ERROR: not all classes present\n"); goto end; }
   
   if (nEdge ==  6) nNode = 4;
   if (nEdge == 10) nNode = 5;
   if (nEdge == 15) nNode = 6;
   if (nEdge == 21) nNode = 7;
+  if (nEdge == 28) nNode = 8;
 
   fclose(input);
 
@@ -472,6 +492,7 @@ int main (int argc, char** argv) {
 
   out = (int*) malloc (sizeof (int) * (nEdge + 1));
   for (i = 1; i <= nEdge; i++) out [i] = 0;
+  //printf("nNode: %i nEdge: %i nGraph: %i \n", nNode, nEdge, nGraph);
 /*
   implied = (int**) malloc (sizeof (int*) * (nEdge + 1));
   for (i = 1; i <= nEdge; i++) implied[i] = malloc (sizeof(int) * (nEdge + 1));
