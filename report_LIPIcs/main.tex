@@ -23,11 +23,11 @@
 
 %\titlerunning{Dummy short title} %TODO optional, please use if title is longer than one line
 
-\author{Chris Lambert {Open Access}}{Dummy University Computing Laboratory, [optional: Address], Country \and My second affiliation, Country \and \url{http://www.myhomepage.edu} }{johnqpublic@dummyuni.org}{https://orcid.org/0000-0002-1825-0097}{(Optional) author-specific funding acknowledgements}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
+\author{Chris Lambert}{Dummy University Computing Laboratory, [optional: Address], Country \and My second affiliation, Country \and \url{http://www.myhomepage.edu} }{johnqpublic@dummyuni.org}{}{(Optional) author-specific funding acknowledgements}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
 
-\author{Evan Lohn\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{[orcid]}{[funding]}
+\author{Evan Lohn\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{}{[funding]}
 
-\author{Marijn Heule\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{[orcid]}{[funding]}
+\author{Marijn Heule\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{}{[funding]}
 
 \authorrunning{J. Open Access and J.\,R. Public} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
 
@@ -197,6 +197,13 @@ The idea for incremental isolators and its following proof fell out of the obser
 
 \subsection{Probing}
 In addition to the SAT encoding approach to isolator generation, we also generated isolators using a method from prior work called ``random probes''  \cite{ref_heule}. On a high level, this approach starts with an empty set of clauses and adds randomly generated clauses that preserve at least one member of each equivalence class until the isolator is perfect.  There were only two non-superficial changes needed to adapt the prior work on random probes for undirected graphs to the directed case; allowing unit clauses and allowing clauses with only positive literals. While not guaranteed to generate optimal isolators, the strength of this approach is the relative speed with which isolators are generated. This approach also benefited in efficiency from the technique of disallowing clauses with all negative literals and extending isolators from the unit clauses of smaller isolators.
+
+\subsection{Beyond the Map file: Canonical set techniques}
+One major critique of our approach is that it does not scale to $n>9$. Already at n=9 there are $2^36$ labeled tournaments on $9$ vertices; this number can be reduced by enforcing all 13 known possible unit clauses during the generation of the map file, but the cnf produced by our SAT-based method is not solvable in reasonable time, and probes for $n=8$ take $\sim 2$ days compared to several seconds for $n=7$. As such, we also experimented with a canonical-set-based approach that scales with the number of equivalence classes. 
+
+The canonical-set-based approach is based on the well-known idea that one way to create an isolator is to express a particular set of canonical representatives in disjunctive normal form (DNF), then convert the DNF to CNF. Because this approach may lead to much larger isolators than the optimal ones, we first used the canonical sets induced by our optimal isolators as proofs of concept; the resulting CNFs were equal in length to our optimal isolators up to n=6 (our isolators for n=7 and above are not optimal, and thus were not considered). Next, we tried the naive approach of using an ``arbitrary'' canonical set (we used the canonical set produced by the \textbf{CITE}  NAUTY program). The size of the isolators generated was very suboptimal, as expected (see table \textbf{REF} below).
+
+A more promising approach involves modifying a given arbitrary canonical set to have certain properties. Given a canonical set, we detect the hamiltonian path $1\rightarrow 2,2\rightarrow 3,... n-1\rightarrow n$ via an algorithm modeled on the proof of h-path existence, then permute each member of the canonical set to have that h-path. Intuitively, procedures such as this one cause the canonical set members to have more edges in common, which will lead to more unit clauses in the final CNF. These experiments gave better results than the naive approach, but
 
 \subsection{nlogn proof}
 %We seek to prove that at least $n\log{n}$???(placeholder) units can be part of an isolator for $n$-vertex tournaments.  
