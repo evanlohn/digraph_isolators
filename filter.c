@@ -68,7 +68,7 @@ long filter (long posMask, long negMask) {
 
   return removed; }
 
-long main (long argc, char** argv) {
+int main (int argc, char** argv) {
   long *thisClass, size;
   long *minSub;
 
