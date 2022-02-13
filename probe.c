@@ -135,7 +135,7 @@ void printClause (int posMask, int negMask) {
 // the clauses instead of removing them from the data structures.
 int seive (int posMask, int negMask) {
   int i, removed = 0;
-  for (i = 1; i <= nClass; i++) red_count[i] = 0;
+  for (i = 1; i <= nClass; i++) red_count[i] = 0; //red_count is the the count of how much an eq_cls is reduced by a clause.
 
   for (i = 0; i < nGraph; i++) {
     int a = mask[i] & posMask;
@@ -286,6 +286,7 @@ void addClause (unsigned int posMask, unsigned int negMask) {
 
 void makeClauseRec (int start, int posMask, int negMask, int depth) {
   int i;
+  int md = 10;
   if (posMask & negMask) return; // skip tautologies
 
   if (depth == 0) {
@@ -293,16 +294,21 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
     if (posMask == 0) return;
     //if (negMask == 0) return;
     int removed;
+    /*
     for (i = 0; i < nEdge; i++) {
       // if edge i is a literal in the clause and all remaining graphs with edge i have some edge j while -j is a literal in the clause, throw the clause out.
       // I believe this is just an optimization, since having -j is an unnecessary addition to the clause.
       if ((posMask & (1 << i)) && (negMask & cover[i])) {
         cover_hits++;
         return; } }
+    */
 
     // CHANGE: removed sus if
     //if (popCount (posMask) + popCount (negMask) <= 3) removed = 1;
     removed = seive (posMask, negMask);
+    //if ((posMask == 1<<2) && (negMask == allone ^ (1<<2))) {
+//	    printf("clause that should work removes %d graphs\n", removed);
+    //}
 
 
     if (removed <  0) ncount++;
@@ -314,6 +320,9 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
   else {
     int _nGraph = nGraph;
     nGraph = moveActive (posMask, negMask);
+    //if (depth > md) {
+//	    printf("prev ngraph: %d, nGraph: %d\n", _nGraph, nGraph);
+    //}
     for (i = start; i <= 2 * nEdge + 1; i++) {
       int l = (i >> 1);
       if (i & 1) l *= -1;
@@ -321,6 +330,14 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
       if (l < 0) makeClauseRec (i + 1, posMask, negMask | (1 << (abs(l)-1)), depth-1);
       else       makeClauseRec (i + 1, posMask | (1 << (abs(l)-1)), negMask, depth-1);
     }
+    /*
+    if (depth > md) {
+	    printf("recursion done, depth %d nGraph %d\n", depth, nGraph);
+	    for (i=0; i < nGraph; i++) {
+		    printf("eq cl: %d, graph: ", eqcl[i]);
+		    printClause(mask[i], 0);
+	    }
+    }*/
     nGraph = _nGraph;
   }
 }
@@ -362,6 +379,19 @@ void evaluateClauses ( ) {
 
     else {
       int removed = seive (posMask, negMask);
+      /*
+      if (activeClauses < 50) {
+	      if (removed == 0 ) {
+		printf("seive removed 0. Clause: ");
+		printClause (posMask, negMask);
+	      }
+
+	      if (removed < 0) {
+		printf("seive removed %d. Clause: ", removed);
+		printClause (posMask, negMask);
+	      }
+
+      }*/
 
       if (removed > 0) {
         h = maskHash (posMask, negMask) % (32 * activeClauses);
@@ -388,6 +418,14 @@ void evaluateClauses ( ) {
   printf("c active clauses reduced from %i to %i (%i)\n", i, k, count);
 #endif
   activeClauses = k;
+  /*
+  if (k < 30) {
+	printf("remaining clauses:\n");
+	  for (int q = 0; q < k; q++) {
+		printClause(cList[q].posMask, cList[q].negMask);
+	  }
+	printf("\n");
+  }*/
   if (activeClauses == 0) {
     maxDepth++;
     ncount = ecount = pcount = 0;
@@ -396,6 +434,17 @@ void evaluateClauses ( ) {
 #ifdef COMMENTS
     printf("c counts: %i %i %i %i (sum %i)\n", maxDepth, ncount, ecount, pcount, ncount + ecount + pcount);
 #endif
+    if (ncount + ecount + pcount == 0) {
+	for (i = 0; i < nEdge; i++) {
+		printf("cover %d: ", i);
+		printClause(cover[i], 0);
+	  
+	}
+	int bleh = seive(1 << 2, allone ^ (1<<2));
+	printf("found a clause removing %d graphs\n", bleh);
+	printf("all clause counts 0\n");
+	exit(0);
+    }
     evaluateClauses ();
 
   }

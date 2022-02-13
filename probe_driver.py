@@ -41,6 +41,11 @@ if __name__ == '__main__':
         with open('sus.cnf', 'w') as f:
             subprocess.run(['./probe', f'{mapfile}', f'{seed}'], stdout=f)
         #os.system(f'./filter {mapfile} sus.cnf > sus.out')
+        #with open('sus.cnf', 'r') as f:
+        #    lines = f.readlines()
+        #    if 'clause counts 0' in lines[-1]:
+        #        print(i)
+        #        exit()
         with open('sus.out', 'w') as f:
             subprocess.run(['./filter', f'{mapfile}', 'sus.cnf'], stdout=f)
         s2 = time.time()

@@ -95,8 +95,6 @@ if __name__ == '__main__':
     if max_var is None:
         n = int(fname.split('_')[1])
         max_var = n * (n-1) // 2
-    print(max_var)
-    exit()
     symms = read_symms(fname, max_var)
     if max_var is None:
         max_var = max([max(var_occur) for _, var_occur in symms])
