@@ -33,6 +33,33 @@ def read_symms(fname, max_var):
     symms.append((all_nums, var_occur))
     return symms
 
+def uf_find(uf, x):
+    x = abs(x)
+    curr = x
+    if x not in uf:
+        return -1
+    while uf[curr] != curr:
+        curr = uf[curr]
+    uf[x] = curr # path compression ;)
+    return curr
+
+def uf_add(uf, x, y):
+    x = abs(x)
+    y = abs(y)
+    if x not in uf:
+        if y not in uf:
+            uf[x] = x
+            uf[y] = x
+        else:
+            uf[x] = uf_find(uf, y)
+    else:
+        # could do union by rank, but its like 3 extra LOC
+        uf[y] = uf_find(uf, x)
+
+def uf_would_form_cycle(uf, x, y):
+    tmp = uf_find(uf, x)
+    return tmp == uf_find(uf, y) and tmp != -1
+
 def generate_symm_break_pairs(symms, max_var):
     # each tuple of symms represents an independent symmetry
     symm_pairs = []
@@ -41,6 +68,7 @@ def generate_symm_break_pairs(symms, max_var):
         def seen_before(a, b):
             return (abs(a), abs(b)) in used or (abs(b),abs(a)) in used
         tmp = []
+        uf = {} # union-find data structure
         for var in range(1, max_var+1):
             if var in var_occur: # variable is part of some symmetries and symm not yet broken on it.
                 ind_lst = var_occur[var]
@@ -53,8 +81,9 @@ def generate_symm_break_pairs(symms, max_var):
                         signed_var, next_var = -signed_var, -next_var
 
                     #if abs(next_var) not in used:
-                    if not seen_before(signed_var, next_var) and (next_var < 0 or signed_var < next_var):
+                    if not seen_before(signed_var, next_var) and (next_var < 0 or signed_var < next_var) and not uf_would_form_cycle(uf, signed_var, next_var):
                         used.add((var, abs(next_var)))
+                        uf_add(uf, var, next_var)
                         #used.add(abs(next_var))
                         tmp.append((signed_var, next_var))
                         break
