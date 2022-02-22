@@ -35,7 +35,7 @@
 
 \ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
 
-\keywords{Satisfiability,Symmetry-breaking,Directed-graphs} %TODO mandatory; please add comma-separated list of keywords
+\keywords{Satisfiability,Symmetry-breaking,Directed-graphs,Tournaments} %TODO mandatory; please add comma-separated list of keywords
 
 \category{} %optional, e.g. invited paper
 
@@ -73,7 +73,7 @@
 %
 \begin{abstract}
 
-Isolators are a useful tool for reducing the computation needed to solve graph existence problems via SAT.  We extend techniques for creating isolators for undirected graphs to the tournament (complete, directed) case, noting several parallels in properties of isolators for the two classes. We further present an algorithm for constructing $n$-vertex tournament isolators with $\Omega(n \log n)$ unit clauses. Finally, we show the utility of our new isolators in computations of tournament Ramsey numbers.
+Isolators are a useful tool for reducing the computation needed to solve graph existence problems via SAT.  We extend techniques for creating isolators for undirected graphs to the tournament (complete, directed) case, noting several parallels in properties of isolators for the two classes. We further present an algorithm for constructing $n$-vertex tournament isolators with $\Theta(n \log n)$ unit clauses. Finally, we show the utility of our new isolators in computations of tournament Ramsey numbers.
 %In the field of satisfiability, symmetry breaking is a crucial technique needed to assist the solver in disregarding redundant candidate solutions.  As such, much work has gone into discovering `symmetry-breaking predicates' for common problems in satisfiability.  We extend prior work on undirected graphs to construct short, perfect symmetry breaking predicates on small tournaments.
 
 \keywords{Satisfiability  \and Symmetry-breaking \and Directed-graphs}
@@ -91,7 +91,22 @@ Isolators are a useful tool for reducing the computation needed to solve graph e
 % no forced "at least one positive, negative"
 %fewer isomorphism classes for small n
 \section{Introduction}
-Our main goal was to extend prior work \cite{ref_heule} with undirected graphs and generate optimal, perfect isolators for tournaments (complete, directed graphs). There were several places in which perfect isolator generation differed for tournaments.
+
+%Two key stories to tell here:
+% a) what is an isolator, why do we care
+% b) how are undirected graphs and tournaments related, esp w.r.t their isolators?
+
+The goal of graph existence problems is to prove the existence of an unlabeled graph satisfying certain conditions. For example, one method for computing Ramsey numbers (a foundational problem in Ramsey theory) is to show that there exists a graph with $n$ vertices with no clique or independent set of size $k$, but there does not exist such a graph with $n+1$ vertices. Graph existence problems can often easily be encoded to SAT by disallowing all sets of edges that could cause a graph to not satisfy the desired property (i.e. for Ramsey numbers, disallow all possible $k$-vertex cliques and independent sets). However, the SAT approach to graph existence problems tends to be outperformed by specialized tools \textbf{CITE}. 
+
+The underperformance of SAT on these types of problems is at least partially due to suboptimal encodings \textbf{CITE}. In particular, the naive approach to searching for a graph via SAT searches for a \textit{labeled} graph by representing the existence of each of the $n \choose 2$ edges with a singe variable and asserting that the edges that exist must satisfy some property. We observe that if a labeled graph $G$ satisfies $P(G)$, $G'$ satisfies $P(G')$ for any $G'$ constructed by permuting the vertices of $G$. Such $G'$ is termed isomorphic to $G$ (written $G\sim G'$), and the set of all such $G'$ is called the ``equivalence class'' $E_G$ of $G$. With a naive problem encoding of many problems, a SAT solver may explore many ``symmetric'' parts of the search space (for example, it must separately check all members of $E_G$) that are all UNSAT. As such, it is often helpful to augment problem encodings with a shorter formula that is UNSAT in such regions, termed a ``Symmetry-Breaking Predicate'' (SBP). While tools such as SHATTER \textbf{CITE} exist to provide SBPs for arbitrary formulas, it is possible to generate more powerful SBPs given more specific knowledge of the problem being encoded.
+
+ ``Isolator" is the term used for symmetry breaking predicates that specifically target symmetries induced by isomorphic graphs. An isolator is ``trivial'' if it admits all possible labeled graphs (i.e. the empty set of clauses), or ``perfect'' if it admits exactly one graph per equivalence class. Additionally, an isolator is ``optimal'' if it uses the fewest possible clauses to admit a given number of graphs. An optimal perfect isolator is therefore the shortest list of clauses that admits exactly one member of each equivalence class in the set of graphs being searched over.
+
+The first contribution of this work is the generation of compact isolators for small tournaments (complete, directed graphs), extending prior work in this direction on undirected tournaments \textbf{CITE}. Second, we present a methodology for the generation of (imperfect) tournament isolators that asymptotically matches the search space reduction of a perfect isolator. Finally, we make several comparisons between the isolator generation processes for undirected graphs and tournaments that can be used to improve or better understand each process.
+\section{Related Work}
+
+TBD
+%Our main goal was to extend prior work \cite{ref_heule} with undirected graphs and generate optimal, perfect isolators for tournaments (complete, directed graphs). There were several places in which perfect isolator generation differed for tournaments.
 
 \subsection{Global Clause Properties}
 Because edgeless and complete graphs are isomorphism classes for any $n$ in the undirected case, every clause of an undirected graph isolator must contain at least one positive and one negative literal. These two graphs do not exist in the case of tournaments; the closest parallel is transitive tournaments satisfying $AB \land BC \rightarrow AC$ for every three vertices $A,B,C$ in the tournament. Unlike the undirected case (with exactly 1 empty graph and 1 complete graph), there are $n!$ isomorphic transitive tournaments on $n$ vertices. It is possible to select the particular transitive tournament $TT$ an isolator admits by ensuring that at least one edge from $TT$ is present in each clause of the isolator. A simple way to do so is ensure each clause contains at least one edge $AB$ s.t. $A<B$ in vertex numbering. However, this approach is not yet proven to admit an optimal isolator.
@@ -199,11 +214,11 @@ The idea for incremental isolators and its following proof fell out of the obser
 In addition to the SAT encoding approach to isolator generation, we also generated isolators using a method from prior work called ``random probes''  \cite{ref_heule}. On a high level, this approach starts with an empty set of clauses and adds randomly generated clauses that preserve at least one member of each equivalence class until the isolator is perfect.  There were only two non-superficial changes needed to adapt the prior work on random probes for undirected graphs to the directed case; allowing unit clauses and allowing clauses with only positive literals. While not guaranteed to generate optimal isolators, the strength of this approach is the relative speed with which isolators are generated. This approach also benefited in efficiency from the technique of disallowing clauses with all negative literals and extending isolators from the unit clauses of smaller isolators.
 
 \subsection{Beyond the Map file: Canonical set techniques}
-One major critique of our approach is that it does not scale to $n>9$. Already at n=9 there are $2^36$ labeled tournaments on $9$ vertices; this number can be reduced by enforcing all 13 known possible unit clauses during the generation of the map file, but the cnf produced by our SAT-based method is not solvable in reasonable time, and probes for $n=8$ take $\sim 2$ days compared to several seconds for $n=7$. As such, we also experimented with a canonical-set-based approach that scales with the number of equivalence classes. 
+One major critique of our approach is that it does not scale to $n>9$. Already at n=9 there are $2^{36}$ labeled tournaments on $9$ vertices; this number can be reduced by enforcing all 13 known possible unit clauses during the generation of the map file, but the cnf produced by our SAT-based method is not solvable in reasonable time, and probes for $n=8$ take $\sim 2$ days compared to several seconds for $n=7$. As such, we also experimented with a canonical-set-based approach that scales with the number of equivalence classes. 
 
 The canonical-set-based approach is based on the well-known idea that one way to create an isolator is to express a particular set of canonical representatives in disjunctive normal form (DNF), then convert the DNF to CNF. Because this approach may lead to much larger isolators than the optimal ones, we first used the canonical sets induced by our optimal isolators as proofs of concept; the resulting CNFs were equal in length to our optimal isolators up to n=6 (our isolators for n=7 and above are not optimal, and thus were not considered). Next, we tried the naive approach of using an ``arbitrary'' canonical set (we used the canonical set produced by the \textbf{CITE}  NAUTY program). The size of the isolators generated was very suboptimal, as expected (see table \textbf{REF} below).
 
-A more promising approach involves modifying a given arbitrary canonical set to have certain properties. Given a canonical set, we detect the hamiltonian path $1\rightarrow 2,2\rightarrow 3,... n-1\rightarrow n$ via an algorithm modeled on the proof of h-path existence, then permute each member of the canonical set to have that h-path. Intuitively, procedures such as this one cause the canonical set members to have more edges in common, which will lead to more unit clauses in the final CNF. These experiments gave better results than the naive approach, but
+A more promising approach involves modifying a given arbitrary canonical set to have certain properties. Given a canonical set, we detect the hamiltonian path $1\rightarrow 2,2\rightarrow 3,... n-1\rightarrow n$ via an algorithm modeled on the proof of h-path existence, then permute each member of the canonical set to have that h-path. Intuitively, procedures such as this one cause the canonical set members to have more edges in common, which will lead to more unit clauses in the final CNF. These experiments gave better results than the naive approach, but (as expected) did not succeed in matching the true optimal isolator length. A possible direction for future work is the development of heuristics for permuting canonical set representatives to produce canonical sets admitting short isolators.
 
 \subsection{nlogn proof}
 %We seek to prove that at least $n\log{n}$???(placeholder) units can be part of an isolator for $n$-vertex tournaments.  
@@ -225,7 +240,7 @@ By the inductive hypothesis,
  
  Next, we have that 
  \begin{equation}\label{unitsk}
- k\frac{k-1}{2} =  \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(n)\rfloor/2 \geq \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(i)\rfloor/2
+ k\frac{k-1}{2} = k \lfloor \log_2(n)\rfloor/2 = \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(n)\rfloor/2 \geq \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(i)\rfloor/2
  \end{equation}
  
  Combining the two lower bounds ((\ref{unitsIH}) and (\ref{unitsk})) for the terms of \cref{unitsndef} completes the proof: $units(n) = \frac{k(k-1)}{2} + units(n-k) \geq \sum\limits_{i=n-k+1}^{n} \lfloor \log_2(i)\rfloor/2 + \sum\limits_{i=1}^{n-k} \lfloor \log_2(i)\rfloor/2 = \sum\limits_{i=1}^{n} \lfloor \log_2(i)\rfloor/2$ as desired.
