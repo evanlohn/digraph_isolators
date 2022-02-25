@@ -61,19 +61,30 @@ def visualize_graphs(graphs, units, n, n_to_plot):
         plt.show()
 
 def find_similar_graphs(n, all_edges):
-    graphs = [sorted(add_neg_edges(n,edges), key=lambda x: abs(x)) for edges in all_edges]
+    graphs = sorted([sorted(add_neg_edges(n,edges), key=lambda x: abs(x)) for edges in all_edges], key=lambda y: sum([x > 0 for x in y]))
 
     # there's probably a cool alg for doing this; I'm going to brute force since n is small
     pairs = []
     for g1_ind, g1 in enumerate(graphs):
         for g2_ind in range(g1_ind + 1, len(graphs)):
-            if sum([v1!=v2 for v1, v2 in zip(g1, graphs[g2_ind])]) == 1:
-                pairs.append((g1_ind, g2_ind))
+            last_neq = None
+            for v1, v2 in zip(g1, graphs[g2_ind]):
+                if v1 != v2:
+                    if last_neq is None:
+                        last_neq = abs(v1)
+                    else:
+                        last_neq = -1
+                        break
+            if last_neq is not None and last_neq != -1:
+                pairs.append((g1_ind, g2_ind, last_neq))
+                
     return pairs
 
 def visualize_similarity(n, all_edges):
-    g = nx.Graph()
-    g.add_edges_from(find_similar_graphs(n, all_edges))
+    g = nx.DiGraph()
+    sim_graphs = find_similar_graphs(n, all_edges)
+    sim_g_edges = [(x, y) for x,y,_ in sim_graphs]
+    g.add_edges_from()
     pos = nx.spring_layout(g)
     pos2 = {}
     for v, v2 in zip(range(0, len(all_edges)), pos):
