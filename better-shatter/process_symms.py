@@ -27,7 +27,7 @@ def read_symms(fname, max_var):
                 else:
                     var_occur[abs(num)].append((match_ind, i))
             all_nums.append(nums)
-        new_symm = line[-2] == ','
+        new_symm = len(line) >= 2 and line[-2] == ','
         if new_symm:
             symms.append((all_nums, var_occur))
     symms.append((all_nums, var_occur))
