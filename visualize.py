@@ -35,6 +35,20 @@ def from_edges(n, edges):
     g.add_edges_from(edges)
     return g
 
+def plot_graph(g, n, units):
+    edges= list(g.edges())
+    e_colors = [('red' if (edge2ind(e) in units or -edge2ind(e) in units) else 'black') for e in edges]
+    edges.sort(key=lambda e: edge2ind(e))
+
+    pos = nx.circular_layout(g)
+    pos2 = {}
+    for v, v2 in zip(range(1, n+1), pos):
+        pos2[v] = pos[v2]
+
+    #print(pos)
+    nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white', arrowsize=20)
+    nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=0.75)
+
 def visualize_graphs(graphs, units, n, n_to_plot):
     N = len(graphs) if n_to_plot is None else n_to_plot
     w = int(N**0.5)
@@ -42,20 +56,9 @@ def visualize_graphs(graphs, units, n, n_to_plot):
 
     print(h,w,units)
     for ind, g in enumerate(graphs[:N]):
-        edges= list(g.edges())
-        e_colors = [('red' if (edge2ind(e) in units or -edge2ind(e) in units) else 'black') for e in edges]
-        edges.sort(key=lambda e: edge2ind(e))
-
-        plt.subplot(h, w, ind+1)
-        pos = nx.circular_layout(g)
-        pos2 = {}
-        for v, v2 in zip(range(1, n+1), pos):
-            pos2[v] = pos[v2]
-
-        #print(pos)
-        nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white', arrowsize=20)
-        nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=0.75)
-    plt.show()
+        #plt.subplot(h, w, ind+1)
+        plot_graph(g, n, units)
+        plt.show()
 
 def find_similar_graphs(n, all_edges):
     graphs = [sorted(add_neg_edges(n,edges), key=lambda x: abs(x)) for edges in all_edges]
@@ -106,8 +109,8 @@ def main(n, iso_file, n_to_plot):
 
 
 
-    #visualize_graphs(graphs, units, n, n_to_plot)
-    visualize_similarity(n, all_edges)
+    visualize_graphs(graphs, units, n, n_to_plot)
+    #visualize_similarity(n, all_edges)
 
 if __name__ == '__main__':
     n = int(sys.argv[1])

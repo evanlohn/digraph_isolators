@@ -34,7 +34,15 @@ def plot_unit_counts(upto=100000):
 	ys = [tab_naive[x] for x in xs]
 	
 	met1 = lambda x: x * (math.log(x,2) - 2)/2
-	met2 = lambda x: tab_naive[x-1] + math.log(x,2) - 7
+	curr = 0
+	curr_ind = 0
+	def met2(x):
+		nonlocal curr, curr_ind
+		while curr_ind < x:
+			curr_ind += 1
+			curr = curr + int(math.log(curr_ind,2))/2
+		return curr
+	#met2 = lambda x: tab_naive[x-1] + math.log(x,2) - 7
 
 	sampler = lambda lst: [x for i, x in enumerate(lst) if i %(len(lst)//1000) == 0]
 
@@ -42,10 +50,13 @@ def plot_unit_counts(upto=100000):
 		xs = sampler(xs)
 		ys = sampler(ys)
 
-	plt.plot(xs, ys)
+
+	plt.plot(xs, ys, label='units(n)')
 	#plt.plot(xs, [4*x for x in xs])
-	plt.plot(xs, [met1(x) for x in xs])
-	plt.plot(xs, [met2(x) for x in xs])
+	#plt.plot(xs, [met1(x) for x in xs])
+	plt.plot(xs, [met2(x) for x in xs], label='LB(n)')
+	plt.legend()
+	plt.xlabel('n')
 
 	plt.show()
 
@@ -57,6 +68,7 @@ def compare_bounds(upto=1000000):
 	pct_correct = 0
 	tab = tab_naive
 	log_upto_i = 0
+	mdiff = 0
 	for i in range(2, upto):
 		log_upto_i += int(math.log(i,2))/2
 		lb = log_upto_i
@@ -65,13 +77,15 @@ def compare_bounds(upto=1000000):
 		at = at and lb <= tab[i]
 		pct_correct += 1 if lb <= tab[i] else 0
 		avg_diff += tab[i] - lb
+		mdiff = max(mdiff, tab[i] - lb)
 		print(i, tab[i], lb, lb <= tab[i])
 		#print(i, tab_naive[i], tab_known[i], tab_known[i] >= tab_naive[i])
 		
 	print(at)
 	print(f'avg diff: {avg_diff/(upto - 2)}')
+	print(f'max diff: {mdiff}')
 	print(f'pct satisfying lower bound: {pct_correct/(upto-2)}')
 
 if __name__ == '__main__':
 	compare_bounds(1000000)
-	#plot_unit_counts(20000)
+	#plot_unit_counts(200)
