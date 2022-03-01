@@ -1,6 +1,7 @@
 import sys
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 def convert_edge_ind(n):
     ctr = 0
@@ -46,7 +47,7 @@ def plot_graph(g, n, units):
         pos2[v] = pos[v2]
 
     #print(pos)
-    nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white', arrowsize=20)
+    nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white', arrowsize=25)
     nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=0.75)
 
 def visualize_graphs(graphs, units, n, n_to_plot):
@@ -84,13 +85,42 @@ def visualize_similarity(n, all_edges):
     g = nx.DiGraph()
     sim_graphs = find_similar_graphs(n, all_edges)
     sim_g_edges = [(x, y) for x,y,_ in sim_graphs]
-    g.add_edges_from()
+    g.add_edges_from(sim_g_edges)
     pos = nx.spring_layout(g)
     pos2 = {}
+    
     for v, v2 in zip(range(0, len(all_edges)), pos):
         pos2[v] = pos[v2]
-    #nx.draw(g, pos2)
-    nx.draw(g)
+
+    USE_IMAGES=False
+    if USE_IMAGES:
+        for i, edges in enumerate(all_edges):
+            img=mpimg.imread(f'ramsey_{n}_{i}.png')
+            g.add_node(i, image=img)
+        fig=plt.figure(figsize=(5,5))
+        ax=plt.subplot(111)
+        ax.set_aspect('equal')
+
+        plt.xlim(-1.5,1.5)
+        plt.ylim(-1.5,1.5)
+
+        trans=ax.transData.transform
+        trans2=fig.transFigure.inverted().transform
+
+        #nx.draw(g, pos2)
+        nx.draw_networkx_edges(g, pos, ax=ax)
+        piesize=0.05 # this is the image size
+        p2=piesize/2.0
+        for n in g:
+            xx,yy=trans(pos[n]) # figure coordinates
+            xa,ya=trans2((xx,yy)) # axes coordinates
+            a = plt.axes([xa-p2,ya-p2, piesize, piesize])
+            a.set_aspect('equal')
+            a.imshow(g.nodes()[n]['image'])
+            a.axis('off')
+        ax.axis('off')
+    else:
+        nx.draw(g, pos)
     plt.show()
 
 def main(n, iso_file, n_to_plot):
@@ -120,8 +150,8 @@ def main(n, iso_file, n_to_plot):
 
 
 
-    visualize_graphs(graphs, units, n, n_to_plot)
-    #visualize_similarity(n, all_edges)
+    #visualize_graphs(graphs, units, n, n_to_plot)
+    visualize_similarity(n, all_edges)
 
 if __name__ == '__main__':
     n = int(sys.argv[1])
