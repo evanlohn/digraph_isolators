@@ -66,6 +66,7 @@ def find_similar_graphs(n, all_edges):
 
     # there's probably a cool alg for doing this; I'm going to brute force since n is small
     pairs = []
+    stats = [0 for _ in range(len(graphs))]
     for g1_ind, g1 in enumerate(graphs):
         for g2_ind in range(g1_ind + 1, len(graphs)):
             last_neq = None
@@ -78,6 +79,18 @@ def find_similar_graphs(n, all_edges):
                         break
             if last_neq is not None and last_neq != -1:
                 pairs.append((g1_ind, g2_ind, last_neq))
+                stats[g1_ind] += 1
+                stats[g2_ind] += 1
+
+    print(f'total equiv classes: {len(graphs)}')
+
+    max_edges = max(stats)
+    num_at_max = len([i for i in range(len(graphs)) if stats[i] == max_edges])
+    print(f'max edges (i.e. "connected" eq classes): {max_edges}. A total of {num_at_max} equiv classes have this number of edges.')
+    min_edges = min(stats)
+    num_at_min = len([i for i in range(len(graphs)) if stats[i] == min_edges])
+    print(f'min edges (i.e. "connected" eq classes): {min_edges}. A total of {num_at_min} equiv classes have this number of edges.')
+    print(f'average degree: {sum(stats)/len(stats)}')
                 
     return pairs
 
@@ -86,11 +99,23 @@ def visualize_similarity(n, all_edges):
     sim_graphs = find_similar_graphs(n, all_edges)
     sim_g_edges = [(x, y) for x,y,_ in sim_graphs]
     g.add_edges_from(sim_g_edges)
-    pos = nx.spring_layout(g)
+    if n == 5:
+        pos = nx.spectral_layout(g)
+    else:
+        pos = nx.circular_layout(g)
     pos2 = {}
     
     for v, v2 in zip(range(0, len(all_edges)), pos):
         pos2[v] = pos[v2]
+
+    #pos[5][0] -= 0.5
+    #pos[7][0] += 0.5
+    #pos[5][1] += 0.1
+    #pos[7][1] += 0.1
+    #pos[3][0] -= 0.1
+    #pos[8][0] += 0.1
+    #pos[3][1] += 0.2
+    #pos[8][1] += 0.2
 
     USE_IMAGES=False
     if USE_IMAGES:
@@ -120,7 +145,7 @@ def visualize_similarity(n, all_edges):
             a.axis('off')
         ax.axis('off')
     else:
-        nx.draw(g, pos)
+        nx.draw(g,pos2, with_labels=True)
     plt.show()
 
 def main(n, iso_file, n_to_plot):
