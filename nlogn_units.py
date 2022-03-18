@@ -1,10 +1,18 @@
 import math
 import matplotlib.pyplot as plt
 
+def optimistic_ramsey_nums_cond(n_verts):
+	if n_verts >= 64: # nothing known for k>7
+		return naive_ramsey_cond(n_verts/34) + 6
+	for k, Rk in zip([7,6,5,4,3,2], [34,28,14,8,4,2]):
+		if n_verts >= Rk:
+			return k
+	return 1
+
 def known_ramsey_nums_cond(n_verts):
 	if n_verts >= 64: # nothing known for k>7
-		return naive_ramsey_cond(n_verts)
-	for k, Rk in zip([7,6,5,4,3,2], [54,28,14,8,4,2]):
+		return naive_ramsey_cond(n_verts/47) + 6
+	for k, Rk in zip([7,6,5,4,3,2], [47,28,14,8,4,2]):
 		if n_verts >= Rk:
 			return k
 	return 1
@@ -14,7 +22,7 @@ def naive_ramsey_cond(n_verts):
 
 def produce_table(ramsey_cond, upto=100):
 	ret = {}
-	for i in range(1, upto):
+	for i in range(2, upto):
 		verts_remaining = i
 		units_added = 0
 		while verts_remaining > 0:
@@ -30,8 +38,12 @@ def produce_table(ramsey_cond, upto=100):
 def plot_unit_counts(upto=100000):
 
 	tab_naive = produce_table(naive_ramsey_cond, upto=upto)
+	tab_known = produce_table(known_ramsey_nums_cond, upto=upto)
+	tab_hope = produce_table(optimistic_ramsey_nums_cond, upto=upto)
 	xs = list(range(2,upto))
 	ys = [tab_naive[x] for x in xs]
+	ys_known = [tab_known[x] for x in xs]
+	ys_hope = [tab_hope[x] for x in xs]
 	
 	met1 = lambda x: x * (math.log(x,2) - 2)/2
 	curr = 0
@@ -49,16 +61,26 @@ def plot_unit_counts(upto=100000):
 	if upto >= 100000:
 		xs = sampler(xs)
 		ys = sampler(ys)
+		ys_known = sampler(ys_known)
+		ys_hope = sampler(ys_hope)
 
-
-	plt.plot(xs, ys, label='units(n)')
+	met2ys = [met2(x) for x in xs]
+	plt.plot(xs, ys_hope, label='units_hope(n)')
+	plt.plot(xs, ys, label='units_naive(n)')
+	plt.plot(xs, ys_known, label='units(n)')
 	#plt.plot(xs, [4*x for x in xs])
 	#plt.plot(xs, [met1(x) for x in xs])
-	plt.plot(xs, [met2(x) for x in xs], label='LB(n)')
+	plt.plot(xs, met2ys, label='LB(n)')
 	plt.legend()
 	plt.xlabel('n')
 
 	plt.show()
+	#print('units(n)')
+	#print(''.join([f'({x},{y})' for x, y in zip(xs, ys)]))
+	#print()
+	#print()
+	#print('LB(n)')
+	#print(''.join([f'({x},{y})' for x, y in zip(xs, met2ys)]))
 
 def compare_bounds(upto=1000000):
 	tab_naive = produce_table(naive_ramsey_cond, upto=upto)
@@ -87,5 +109,6 @@ def compare_bounds(upto=1000000):
 	print(f'pct satisfying lower bound: {pct_correct/(upto-2)}')
 
 if __name__ == '__main__':
-	compare_bounds(1000000)
-	#plot_unit_counts(200)
+	#compare_bounds(1000000)
+	plot_unit_counts(200)
+	#plot_unit_counts(100000)
