@@ -2,6 +2,7 @@ import sys
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import numpy as np
 
 def convert_edge_ind(n):
     ctr = 0
@@ -36,19 +37,20 @@ def from_edges(n, edges):
     g.add_edges_from(edges)
     return g
 
-def plot_graph(g, n, units):
+def plot_graph(g, n, units, arrowsize=25, use_edge_labels=True):
     edges= list(g.edges())
     e_colors = [('red' if (edge2ind(e) in units or -edge2ind(e) in units) else 'black') for e in edges]
     edges.sort(key=lambda e: edge2ind(e))
 
-    pos = nx.circular_layout(g)
+    pos = nx.circular_layout(g, scale=0.1)
     pos2 = {}
     for v, v2 in zip(range(1, n+1), pos):
         pos2[v] = pos[v2]
 
     #print(pos)
-    nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white', arrowsize=25)
-    nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=0.75)
+    nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white', arrowsize=arrowsize)
+    if use_edge_labels:
+        nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=0.75)
 
 def visualize_graphs(graphs, units, n, n_to_plot):
     N = len(graphs) if n_to_plot is None else n_to_plot
@@ -56,14 +58,21 @@ def visualize_graphs(graphs, units, n, n_to_plot):
     h = w if w*w == N else w + 1
 
     print(h,w,units)
+    SAVE_MODE=True
     for ind, g in enumerate(graphs[:N]):
-        #plt.subplot(h, w, ind+1)
-        plot_graph(g, n, units)
+        if SAVE_MODE:
+            plt.figure(figsize=(2,2))
+            plot_graph(g, n, units,arrowsize=40, use_edge_labels=False)
+            plt.savefig(f'ramsey_{n}_{ind}.png', bbox_inches='tight', transparent=True)
+        else:
+            plt.subplot(h, w, ind+1)
+            plot_graph(g, n, units)
+    if not SAVE_MODE:
         plt.show()
 
 def find_similar_graphs(n, all_edges):
-    graphs = sorted([sorted(add_neg_edges(n,edges), key=lambda x: abs(x)) for edges in all_edges], key=lambda y: sum([x > 0 for x in y]))
-
+    graphs = [sorted(add_neg_edges(n,edges), key=lambda x: abs(x)) for edges in all_edges]
+    #graphs = sorted(graphs, key=lambda y: sum([x > 0 for x in y]))
     # there's probably a cool alg for doing this; I'm going to brute force since n is small
     pairs = []
     for g1_ind, g1 in enumerate(graphs):
@@ -86,18 +95,19 @@ def visualize_similarity(n, all_edges):
     sim_graphs = find_similar_graphs(n, all_edges)
     sim_g_edges = [(x, y) for x,y,_ in sim_graphs]
     g.add_edges_from(sim_g_edges)
-    pos = nx.spring_layout(g)
+    pos = nx.circular_layout(g)
     pos2 = {}
     
     for v, v2 in zip(range(0, len(all_edges)), pos):
         pos2[v] = pos[v2]
 
-    USE_IMAGES=False
+    USE_IMAGES=True
+    print(n)
     if USE_IMAGES:
         for i, edges in enumerate(all_edges):
             img=mpimg.imread(f'ramsey_{n}_{i}.png')
             g.add_node(i, image=img)
-        fig=plt.figure(figsize=(5,5))
+        fig=plt.figure(figsize=(20,20))
         ax=plt.subplot(111)
         ax.set_aspect('equal')
 
@@ -108,19 +118,25 @@ def visualize_similarity(n, all_edges):
         trans2=fig.transFigure.inverted().transform
 
         #nx.draw(g, pos2)
-        nx.draw_networkx_edges(g, pos, ax=ax)
-        piesize=0.05 # this is the image size
+        nx.draw_networkx_edges(g, pos, ax=ax, arrowsize=20)
+        piesize=0.1 # this is the image size
         p2=piesize/2.0
-        for n in g:
-            xx,yy=trans(pos[n]) # figure coordinates
+        n_graphs = len(g)
+        for i,node in enumerate(g):
+            xx,yy=trans(pos[node]) # figure coordinates
             xa,ya=trans2((xx,yy)) # axes coordinates
-            a = plt.axes([xa-p2,ya-p2, piesize, piesize])
+            theta = i*2*np.pi/n_graphs
+            delta_x = np.cos(theta)*p2*0.8
+            delta_y = np.sin(theta)*p2*0.8
+            a = plt.axes([xa-p2 + delta_x,ya-p2 + delta_y, piesize, piesize])
             a.set_aspect('equal')
-            a.imshow(g.nodes()[n]['image'])
+            a.imshow(g.nodes()[node]['image'])
             a.axis('off')
         ax.axis('off')
     else:
         nx.draw(g, pos)
+    print(n)
+    plt.savefig(f'ramsey_{n}_flowchart.png', bbox_inches='tight')
     plt.show()
 
 def main(n, iso_file, n_to_plot):
@@ -150,11 +166,12 @@ def main(n, iso_file, n_to_plot):
 
 
 
-    #visualize_graphs(graphs, units, n, n_to_plot)
+    visualize_graphs(graphs, units, n, n_to_plot)
     visualize_similarity(n, all_edges)
 
 if __name__ == '__main__':
     n = int(sys.argv[1])
     iso_file = f'isolator{n}.txt' if len(sys.argv) <=2 else sys.argv[2]
     n_to_plot = None if len(sys.argv) <=3 else int(sys.argv[3])
+    #n_to_plot=1
     main(n, iso_file, n_to_plot)
