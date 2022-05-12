@@ -58,7 +58,7 @@ def visualize_graphs(graphs, units, n, n_to_plot):
     h = w if w*w == N else w + 1
 
     print(h,w,units)
-    SAVE_MODE=True
+    SAVE_MODE=False
     for ind, g in enumerate(graphs[:N]):
         if SAVE_MODE:
             plt.figure(figsize=(2,2))

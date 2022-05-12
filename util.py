@@ -13,6 +13,13 @@ def isolator_clauses(n, only_units=False):
             else: in_clauses = line.strip() == "clauses:"
     return CNF(cs)
 
+def print_isolator_info(n):
+    cnf = isolator_clauses(n)
+    i2e = convert_edge_ind(n)
+    for clause in cnf.clauses:
+        print(f'{clause} {[i2e[v] for v in clause]}')
+
+
 def map_graphs(n, mapname=None):
     if mapname is None:
         mapname = f"map{n}.txt"
