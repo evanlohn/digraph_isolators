@@ -46,6 +46,8 @@ def bin_int(x, n_edges):
     return format(x,'0{}b'.format(n_edges))[::-1]
 
 def matches_units_pred(g_bin_int, units):
+    if len(units) == 0:
+        return True
     if units[0] > 0:
         return all([g_bin_int[unit - 1] == '1' for unit in units])
     else:

@@ -124,6 +124,6 @@ if __name__ == '__main__':
     n = int(sys.argv[1])
     use_iso_at = 8 if len(sys.argv) <=2 else int(sys.argv[2])
     use_iso_at = max([1, use_iso_at])
-    #print(make_big_iso(n, use_iso_at))
+    print(make_big_iso(n, use_iso_at))
     #compare_remaining_classes()
-    compare_large_n()
+    #compare_large_n()
