@@ -4,7 +4,9 @@
 
 // this code is a slightly modified version of https://github.com/marijnheule/isolator/blob/master/probe_orig.c
 
-#define ALLOC     300000000
+//#define OPT
+
+#define ALLOC    300000000
 #define MAXMAX       10000
 #define LISTSIZE        30
 #define PRIME     16777619
@@ -21,7 +23,7 @@
 
 #define HASH
 
-//#define COMMENTS
+#define COMMENTS
 
 #define CLAUSES
 
@@ -64,7 +66,7 @@ unsigned int edgeMask (int v, int w) {
   if (v > w) { a = w; b = v; }
 
   //CHANGE 1: use different edge numbering
-  int i = (w - 2) * (w - 1) / 2 + v; 
+  int i = (w - 2) * (w - 1) / 2 + v;
 
   return (unsigned int) (1 << i); }
 
@@ -291,17 +293,17 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
 
   if (depth == 0) {
     //CHANGE: allow positive units
-    if (posMask == 0) return;
+    //if (posMask == 0) return;
     //if (negMask == 0) return;
     int removed;
-    /*
+#ifdef OPT
     for (i = 0; i < nEdge; i++) {
       // if edge i is a literal in the clause and all remaining graphs with edge i have some edge j while -j is a literal in the clause, throw the clause out.
       // I believe this is just an optimization, since having -j is an unnecessary addition to the clause.
       if ((posMask & (1 << i)) && (negMask & cover[i])) {
         cover_hits++;
         return; } }
-    */
+#endif
 
     // CHANGE: removed sus if
     //if (popCount (posMask) + popCount (negMask) <= 3) removed = 1;
@@ -314,7 +316,7 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
     if (removed <  0) ncount++;
     if (removed == 0) ecount++;
     if (removed >  0) pcount++;
-    if (removed > 0)
+    if (removed >  0)
       addClause (posMask, negMask);
   }
   else {
@@ -438,7 +440,6 @@ void evaluateClauses ( ) {
 	for (i = 0; i < nEdge; i++) {
 		printf("cover %d: ", i);
 		printClause(cover[i], 0);
-	  
 	}
 	int bleh = seive(1 << 2, allone ^ (1<<2));
 	printf("found a clause removing %d graphs\n", bleh);
@@ -611,12 +612,14 @@ int main (int argc, char** argv) {
 #ifdef COMMENTS
   printf("c counts: %i %i %i %i (sum %i)\n", maxDepth, ncount, ecount, pcount, ncount + ecount + pcount);
 #endif
+/*
   ncount = ecount = pcount = 0;
   makeClauseRec(2, 0, 0, 3);
 #ifdef COMMENTS
   printf("c counts: %i %i %i %i (sum %i)\n", maxDepth, ncount, ecount, pcount, ncount + ecount + pcount);
 #endif
-  maxDepth = 3;
+*/
+  maxDepth = 2;
 
 while (1) {
   int flag = 1;
@@ -631,7 +634,6 @@ while (1) {
     printf("\t%i\t%i\t%i\n", nClause, nLit, seed);
     #endif
     goto end; }
-
 #ifdef COMMENTS
   printf("c active %i\n", active);
 #endif
@@ -676,7 +678,7 @@ while (1) {
   int p = popCount (listPos[maxj]) + popCount (listNeg[maxj]);
 
 #ifdef MAXLENGTH
-  if (maxDepth < (nNode - 1))     
+  if (maxDepth < (nNode - 1))
 #endif
   if (maxDepth == p) {
     maxDepth++;
