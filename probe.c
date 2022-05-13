@@ -292,18 +292,27 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
   if (posMask & negMask) return; // skip tautologies
 
   if (depth == 0) {
+	  if (posMask == (1 << 2) && (negMask == ((1 << 3) | (1 <<5) | (1 << 8)))) {
+		printf("what a beuatiiful clause!!!\n");
+	  }
     //CHANGE: allow positive units
     //if (posMask == 0) return;
     //if (negMask == 0) return;
     int removed;
-#ifdef OPT
+
     for (i = 0; i < nEdge; i++) {
       // if edge i is a literal in the clause and all remaining graphs with edge i have some edge j while -j is a literal in the clause, throw the clause out.
       // I believe this is just an optimization, since having -j is an unnecessary addition to the clause.
       if ((posMask & (1 << i)) && (negMask & cover[i])) {
+	
+	if (posMask == (1 << 2) && (negMask == ((1 << 3) | (1 <<5) | (1 << 8)))) {
+		printf("yoinking negMask: ");
+		printClause(0, negMask);
+		printf("due to cover %d: ", i);
+		printClause(cover[i], 0);
+	}
         cover_hits++;
         return; } }
-#endif
 
     // CHANGE: removed sus if
     //if (popCount (posMask) + popCount (negMask) <= 3) removed = 1;
@@ -312,6 +321,9 @@ void makeClauseRec (int start, int posMask, int negMask, int depth) {
 //	    printf("clause that should work removes %d graphs\n", removed);
     //}
 
+  if (posMask == (1 << 2) && (negMask == ((1 << 3) | (1 <<5) | (1 << 8)))) {
+	printf("pretty clause removes %d \n", removed);
+  }
 
     if (removed <  0) ncount++;
     if (removed == 0) ecount++;
@@ -443,6 +455,10 @@ void evaluateClauses ( ) {
 	}
 	int bleh = seive(1 << 2, allone ^ (1<<2));
 	printf("found a clause removing %d graphs\n", bleh);
+	for (i = 0; i < nGraph; i++) {
+		printf("graph %d class %d: ", i, eqcl[i]);
+		printClause(mask[i], 0);
+	}
 	printf("all clause counts 0\n");
 	exit(0);
     }

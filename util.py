@@ -13,6 +13,13 @@ def isolator_clauses(n, only_units=False):
             else: in_clauses = line.strip() == "clauses:"
     return CNF(cs)
 
+def print_isolator_info(n):
+    cnf = isolator_clauses(n)
+    i2e = convert_edge_ind(n)
+    for clause in cnf.clauses:
+        print(f'{clause} {[i2e[v] for v in clause]}')
+
+
 def map_graphs(n, mapname=None):
     if mapname is None:
         mapname = f"map{n}.txt"
@@ -175,8 +182,6 @@ def from_edge_inds(n, edges):
         if e_ind not in edges:
             edges.append(-e_ind)
 
-    
-
     return [edge_verts[e] for e in edges]
 
 def print_degree_counts(graphs, n):
@@ -237,7 +242,57 @@ def filter_map_file():
         print(f'{list(g)} is canonical for class {gs[g]}')
     #print(fcnf)
 
+def nauty_R(bits):
+    #print(bits)
+    #bit_str = ''.join(format(x, 'b') for x in bits)
+    bit_str = ''.join([''.join(x) for x in bits])
+
+    if len(bit_str) % 6 != 0:
+        bit_str += '0'*(6 - len(bit_str)%6)
+    #print(bit_str)
+    return [chr(int(bit_str[6*i:6*(i+1)], 2) + 63) for i in range(len(bit_str)//6)]
+
+def nauty_R_inv(nauty_str, n):
+    bit_str = ''
+    # first two characters are & and chr(63+n)
+    for c in nauty_str[2:]:
+        bit_str += format(ord(c) - 63, '06b')
+    adj_mat = [['0' for _ in range(n)] for _ in range(n)]
+    ctr = 0
+    for r in range(n):
+        for c in range(n):
+            adj_mat[r][c] = bit_str[ctr]
+            ctr += 1
+    return adj_mat
+
+def read_d6(fname):
+    graphs = []
+    with open(fname, 'r') as f:
+        lines = f.readlines()
+    for line in lines:
+        assert line[0] == '&'
+        n = ord(line[1]) - 63
+        g = nauty_R_inv(line, n)
+        graphs.append([[int(x) for x in row] for row in g])
+    return graphs
+
+def gen_graphs(n, units):
+    n_edges = n*(n-1)//2
+    graphs = get_all_binary_graphs(n_edges, units)
+    adj_mats = []
+    for g in graphs:
+        adj_mat = graph_from_int(g, n)
+        adj_mats.append('&{}'.format(chr(63+n)) + ''.join(nauty_R(adj_mat)) + '\n')
+    return adj_mats
+
+def print_adjmat(graph, cut=None):
+    if cut is None:
+        cut = len(graph)
+    for row in graph[:cut]:
+        print(' '.join([str(x) for x in row[:cut]]))
+
 if __name__ == '__main__':
     # filter_map_file()
-    count_degrees()
-
+    #count_degrees()
+    graphs = read_d6('tt7free33some.d6')
+    print_adjmat(graphs[0],cut=25)
