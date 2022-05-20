@@ -51,15 +51,18 @@ Satisfiability, Symmetry-breaking, Directed-graphs, Tournaments, Isolators.
 
 \section{Introduction}
 
-In recent years, SAT solvers have been used to solve several difficult combinatorial problems. However, naive encodings of SAT problems often include undesired symmetries, i.e. certain matching subsets of variables that result in equivalent subproblems when given equivalent assignments. To prove the original formula unsatisfiable, in the worst case a solver must search through all possible symmetric parts of the problem space, which slows the generation of unsatisfiable proofs unnecessarily. Similarly, while the solver tries to find a satisfying assignment, symmetries in the input formula may cause the solver to effectively re-explore the same part of the search space even after proving the lack of a solution in a symmetric part of the problem.
+In recent years, SAT solvers have been used to solve several difficult combinatorial problems \cite{ref_keller,ref_schur,ref_pythagorean}. However, naive encodings of SAT problems often include undesired symmetries, i.e. certain matching subsets of variables that result in equivalent subproblems when given equivalent assignments. To prove the original formula unsatisfiable, in the worst case a solver must search through all possible symmetric parts of the problem space, which slows the generation of unsatisfiable proofs unnecessarily. Similarly, while the solver tries to find a satisfying assignment, symmetries in the input formula may cause the solver to effectively re-explore the same part of the search space even after proving the lack of a solution in a symmetric part of the problem.
 
-The most common way of lessening the impact of symmetries in a given formula is by adding a set of new clauses called a Symmetry-Breaking Predicate (SBP) to the formula before solving. The goal of a SBP is to preserve the satisfiability of the formula while removing regions of the search space known to be symmetric to other regions from consideration. When searching for the existence for a graph with particular structure (there are several classes of open problems asking exactly that \cite{ref_vdw, ref_ramseyk, ref_5cycle}), a large class of problem symmetries naturally results from the existence of isomorphic labeled graphs. These symmetries exist independent of any desired graph property related to graph structure, and largely result from the fact that SAT solvers are searching the space of labeled graphs in order to prove the (non-)existence of an unlabeled graph. 
+The most common way of lessening the impact of symmetries in a given formula is by adding a set of new clauses called a Symmetry-Breaking Predicate (SBP) to the formula before solving. The goal of a SBP is to preserve the satisfiability of the formula while removing from consideration any regions of the search space known to be symmetric to other regions. There are several classes of open problems that require searching for the existence for a graph with particular structure \cite{ref_vdw, ref_ramseyk, ref_5cycle}. A large class of problem symmetries in such problems naturally results from the existence of isomorphic labeled graphs. These symmetries exist independent of any desired graph property related to graph structure, and largely result from the fact that SAT solvers are searching the space of labeled graphs in order to prove the (non-)existence of an unlabeled graph. A SBP that targets graph isomorphisms is known as an isolator. Isolators that break many symmetries with few clauses are most useful in practice, as SAT solvers generally take longer to solve formulas with more clauses. Such isolators are often described as ``short'', ``small'', or ``compact.''
 
-A SBP that targets graph isomorphisms is known as an isolator. An isolator is \emph{trivial} if it admits all possible labeled graphs (i.e. the constant $true$ function), and \emph{perfect} if it admits exactly one graph per equivalence class. Additionally, an isolator is \emph{optimal} if it uses the fewest possible clauses to admit a given number of graphs. An optimal perfect isolator is therefore the shortest list of clauses that admits exactly one member of each equivalence class in the set of graphs being searched over. Having optimal or near-optimal isolators is useful in practice, as SAT solvers generally take longer to solve formulas with more clauses.
+%An isolator is \emph{trivial} if it admits all possible labeled graphs, and \emph{perfect} if it admits exactly one graph per equivalence class. Additionally, an isolator is \emph{optimal} if it uses the fewest possible clauses to admit a given number of graphs. An optimal perfect isolator is therefore the shortest list of clauses that admits exactly one member of each equivalence class in the set of graphs being searched over.
 
-Prior work has shown that it is possible to generate small isolators for undirected graphs \cite{ref_heule}; this work handles the generation of short isolators for tournaments (complete, directed graphs). There are several mathematically interesting questions one can ask about tournaments that motivate the generation of tournament isolators. The most well known is the Tournament Ramsey number problem, an analog to Ramsey numbers that (when solved) answers the question of ``at what size tournament $n$ must a transitive sub-tournament of size $k$ appear.'' Other applications include Sumner's conjecture and various election models in social choice theory (\cite{ref_sumner, ref_social_choice}).
+Prior work has shown that it is possible to generate small isolators for undirected graphs \cite{ref_heule}; this work handles the generation of short isolators for tournaments (complete, directed graphs). There are several mathematically interesting questions one can ask about tournaments that motivate the generation of tournament isolators. For example, Sumner's conjecture and various election models in social choice theory rely on tournament properties \cite{ref_sumner, ref_social_choice}. However, the most well known question about tournament structure is the Tournament Ramsey number problem, an analog to Ramsey numbers \cite{ref_ramsey_survey} that asks the question of ``in what size tournament $n$ must a transitive sub-tournament of size $k$ exist.'' A (sub)tournament is \emph{transitive} if it contains no cycles.
+%A (sub-)tournament is transitive if for all triples of vertices $u,v,w$, the existence of arcs $(a,b)$ and $(b,c)$ implies the existence of $(a,c)$. 
 
-The first contribution of this work is the generation of compact isolators (isolators with relatively few clauses) for small tournaments, extending prior work in this direction on undirected tournaments \cite{ref_heule}. Second, we present a methodology for the generation of (imperfect) compact tournament isolators that asymptotically matches the search space reduction of a perfect isolator. Finally, we make several comparisons between the isolators for undirected graphs and tournaments that can be used to improve or better understand each class of graph.
+The first contribution of this work is the generation of compact tournament isolators that asymptotically match the search space reduction of a perfect isolator. Second, we present a methodology for the generation of compact isolators for small tournaments that extends prior work on undirected tournaments \cite{ref_heule}.  Finally, we demonstrate the practical usage of our small isolators for finding larger graphs relevant to the search for tournament Ramsey numbers.
+
+%Finally, we make several comparisons between the isolators for undirected graphs and tournaments that can be used to improve or better understand each class of graph.
 
 % Attempt 2
 
@@ -93,11 +96,11 @@ The first contribution of this work is the generation of compact isolators (isol
 We define the following common concepts from SAT literature:
 %\item A \emph{variable} is an object that can be assigned to either True or False 
 %\item A positive or negative \emph{literal} is a shorthand for the predicate that a given variable is assigned True or False, respectively. 
-A \emph{literal} is either a variable or a negated variable.
-A \emph{clause} is a disjunction of 0 or more literals.
+A \emph{literal} is either a variable or a negated variable. We use $\lnot$ to denote negation.
+A \emph{clause} is a disjunction of literals.
 A \emph{unit clause} (sometimes referred to as simply a \emph{unit}) is a clause containing exactly one literal.
 A \emph{CNF formula} is a conjunction of clauses (CNF=Conjunctive Normal Form). Unless otherwise specified, ``formula'' refers to ``CNF formula.''
-An \emph{assignment} $\sigma$ is a function from variables to truth values (True/False). $\sigma$ satisfies a formula $F$ if the boolean function denoted by $F$ returns True given the inputs specified by $\sigma$.
+An \emph{assignment} $\alpha$ is a function from variables to truth values (True/False). $\alpha$ satisfies a formula $F$ if the boolean function denoted by $F$ returns True given the inputs specified by $\alpha$.
 
 
 We also define several graph-theoretic concepts.
@@ -109,12 +112,13 @@ An \emph{automorphism} $\pi$ on a tournament $G$ is any permutation $\pi$ such t
 
 \section{Isolator Notation and Concepts}
 
-Vertices (members of $v$ will be denoted with lowercase letters $a,b,c...$ or with $v_1, v_2, ... v_n$ when an ordering of the vertices is relevant. Arcs will be referred to with $(u,v)$, meaning ``there is an arc from $u$ to $v$.'' In our construction of isolators, each variable will be represented in text n the form $uv$ and has the semantics ``arc $(u,v)$ exists in the graph.'' However, each $uv$ must be assigned a corresponding integer to conform to the commonly used DIMACS CNF format; our schema for doing so is described in the following section.
+Some or all of the variables in a formula $F$ can be defined to have the semantics ``edge $e$ exists in graph $G$''. If this is the case, we say that $F$ \emph{admits} $G$ exactly when there exists a satisfying assignment to the conjunction of $F$ and the set of unit clauses semantically implied by the edges of $G$.
+An \emph{isolator} for $n$-vertex tournaments is a formula $F$ that admits at least one tournament from each equivalence class on $n$-vertex tournaments.
+A \emph{perfect} isolator is an isolator that admits \textit{exactly} one tournament from each equivalence class.
+A perfect isolator $F$ is \emph{optimal} if there does not exist a perfect isolator with fewer non-unit clauses than $F$.
+A \emph{compact} or \emph{short} isolator is not rigorously defined; rather it describes an isolator with few enough non-unit clauses to be of practical use in solving SAT problems.
 
-\subsection{Arc literal numbering}
-We specify a function $idx_n(u,v)$ to map each possible arc $(u,v)$ in an $n$-vertex tournament to a unique integer identifier. Because it was desirable for these identifiers to be used directly as literals in a CNF formula, $idx_n(u,v)$ was constrained to satisfy certain properties. In particular, $\mathit{idx}_n(u,v) = -\mathit{idx}_n(v,u)$. To facilitate isolator comparisons across different $n$, $\mathit{idx}$ also had to satisfy the property that $\mathit{idx}_n(u,v) = \mathit{idx}_{n+1}(u,v)$. We therefore drop the subscript $n$ when referring to $\mathit{idx}_n(u,v) $ in the future, as its value does not depend on $n$. 
-
-In particular, $\mathit{idx}$ is inductively defined as follows for an $n+1$-vertex tournament with vertices $v_1, v_2,,...v_n, v_{n+1}$. Let $K = n(n-1)/2$ be the largest output of $\mathit{idx}$ for an $n$-vertex tournament (implying base case $\mathit{idx}(v_1,v_2) = 1$ when $n=2$). Applying $\mathit{dx}$ to each of the arcs $(a,v_{n+1}), (b,v_{n+1}), ... (v_n, v_{n+1})$ yields $K+1, K+2,...,K+n$, respectively. All arcs not included in this definition are of the form $(v_w, v_u)$ where $w>u$, and are defined by the earlier mentioned constraint of $\mathit{idx}(u,v) = -\mathit{idx}(v,u)$.
+Vertices (members of $v$ will be denoted with lowercase letters $a,b,c...$ or with $v_1, v_2, ... v_n$ when an ordering of the vertices is relevant. Arcs will be referred to with $(u,v)$, meaning ``there is an arc from $u$ to $v$.'' In our construction of isolators, each variable is written in the form $uv$ and has the semantics ``arc $(u,v)$ exists in the graph.'' 
 
 %Consider a tournament with three vertices labeled $a,b,c$. One such tournament can be represented equivalently as a picture, a list of arcs (directed edges), or an adjacency matrix as follows:
 
@@ -131,9 +135,9 @@ Consider the following two labeled three-vertex tournaments.
 \node[vertex] (c) at  (1,0) {c};
 
 %edges
-\draw[edge] (a) to (b);
-\draw[edge][red] (a) to (c);
-\draw[edge][red] (c) to (b);
+\draw[edge][red] (a) to (b);
+\draw[edge] (a) to (c);
+\draw[edge][red] (b) to (c);
 
 %\draw[edge] (a)  to[bend left] (a1);
 %\draw[edge] (a1) to[bend left] (a);
@@ -146,51 +150,42 @@ Consider the following two labeled three-vertex tournaments.
 \node[vertex] (f) at  (3,0) {c};
 
 %edges
-\draw[edge] (e) to (d);
-\draw[edge][red] (d) to (f);
-\draw[edge][red] (f) to (e);
+\draw[edge][red] (d) to (e);
+\draw[edge] (f) to (d);
+\draw[edge][red] (e) to (f);
 
 \end{tikzpicture}
 
-These tournaments represent the two equivalence classes for $n=3$ tournaments. While any combination of a cyclic and non-cyclic tournament would suffice to represent both equivalence classes, the tournaments chosen above have the interesting property of sharing two edges $ac$ and $cb$ (colored red). This property allows us to produce a short formula that admits both graphs:
+These tournaments represent the only two equivalence classes for $n=3$ tournaments: a cycle and a transitive tournament. While any combination of a cycle and transitive tournament would suffice to represent both equivalence classes, the tournaments chosen above have the interesting property of sharing two edges $ab$ and $bc$ (colored red). This property allows us to produce a short formula that admits both graphs:
 
-$ac \land cb$.
+$ab \land bc$.
 
-This formula admits exactly one of the two cycles and one of the six non-cycles on 3 vertices, and does so with the fewest number of clauses. Therefore, $ac \land cb$ is a perfect, optimal isolator for $n=3$ tournaments.
+This formula admits exactly one of the two cycles and one of the six transitive tournaments on 3 vertices, and does so with the fewest number of clauses. Therefore, $ab \land bc$ is a perfect, optimal isolator for $n=3$ tournaments.
 
-Figure \ref{iso4} displays all 4 canonical representatives for $n=4$ tournaments. We note that once again all highlighted edges have the same edge labels across graphs (and all permutations of non-highlighted edges are present), so a short formula that admits exactly the set of graphs in the figure is \textbf{TBD: change fig 4 to use letters for vertex labels}
+Figure \ref{iso4} displays all 4 canonical representatives for $n=4$ tournaments. We note that once again all highlighted edges have the same edge labels across graphs, and all permutations of non-highlighted edges are present. So, a short formula that admits exactly the set of graphs in the figure is
 
 $ab \land bc \land cd \land ad$.
-
-
-\textbf{This actually duplicates a paragraph from the Intro. should we delete this, or the intro?}
-Now, we define several isolator-related concepts.
-Some or all of the variables in a formula $F$ can be defined to have the semantics ``edge $e$ exists in graph $G$''. If this is the case, we say that $F$ \emph{admits} $G$ exactly when there exists a satisfying assignment to the conjunction of $F$ and the set of unit clauses semantically implied by the edges of $G$.
-An isolator for $n$-vertex tournaments is a formula $F$ that admits at least one tournament from each equivalence class on $n$-vertex tournaments
-A \emph{perfect} isolator is an isolator that admits \textit{exactly} one tournament from each equivalence class.
-A perfect isolator $F$ is \emph{optimal} if there does not exist a perfect isolator with fewer non-unit clauses than $F$.
-A \emph{compact} or \emph{short} isolator is not rigorously defined; rather it describes an isolator with few enough non-unit clauses to be of practical use in solving SAT problems.
-
-
-\subsection{Comparison of undirected graph and tournament isolators}
-
-Although the majority of this work focuses on tournament isolators, there are many interesting parallels between undirected and tournament isolators. In an undirected context, the \emph{existence} of edge $(u,v)$ is denoted by the literal $uv$, while its nonexistence is denoted by the literal's negation $\lnot uv$.
-Because edgeless and complete graphs are isomorphism classes for any $n$ in the undirected case, every clause of an undirected graph isolator must contain at least one positive and one negative literal (assuming no auxiliary variables). These two graphs do not exist in the case of tournaments; the closest parallel is transitive tournaments satisfying $ab \land bc \rightarrow ac$ for every three vertices $a,b,c$ in the tournament. Unlike the undirected case (with exactly 1 empty graph and 1 complete graph with $n!$ automorphisms each), there are $n!$ isomorphic transitive tournaments on $n$ vertices. It is possible to select the particular transitive tournament $TT$ that an isolator admits by ensuring that at least one edge from $TT$ is present in each clause of the isolator. A simple way to do so is ensure each clause contains at least one edge $ab$ s.t. $a<b$ in vertex numbering. 
-
-Another consequence of undirected isolators requiring at least one positive and one negative literal per clause is that undirected isolators have no unit clauses. However, while negating all literals in an undirected isolator produces another undirected isolator (because the existence and non-existence of an edge is symmetric), there is no direct parallel to be found in tournaments as edge directionality does not have this property.
-
-\subsection{Ease of Isomorphism}
-Another interesting difference between undirected graphs and tournaments is the low number isomorphism classes for tournaments when $n$ is small (see table \ref{tab:smallest_isolators_found}). Intuitively, this happens because it is ``easy'' for tournaments to be isomorphic. The two options for the edge between vertices $a$ and $b$ in the undirected case are $ab$ existing or not existing. Crucially, an undirected graph $G$ will never be isomorphic to $G'$ constructed by adding or removing an edge of $G$ (an operation that can be seen as ``flipping'' an edge to its other possibility). However, ``flipping'' an edge of a tournament $T$ (changing the edge's direction) will produce $T' \simeq T$ iff the two vertices $a$ and $b$ of the flipped edge had the same edges to the rest of the graph (the isomorphism is via the permutation that swaps $a$ and $b$).
-
-
-
 
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth]{iso_4.png}
-\caption{Isomorphism class representatives admitted by a particular isolator for 4-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator, and the isolator has only unit clauses.} \label{iso4}
+\caption{Isomorphism class representatives admitted by a perfect, optimal isolator for 4-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator, and the isolator has only unit clauses. Edge labels are the integers returned by the $\mathit{idx}$ function from the Arc Literal Numbering section.} \label{iso4}
 \end{figure}
 
+\subsection{Comparison of undirected graph and tournament isolators}
+
+Although the majority of this work focuses on tournament isolators, there are many interesting parallels between undirected and tournament isolators. In an undirected context, the \emph{existence} of edge $(u,v)$ is denoted by the literal $uv$, while its nonexistence is denoted by the literal's negation $\lnot uv$.
+Because edgeless and complete graphs are isomorphism classes for any $n$ in the undirected case, every clause of an undirected graph isolator containing only arc literals must contain at least one positive and one negative literal. These two graphs do not exist in the case of tournaments; the closest parallel is transitive tournaments satisfying $uv \land vw \rightarrow uw$ for every three vertices $u,v,w$ in the tournament. Unlike the undirected case (with exactly one empty graph and one complete graph with $n!$ automorphisms each), there are $n!$ isomorphic transitive tournaments on $n$ vertices. It is possible to select the particular transitive tournament $TT$ that an isolator admits by ensuring that at least one edge from $TT$ is present in each clause of the isolator. A simple way to do so is ensure each clause contains at least one edge $uv$ s.t. $u<v$ in vertex numbering. 
+
+Another consequence of undirected isolators requiring at least one positive and one negative literal per clause is that undirected isolators have no unit clauses. However, while negating all literals in an undirected isolator produces another undirected isolator (because the existence and non-existence of an edge is symmetric), there is no direct parallel to be found in tournaments as edge directionality does not have this property.
+
+Another interesting difference between undirected graphs and tournaments is the low number isomorphism classes for tournaments when $n$ is small (see table \ref{tab:smallest_isolators_found}). Intuitively, this happens because it is ``easier'' for tournaments to be isomorphic. The two options for the edge between vertices $u$ and $v$ in the undirected case are $uv$ existing or not existing. Crucially, an undirected graph $G$ will never be isomorphic to $G'$ constructed by adding or removing an edge of $G$, which is an operation that can be seen as ``flipping'' an edge to its other possibility. However, ``flipping'' an edge of a tournament $T$ by changing the edge's direction will produce $T' \simeq T$ iff the two vertices $u$ and $v$ of the flipped edge had the same edges to the rest of the graph (the isomorphism is via the permutation that swaps $u$ and $v$). Although this discrepancy exists for small $n$, the numbers of isomorphism classes for undirected graphs and tournaments are remarkably close for larger $n$ \textbf{TBD: make more specific, CITE OEIS}. Therefore, we expect that perfect, optimal isolators for undirected graphs and tournaments will have similar numbers of clauses for larger $n$.
+
+\subsection{Arc Literal Numbering}
+However, each $uv$ must be assigned a corresponding integer to conform to the commonly used DIMACS CNF format; our schema for doing so is described in the following section.
+We specify a function $idx_n(u,v)$ to map each possible arc $(u,v)$ in an $n$-vertex tournament to a unique integer identifier. Because it was desirable for these identifiers to be used directly as literals in a CNF formula, $idx_n(u,v)$ was constrained to satisfy certain properties. In particular, $\mathit{idx}_n(u,v) = -\mathit{idx}_n(v,u)$. To facilitate isolator comparisons across different $n$, $\mathit{idx}$ also had to satisfy the property that $\mathit{idx}_n(u,v) = \mathit{idx}_{n+1}(u,v)$. We therefore drop the subscript $n$ when referring to $\mathit{idx}_n(u,v) $ in the future, as its value does not depend on $n$. 
+
+In particular, $\mathit{idx}$ is inductively defined as follows for an $n+1$-vertex tournament with vertices $v_1, v_2,,...v_n, v_{n+1}$. Let $K = n(n-1)/2$ be the largest output of $\mathit{idx}$ for an $n$-vertex tournament (implying base case $\mathit{idx}(v_1,v_2) = 1$ when $n=2$). Applying $\mathit{idx}$ to each of the arcs $(v_1,v_{n+1}), (v_2,v_{n+1}), ... (v_n, v_{n+1})$ yields $K+1, K+2,...,K+n$, respectively. All arcs not included in this definition are of the form $(v_w, v_u)$ where $w>u$, and are defined by the earlier mentioned constraint of $\mathit{idx}(u,v) = -\mathit{idx}(v,u)$.
 %\hfill
 %\begin{minipage}[t]{0.15\textwidth}
 %  $ab, ac, cb$
@@ -280,7 +275,7 @@ Another interesting difference between undirected graphs and tournaments is the 
 In practice, SAT solvers immediately reduce formulas with unit clauses to shorter formulas without units via unit propagation. Additionally, each unit clause reduces the search space (the maximum number of assignments hat would need to be checked by a brute-force solver) by a factor of 2. Therefore, it is practically useful to create isolators with as many units as possible. The following sections detail and analyze our various methods for creating isolators with many unit clauses.
 
 \subsection{Provable Units}
-While constructing smaller isolators using the techniques above, we opted to manually inspect our results and see what patterns they shared.  In doing so, we rediscovered a well-known fact from graph theory literature; every tournament contains a Hamiltonian path \cite{ref_tournament_book}. Proof sketch: inductively consider a length $n$ Hamiltonian path $v_1, v_2, ... v_n$ in an $n+1$-vertex tournament $G$. For the vertex $v_{n+1}$ not part of the path, in the case that either $(v_{n+1}, v_1)$ or $(v_n, v_{n+1})$ is in $G$, a length $n+1$ Hamiltonian path is formed. Otherwise, $(v_1, v_{n+1})$ and $(v_{n+1}, v_{n})$ are in $G$ and thus there must exist consecutive vertices $v_i,v_{i+1}$ in the hamiltonian path such that arcs $(v_i,v_{n+1})$ and $(v_{n+1},v_{i+1})$ are in $G$. In this case, the sequence $v_1,v_2,...v_i, v_{n+1}, v_{i+1},...v_n$ forms a length $n+1$ Hamiltonian path. As a result of this property, it is always possible to construct an $n$-vertex isolator by using a set of unit clauses describing a Hamiltonian path on an $n$-vertex tournament. 
+While constructing smaller isolators using the techniques above, we opted to manually inspect our results and see what patterns they shared.  In doing so, we rediscovered a well-known fact from graph theory literature; every tournament contains a Hamiltonian path \cite{ref_tournament_book}. Proof sketch: inductively consider a length $n$ Hamiltonian path $v_1, v_2, ... v_n$ in an $n+1$-vertex tournament $G$. For the vertex $v_{n+1}$ not part of the path, in the case that either $(v_{n+1}, v_1)$ or $(v_n, v_{n+1})$ is in $G$, a length $n+1$ Hamiltonian path is formed. Otherwise, $(v_1, v_{n+1})$ and $(v_{n+1}, v_{n})$ are in $G$ and thus there must exist consecutive vertices $v_i,v_{i+1}$ in the Hamiltonian path such that arcs $(v_i,v_{n+1})$ and $(v_{n+1},v_{i+1})$ are in $G$. In this case, the sequence $v_1,v_2,...v_i, v_{n+1}, v_{i+1},...v_n$ forms a length $n+1$ Hamiltonian path. As a result of this property, it is always possible to construct an $n$-vertex isolator by using a set of unit clauses describing a Hamiltonian path on an $n$-vertex tournament. 
 
 %\begin{proof}
 %Proceed by induction.  The statement is trivial for 1- and 2- vertex tournaments, since in the former the empty path is Hamiltonian and in the latter the sole edge is the path.  Now, given an $m$-length path in a tournament for $2 \le m < n-1$, argue that an $m+1$-length path exists.
@@ -299,7 +294,7 @@ In the next section, we provide a procedure that achieves this bound.
 
 %We seek to prove that at least $n\log{n}$???(placeholder) units can be part of an isolator for $n$-vertex tournaments.  
 %If a $TT_k$ is known to exist within every member of the class of $n$-vertex tournaments,
-In situations where we know that every member of the class of n-vertex tournaments contains a $TT_k$ (a transitive tournament of size k), we also know that every equivalence class must contain a member with the tournament fixed in some arbitrary position and orientation (i.e. vertices $1$ through $k$ in ascending order). Therefore, any formula that fixes (i.e. asserts the existence of) a $TT_k$ on the class of $n$-vertex tournaments is a valid isolator, i.e. will not remove any equivalence classes. Because the remaining subset of $n-k$ non-fixed vertices also forms a tournament, further knowledge about the existence of a transitive tournament within the remaining $n-k$ vertices can be used to fix (via units) another transitive tournament within the $n-k$ vertex subtournament. This procedure can be repeated until all vertices of the original tournament are part of some fixed transitive subtournament. Tournament Ramsey numbers provide exactly the required information about the existence of a transitive subtournament. In fact, tournament Ramsey numbers (when known) provide the \textit{largest} transitive subtournament guaranteed to exist in a tournament of a given size. Therefore, tournament Ramsey numbers (as well as upper bounds, which exist for arbitrarily large $n$) can be used to iteratively construct large sets of unit clauses for tournament isolators: we will refer to this process as TT-fixing.
+In situations where we know that every member of the class of $n$-vertex tournaments contains a $TT_k$ (a transitive tournament of size k), we also know that every equivalence class must contain a member with the tournament fixed in some arbitrary position and orientation (i.e. vertices $1$ through $k$ in ascending order). Therefore, any formula that fixes (i.e. asserts the existence of) a $TT_k$ on the class of $n$-vertex tournaments is a valid isolator, i.e. will not remove any equivalence classes. Because the remaining subset of $n-k$ non-fixed vertices also forms a tournament, further knowledge about the existence of a transitive tournament within the remaining $n-k$ vertices can be used to fix (via units) another transitive tournament within the $n-k$ vertex subtournament. This procedure can be repeated until all vertices of the original tournament are part of some fixed transitive subtournament. Tournament Ramsey numbers provide exactly the required information about the existence of a transitive subtournament. In fact, tournament Ramsey numbers (when known) provide the \textit{largest} transitive subtournament guaranteed to exist in a tournament of a given size. Therefore, tournament Ramsey numbers (as well as upper bounds, which exist for arbitrarily large $n$) can be used to iteratively construct large sets of unit clauses for tournament isolators: we will refer to this process as TT-fixing.
 
 %\textbf{add algorithm TBD}
 \textbf{Add diagram TBD, having some trouble here...}
@@ -335,7 +330,7 @@ In situations where we know that every member of the class of n-vertex tournamen
 
 
 \subsection{TT-fixing gives $\Theta(n\log n)$ units}
-Let $units(n)$ be the function that returns the number of units that can be added to an isolator when using the TT-fixing method on $n$-vertex tournaments. Our goal is to prove a lower bound on $units(n)$. Unfortunately, exact tournament Ramsey numbers are non-trivial to calculate (only up to $R(6) = 28$ is known). However, from Erd\H{o}s and Moser \textbf{CITE} we have that $R(k) \leq 2^{k-1}$, i.e. that a $TT_{k}$ must exist when considering any tournament on $2^{k-1}$ or more vertices. Erd\H{o}s and Moser's bound can thus be used with TT-fixing to lower-bound $units(n)$.
+Let $units(n)$ be the function that returns the number of units that can be added to an isolator when using the TT-fixing method on $n$-vertex tournaments. Our goal is to prove a lower bound on $units(n)$. Unfortunately, exact tournament Ramsey numbers are non-trivial to calculate (only up to $R(6) = 28$ is known). However, from Erd\H{o}s and Moser \textbf{CITE TBD, still can't find this} we have that $R(k) \leq 2R(k-1)$, which implies $R(k) \leq 2^{k-1}$ \textbf{found in ``on the representations of directed graphs...''}, i.e. that a $TT_{k}$ must exist when considering any tournament on $2^{k-1}$ or more vertices. Erd\H{o}s and Moser's bound can thus be used with TT-fixing to lower-bound $units(n)$.
 
 We claim that $units(n) \geq \sum\limits_{i=1}^n \frac{1}{2} \lfloor \log_2(i) \rfloor$. We proceed via induction, with step $n$ depending on step $n-k$, with $k=\lfloor \log_2(n)\rfloor + 1$. The proposition is true for $n=1$ because $0 \geq 0$, $n=2$ because $ 1 \geq 0.5$.  By definition of TT-fixing, for a graph with $n$ vertices we have 
 
@@ -415,7 +410,7 @@ By the inductive hypothesis,
     
 \end{axis}
 \end{tikzpicture}
-\caption{A visual depiction of how the number of unit clauses produced by TT-fixing grows under different assumptions about ramsey numbers.} 
+\caption{A visual depiction of how the number of unit clauses produced by TT-fixing grows under different assumptions about Ramsey numbers.} 
 \label{pracunits}
 \end{figure}
 
@@ -499,26 +494,26 @@ By the inductive hypothesis,
     
 \end{axis}
 \end{tikzpicture}
-\caption{A depiction of the search space reduction provided by TT-fixing up to $n=18$ in $\log_2$ space.  }
+\caption{A depiction of the search space reduction provided by TT-fixing using best-known Ramsey number bounds up to $n=18$ in $\log_2$ space.  }
 \label{isosearchspace}
 \end{figure}
 
 \subsection{Practical vs Theoretical TT-fixing units}
-In Figure \ref{pracunits} The bottom two lines depict the strict lower bound used in the $n\log n$ units proof (blue), as well as the actual number of units TT-fixing would provide if we only used the $R(k) \leq 2^{k-1}$ bound from the proof (red). Above that (orange) is the number of units TT-fixing provides given the best currently known Ramsey number bounds. Finally, (black) shows how many unit clauses TT-fixing would provide if we proved that $R(7) = 34$ (the best known bound on $R(7)$ is $34 \leq R(7) \leq 47$ \cite{directedramsey}). Figure \ref{lowerboundlarge} provides visual evidence of the tightness of the lower bound used in the proof. For all $n$ in the interval $[2,1e5)$ the maximum deviation of the two functions was 48, while the average deviation was $\approx 30.1$.
+In Figure \ref{pracunits} The bottom two lines depict the strict lower bound used in the $n\log n$ units proof (blue), as well as the actual number of units TT-fixing would provide if we only used the $R(k) \leq 2^{k-1}$ bound from the proof (red). Above that (orange) is the number of units TT-fixing provides given the best currently known Ramsey number bounds.  The best known bound on $R(7)$ is $34 \leq R(7) \leq 47$ \cite{directedramsey}, so the black line describes the best case for how many unit clauses TT-fixing could provide if $R(7) = 34$ was proven. Erd\H{o}'s result of $R(k) \le 2R(k-1)$ allows even improvements to small Ramsey number bounds to impact the efficacy of TT-fixing for large $n$. Figure \ref{lowerboundlarge} provides visual evidence of the tightness of the lower bound used in the proof. For all $n$ in the interval $[2,1e5)$ the maximum deviation of the two functions was 48, while the average deviation was $\approx 30.1$.
 
-In Figure \ref{isosearchspace}, the top (orange) line is the total number of graphs a SAT solver must search in a graph existence problem in the absence of an isolator.  The bottom (red) line is the number of unlabeled tournaments on $n$ vertices; this is the minimum number of graphs that any brute-force solver must search to solve a graph existence problem. This data was taken from OEIS sequence A000568 \textbf{CITE}, which unfortunately limits the size of $n$ for which we can make this comparison to $n=19$. The middle (blue) line shows how many graphs a SAT solver would need to check in the presence of an isolator created by TT-fixing. As $n$ grows large, the gap between the bottom two lines should grow small relative to the gap between the top two lines as per the $n \log n$ units upper bound proof.
+In Figure \ref{isosearchspace}, the top (orange) line is the total number of graphs a SAT solver must search in a tournament existence problem in the absence of an isolator.  The bottom (red) line is the number of unlabeled tournaments on $n$ vertices; this is the minimum number of graphs that any brute-force solver must search to solve a tournament existence problem. This data was taken from OEIS sequence A000568 \textbf{CITE}, which unfortunately limits the size of $n$ for which we can make this comparison to $n=19$. The middle (blue) line shows how many graphs a SAT solver would need to check in the presence of an isolator created by TT-fixing. As $n$ grows large, the gap between the bottom two lines should grow small relative to the gap between the top two lines as per the $n \log n$ units upper bound proof.
 
 
 \subsection{Undirected Isolators: Clique-fixing}
-\textbf{I cleaned this up a bit, is the description more understandable now or do you still think I should go with the cyclic approach to the clauses?}
-As mentioned earlier, undirected isolators cannot have unit have clauses. Therefore, undirected isolators cannot directly benefit from units via TT-fixing. However, a crossover result for undirected graphs does exist for binary clauses that uses the same ideas as TT-fixing; we term this process ``clique-fixing.'' Undirected ramsey number guarantee the existence of a red or blue colored $k$-clique for graphs with more than $R_u(k)$ vertices ($R_u$ used here for undirected ramsey numbers). Clique-fixing uses the same iterative process as TT-fixing, but replaces the generation of units for $TT_k$ with the following clauses:
+%\textbf{I cleaned this up a bit, is the description more understandable now or do you still think I should go with the cyclic approach to the clauses?}
+As mentioned earlier, undirected isolators cannot have unit have clauses. Therefore, undirected isolators cannot directly benefit from units via TT-fixing. However, a crossover result for undirected graphs does exist for binary clauses that uses the same ideas as TT-fixing; we term this process \emph{clique-fixing}. Undirected Ramsey number guarantee the existence of a red or blue colored $k$-clique for graphs with more than $R_u(k)$ vertices ($R_u$ used here for undirected Ramsey numbers). Clique-fixing uses the same iterative process as TT-fixing, but replaces the generation of units for $TT_k$ with the following clauses:
 
 $\{r \lor e, \lnot r \lor \lnot e | e \in \mathit{Edges}(K_k)\}$
 %$\{r \lor \mathit{idx}(b,c)  | (b, c) \in [1..k]\times[1..k] \text{ s.t. } b < c\}$
 
 %$\{\lnot r \lor \lnot \mathit{idx}(b,c)  | (b, c) \in [1..k]\times[1..k] \text{ s.t. } b < c\}$
 
-where $r$ is an auxiliary variable representing the concept ``the k-clique is red'' and $\mathit{Edges}(K_k)$ is the set of edge literals for the complete graph on $k$ vertices. We note that these clauses are ``almost'' units in the sense that after a solver makes a decision about whether to set $r$ to true or false, an entire $k(k-1)/2$ edges are set by unit propagation. Each step of clique-fixing therefore loses a single unit clause worth of search space reduction when compared to TT-fixing. Although not the focus of this work, it is plausible that a similar asymptotic optimality analysis could be done for clique-fixing given this small discrepancy. However, it is notable that undirected Ramsey numbers (necessary for clique-fixing) empirically grow much faster than tournament Ramsey numbers despite equal theoretical worst-case scaling, which implies that clique-fixing may not be as practically useful as TT-fixing.
+where $r$ is an auxiliary variable representing the concept ``the $k$-clique is red'' and $\mathit{Edges}(K_k)$ is the set of edge literals for the complete graph on $k$ vertices. We note that these clauses are ``almost'' units in the sense that after a solver makes a decision about whether to set $r$ to true or false, an entire $k(k-1)/2$ edges are set by unit propagation. Each step of clique-fixing therefore loses a single unit clause worth of search space reduction when compared to TT-fixing. Although not the focus of this work, it is plausible that a similar asymptotic optimality analysis could be done for clique-fixing given this small discrepancy. However, it is notable that undirected Ramsey numbers (necessary for clique-fixing) empirically grow much faster than tournament Ramsey numbers despite equal theoretical worst-case scaling, which implies that clique-fixing may not be as practically useful as TT-fixing.
 
 
 %\begin{figure}
@@ -543,18 +538,18 @@ Unit-based techniques scale to arbitrary $n$, and TT-fixing is ``asymptotically 
 
 \subsection{Basic SAT encoding}
 
-We re-implemented and modified the perfect isolator encoding for undirected graphs \cite{ref_heule} to be used for tournaments. Formally, we encoded the question ``Is there a set of $k$ non-unit clauses $C_1, C_2, ... C_k$ and a set of unit clauses whose union is a perfect isolator for $n$-vertex tournaments''. This first section will explain the encoding of the simpler problem: ``Is there a set of $k$ clauses $C_1, C_2, ... C_k$ whose union is a perfect isolator for $n$-vertex tournaments,'' which will be modified to the final problem definition in following sections.
+We re-implemented and modified the perfect isolator encoding for undirected graphs \cite{ref_heule} to be used for tournaments. Formally, we encoded the question ``Is there a set of $k$ clauses $C_1, C_2, ... C_k$ that is a perfect isolator for $n$-vertex tournaments''. %This first section will explain the encoding of the simpler problem: ``Is there a set of $k$ clauses $C_1, C_2, ... C_k$ whose union is a perfect isolator for $n$-vertex tournaments,'' which will be modified to the final problem definition in following sections.
 
 For the $i$th isolator clause $C_i$ and arc literal $l$, we defined the variable $\mathit{In}(C_i, l)$ to represent ``$l$ is in $C_i$''. Then, for each tournament $G$ on $n$ vertices, we define variables $\mathit{Excludes}(G,C_i)$ for $1 \le i \le k$ to mean ``clause $C_i$ does not admit $G$''. This specification is implemented as follows with a Tseitin encoding \cite{ref_tseitin} to handle the equality and conjunctions:
 
 \begin{equation}
-\mathit{Excludes}(G,C_i) \Leftrightarrow \bigwedge\limits_{l \in A_G}\lnot \mathit{In}(C_i, l).
+\mathit{Excludes}(G,C_i) \leftrightarrow \bigwedge\limits_{l \in A_G}\lnot \mathit{In}(C_i, l).
 \end{equation}
 
 \noindent Here $A_G$ is the set of arc literals corresponding to the arcs present in graph $G$. We also define the variable $\mathit{Canon}(G)$ for all graphs $G$, meaning ``Graph $G$ is the canonical representative of its isomorphism class $I_G$.'' We implement this as follows (again using Tseitin):
 
 \begin{equation}
-    \mathit{Canon}(G) \Leftrightarrow \bigwedge\limits_{i=1}^k \lnot \mathit{Excludes}(G,C_i).
+    \mathit{Canon}(G) \leftrightarrow \bigwedge\limits_{i=1}^k \lnot \mathit{Excludes}(G,C_i).
 \end{equation}
 
 Finally, for each isomorphism class $I$, we add the following clauses representing ``exactly one graph in $I$ is canonical'' to the formula for each isomorphism class $I$:
@@ -570,7 +565,7 @@ Finally, for each isomorphism class $I$, we add the following clauses representi
 \subsection{Symmetry Breaking}
 
 One symmetry in the above encoding is the order of the isolator clauses, as reordering clauses of an expression in CNF does not affect its satisfying assignments.  To break this symmetry, we added clauses that ensured a lexicographic ordering of the clauses in the resulting isolator.  For every adjacent pair of clauses $C_i$ and $C_{i+1}$, we fixed some ordering of every literal that may appear in them $l_1, l_2, \dots, l_n$, and then created variables $e_0, e_1, \dots, e_n$ where $e_j$ represents that clauses $C_i$ and $C_{i+1}$ are equivalent when considering only the first $j$ literals.  $e_0$ is always true, and to maintain the semantics of the other $e_j$ we added the clauses
-$$e_j \Leftrightarrow (e_{j-1} \land (In(C_i, l_j) \Leftrightarrow In(C_{i+1}, l_j)))$$
+$$e_j \leftrightarrow (e_{j-1} \land (In(C_i, l_j) \leftrightarrow In(C_{i+1}, l_j)))$$
 via the Tseitin transformation for every $1 \le i < k$ and $1 \le j\le n$.  Then, we enforced a lexicographic ordering by requiring that for every $j$ such that $C_i$ and $C_{i+1}$ were equal up to $j$, that if clause $C_i$ contained $l_j$ then $C_{i+1}$ must also contain $l_j$.  Explicitly, we added the following requirement via the Tseitin transformation for every $1 \le i < k$ and $1 \le j\le n$:
 $$e_{j-1} \land In(C_i, l_j) \implies In(C_{i+1}, l_j)$$
 and furthermore we required that $e_n$ is false to ensure a strict ordering.  When searching for an isolator with $k$ clauses, this reduces the search space by a factor of $k!$ as only one of the $k!$ permutations of a given distinct set of clauses will be considered.
@@ -584,7 +579,7 @@ with $A_p$ being the set of all positive literals.    When trying to find an iso
 Under the encoding described above, our solver finds isolators with many large clauses. However, by applying unit propagation it was often possible to reduce clause sizes. This indicated that not only was the solver generating solutions that needed postprocessing, but candidate isolators that were equivalent under unit propagation were being considered multiple times --- a sort of symmetry in this problem.  To resolve this, we added variables $\mathit{Unit}(l)$ representing ``literal $l$ is a unit clause.'' We then required that the isolator be already unit-propagated with respect to these literals by adding the requirement
 $$\lnot \mathit{In}(C, l) \lor \lnot \mathit{Unit}(l)$$
 for all clauses $C$ and literals $l$. We also had to account for these units excluding graphs in the $\mathit{Canon}$ clauses, which were updated to
-$$\mathit{Canon}(G) \Leftrightarrow \bigwedge\limits_{i=1}^k \lnot \mathit{Excludes}(G,C_i) \land \bigvee\limits_{l \in A_G}\lnot \mathit{Unit}(\lnot l)$$
+$$\mathit{Canon}(G) \leftrightarrow \bigwedge\limits_{i=1}^k \lnot \mathit{Excludes}(G,C_i) \land \bigvee\limits_{l \in A_G}\lnot \mathit{Unit}(\lnot l)$$
 
 
 Finally, we considered whether to count these special unit literals towards the clause count in determining isolator optimality. As mentioned in the preliminaries, we chose not to do so. When an isolator with units is used in a SAT solver, the units will be instantly eliminated through unit propagation and thus will reduce the complexity of the resulting problem.  Therefore, we consider an optimal isolator to not just have the minimal number of clauses, but the minimal number of non-unit clauses.  Since units cannot exist in undirected graph isolators (because an undirected graph isolator must admit both the complete and empty graph), this definition of optimality is consistent with the prior work on the undirected case \cite{ref_heule}. Note that we only needed to consider positive unit literals as per the vertex-labeling symmetry breaking, which drastically reduced the search space.
@@ -620,7 +615,7 @@ Finally, we considered whether to count these special unit literals towards the 
 The following sections describe several miscellaneous techniques, ranging from practical ways to gain slight improvements on prior techniques to possible directions for future research.
 
 \subsection{Incremental Isolators}
-Prior work has already shown that any isolator for $n$-vertex tournaments is also an isolator for $n+k$-vertex tournaments for any positive $k$ \textbf{CITE}. This fact implies that it is possible to construct perfect isolators for $n+k$-vertex tournaments by adding clauses to any isolator for $n$-vertex tournaments. In particular, our SAT encoding pipeline had the option to ignore graphs that not admitted by a given set of units. Including the maximal set of units from an $n$-vertex isolator when generating an encoding for $n+1$-vertex isolators reduces the number of tournaments to generate $\mathit{Canon}$ clauses for by a factor of at least $2^{n}$ (because each isolator has at least the units corresponding to a hamiltonian path), which makes approaches that scale linearly with the number of labeled tournaments still viable for up to $n = 8$.  It is worth noting that we do not have any proofs that any of our non-perfect or non-optimal isolators can be extended to an \textit{optimal} isolator, even when the isolator being extended from is comprised of only unit clauses.  However, extending an isolator from an initial set of units can make searching for compact isolators much more efficient. 
+Prior work has already shown that any isolator for $n$-vertex tournaments is also an isolator for $n+k$-vertex tournaments for any positive $k$ \textbf{CITE}. This fact implies that it is possible to construct perfect isolators for $n+k$-vertex tournaments by adding clauses to any isolator for $n$-vertex tournaments. In particular, our SAT encoding pipeline had the option to ignore graphs that not admitted by a given set of units. Including the maximal set of units from an $n$-vertex isolator when generating an encoding for $n+1$-vertex isolators reduces the number of tournaments to generate $\mathit{Canon}$ clauses for by a factor of at least $2^{n}$ (because each isolator has at least the units corresponding to a Hamiltonian path), which makes approaches that scale linearly with the number of labeled tournaments still viable for up to $n = 8$.  It is worth noting that we do not have any proofs that any of our non-perfect or non-optimal isolators can be extended to an \textit{optimal} isolator, even when the isolator being extended from is comprised of only unit clauses.  However, extending an isolator from an initial set of units can make searching for compact isolators much more efficient. 
 
  We further note that it is always possible to combine an isolator on $m$ vertices with an isolator on $n$ vertices to create a new isolator on $m+n$ vertices. The method for doing so involves applying each isolator to a disjoint subset of vertices. More formally, given two injective functions $f_m: [1,m] \rightarrow [1,m+n], f_n: [1,n] \rightarrow [1,m+n]$ s.t the ranges of $f_m$ and $f_n$ are disjoint, each literal representing some arc $(a,b)$ in the $m$-vertex isolator gets transformed to the literal representing arc $(f_m(a), f_m(b))$, and likewise with $f_n$ for the $n$-vertex isolator. The resulting isolator is valid by the following proof.
 
@@ -649,7 +644,7 @@ This technique is practically useful for creating compact isolators for large $n
 In addition to the SAT encoding approach to isolator generation, we also generated isolators using a method from prior work called ``random probes''  \cite{ref_heule}. On a high level, this approach starts with an empty set of clauses and adds randomly generated clauses that preserve at least one member of each equivalence class until the isolator is perfect.  There were only two non-superficial changes needed to adapt the prior work on random probes for undirected graphs to the directed case; allowing unit clauses and allowing clauses with only positive literals. While not guaranteed to generate optimal isolators, the strength of this approach is the relative speed with which isolators are generated. This approach also benefited in efficiency from the technique of disallowing clauses with all negative literals and extending isolators from the unit clauses of smaller isolators.
 
 \subsection{Canonical set techniques}
-One major critique of our approaches for producing \textit{perfect} isolators is that they do not scale to $n>9$. Already at n=9 there are $2^{36}$ labeled tournaments on $9$ vertices; this number can be reduced by enforcing all 13 known possible unit clauses during the generation of the cnf file, but the cnf produced by our SAT-based method is not solvable in several days, and probes for $n=8$ take $\sim 2$ days compared to several seconds for $n=7$. As such, we also experimented with a canonical-set-based approach that scales with the number of equivalence classes. 
+One major critique of our approaches for producing \textit{perfect} isolators is that they do not scale to $n>9$. Already at n=9 there are $2^{36}$ labeled tournaments on $9$ vertices; this number can be reduced by enforcing all 13 known possible unit clauses during the generation of the CNF file, but the CNF produced by our SAT-based method is not solvable in several days, and probes for $n=8$ take $\sim 2$ days compared to several seconds for $n=7$. As such, we also experimented with a canonical-set-based approach that scales with the number of equivalence classes. 
 
 The canonical-set-based approach uses the well-known idea that one way to create an isolator is to generate one canonical representative for each equivalence class, then construct a formula that admits exactly those graphs \cite{ref_canon_set}. Our approach differed slightly from \cite{ref_canon_set}, as instead of using lexicographic ordering constraints from a carefully constructed ``canonizing set'' on the graph's adjacency matrix, we express any given set of canonical representatives in disjunctive normal form (DNF), then convert the DNF to CNF using the Bica \cite{ref_bica}. Because this approach may lead to much larger isolators than the optimal ones, we first used the canonical sets induced by our optimal isolators as proofs of concept; the resulting CNFs were equal in number of clauses to our optimal isolators up to n=6 (our isolators for n=7 and above are not optimal, and thus were not considered). Next, we tried the naive approach of using an arbitrary canonical set (we used the canonical set produced by the NAUTY \cite{ref_nauty} program). The size of the isolators generated was very suboptimal, as expected (see table \ref{tab:canon_set} below).
 
@@ -671,7 +666,7 @@ A more promising approach involves modifying a given arbitrary canonical set to 
 
 \section{Results}
 
-Our experimental results include the sizes of known perfect isolators for small $n$, as well as experiments showing the practical utility of small $n=6,7$ perfect isolators for solving a graph existence problem.
+Our experimental results include the sizes of known perfect isolators for small $n$, as well as experiments showing the practical utility of small $n=6,7$ perfect isolators for solving a tournament existence problem.
 
 \subsection{Experimental Setup}
 Our SAT-based approach to generating isolators rely on the creation of ``map'' files: text files associating each tournament of size $n$ with a label representing that graph's isomorphism class. In order to generate a map file for tournaments on $n$ vertices, we began by enumerating all $2^{n(n-1)/2}$ graphs of size $n$. We converted each graph into an adjacency matrix and then into the ``.d6'' format specified in the NAUTY handbook, then fed the resulting graphs into the labelg script bundled with the NAUTY tool for graph isomorphisms \cite{ref_nauty}. labelg produced a file where each graph was converted to the canonical form used by nauty. We gave each canonical form a unique label and outputted the arc (directed edge) indices of each original graph alongside its canonical form. 
@@ -682,7 +677,7 @@ Our SAT-based approach to generating isolators rely on the creation of ``map'' f
 
 \subsection{Small Optimal Isolators}
 
-Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT solver CadiCal \cite{cadical} solves the two instances required to prove optimality ($k=6,7$ non-unit clauses) within 24 hours. Figures \ref{iso4} and \ref{fig2} graphically display optimal, perfect isolators for $n=4,5$ by displaying a graph from each isomorphism class. Figure \ref{fig3} presents the same image for one of the 56 isomorphism classes for $n=6$. Most of the structure of these isolators can be seen from their unit clauses, which are depicted via red edges in the figures. 
+Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT solver CaDiCaL \cite{cadical} solves the two instances required to prove optimality ($k=6,7$ non-unit clauses) within 24 hours. Figures \ref{iso4} and \ref{fig2} graphically display optimal, perfect isolators for $n=4,5$ by displaying a graph from each isomorphism class. Figure \ref{fig3} presents the same image for one of the 56 isomorphism classes for $n=6$. Most of the structure of these isolators can be seen from their unit clauses, which are depicted via red edges in the figures. 
 
 %For $n=4,5$ we also computed the number of different perfect optimal isolators up to isomorphism, where we define two isolators to be isomorphic if they are equivalent under some vertex permutation. There is only a single perfect optimal isolator for $n=4$, while there are 5 different (perfect optimal) isolators for $n=5$. Interestingly, each of the 5 can be expressed such that they have the same 6 unit clauses, and differ only in the 2 non-unit clauses present in optimal $n=5$ isolators.
 
@@ -728,7 +723,7 @@ Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT so
 
 \subsection{Tournament Ramsey Graphs}
 
-Let $TR(n, k)$ be the set of unlabeled (equivalently, labeled but up to isomorphism) tournaments on $n$ vertices that contain no $TT_k$ as a subgraph. The tournament Ramsey problem asks for the largest $n$ such that $|TR(n, k)| = 0$ given some fixed $k$. To improve a tournament Ramsey number lower bound, it suffices to find a tournament without a $TT_k$ larger than any known tournament without a $TT_k$. One method for doing so is attempting to extend one of the largest known tournaments without a $TT_k$, because any larger tournament with a $TT_k$ necessarily has at least one smaller such tournament as a subgraph (up to isomorphism).
+Let $TR(n, k)$ be the set of unlabeled (equivalently, labeled but up to isomorphism) tournaments on $n$ vertices that contain no $TT_k$ as a subgraph. The tournament Ramsey problem asks for the smallest $n$ such that $|TR(n, k)| = 0$ given some fixed $k$. To improve a tournament Ramsey number lower bound, it suffices to find a tournament without a $TT_k$ larger than any known tournament without a $TT_k$. One method for doing so is attempting to extend one of the largest known tournaments without a $TT_k$, because any larger tournament with a $TT_k$ necessarily has at least one smaller such tournament as a subgraph (up to isomorphism).
 
 Therefore, one direct method for incremental progress towards improving tournament Ramsey number bounds is to expand the known portion of $TR(n,k)$ for the maximal known $n$ for some fixed $k$. In particular, we sought to use our isolator techniques in conjunction with the methods of earlier work on tournament Ramsey numbers \cite{directedramsey} to find more members of $TR(33,7)$. All isomorphism checking and automorphism generation referred to below was done with the NAUTY \cite{ref_nauty} tool.
 
@@ -739,14 +734,14 @@ For certain $n,k$ it is the case that $|TR(n,k)| = 1$. In such cases, the graph 
  \begin{enumerate}
  \item $26*25/2 = 325$ unit clauses requiring that ST26 be present in vertices $v_1$ through $v_{26}$
  \item The perfect isolator for $n=7$ on the seven remaining vertices $v_{27}$ through $v_{33}$
- \item A clause blocking each known solution with ST$26$ and without ST$27$, as well as isomorphic solutions generated from the 39 automorphisms of ST$26$
- \item For each solution with ST$27$, and for each distinct ST$26$ (and their automorphisms) in such solutions, a clause blocking the solution with the ST$26$ permuted to the first 26 vertices.
- \item clauses enforcing the `` no $TT_7$'' condition from \cite{directedramsey}
+ \item A clause blocking each known solution with ST$26$ and without ST$27$, as well as isomorphic solutions generated from the 39 automorphisms of ST$26$ and he variable number of automorphisms for the graph admitted by the $n=7$ isolator
+ \item For each solution with ST$27$, and for each distinct ST$26$ (and their automorphisms) in such solutions, and for each automorphism of the subgraph admitted by the $n=7$ isolator, a clause blocking the solution with the ST$26$ permuted to the first 26 vertices
+ \item clauses enforcing the ``no $TT_7$'' condition from \cite{directedramsey}
  \end{enumerate}
 
 While this formula does not disallow all ST$27$s (i.e. a solution might include an extension from ST$26$ that was not present in the original solution set), it disallows all currently known extensions, including the most common by far extension. Additionally, the $n=7$ perfect isolator plays a crucial role for finding new solutions in that without it, the SAT solver could find any tournament equivalent to one of the previously known $TR(33,7)$ elements except for some non-automorphic permutation of the last 7 vertices (which would thus be isomorphic to the previously known solution). We claim that all solutions to our formula must be non-isomorphic to the original 5303 solutions. \textbf{include proof?}
 
-We found 1 new member of $TR(33,7)$ with this method. 
+We found 1 new member of $TR(33,7)$ with this method. \textbf{TBD: explain why this matters, Conclude.}
 %\subsection{Maximal Unit Sets}
 %probably not needed, not actually interesting either without a bunch of figures to show the sets
 
