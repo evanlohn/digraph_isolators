@@ -64,7 +64,7 @@ Satisfiability, Symmetry-breaking, Directed-graphs, Tournaments, Isolators.
 
 In recent years, SAT solvers have been used to solve several difficult combinatorial problems \cite{ref_keller,ref_schur,ref_pythagorean}. However, naive encodings of SAT problems often include undesired symmetries, i.e. certain matching subsets of variables that result in equivalent subproblems when given equivalent assignments. To prove the original formula unsatisfiable, in the worst case a solver must search through all possible symmetric parts of the problem space, which slows the generation of unsatisfiable proofs unnecessarily. Similarly, while the solver tries to find a satisfying assignment, symmetries in the input formula may cause the solver to effectively re-explore the same part of the search space even after proving the lack of a solution in a symmetric part of the problem.
 
-The most common way of reducing the impact of symmetries in a given formula is by adding a set of new clauses called a Symmetry-Breaking Predicate (SBP) to the formula before solving. The goal of a SBP is to preserve the satisfiability of the formula while removing from consideration any regions of the search space known to be symmetric to other regions. In this work we focus on SBP's for \emph{graph existence problems}, which are problems that can be solved by checking if a graph with particular structure exists. Solving such problems is an active area of research \cite{ref_vdw, ref_ramseyk, ref_5cycle}. A large class of problem symmetries in graph existence problems naturally results from the existence of isomorphic labeled graphs. These symmetries exist independent of any desired graph property related to graph structure. Rather, they occur because SAT solvers must search the space of labeled graphs in order to prove the (non-)existence of an unlabeled graph. A SBP that targets graph isomorphisms is known as an isolator. Isolators that break many symmetries with few clauses are most useful in practice, as SAT solvers generally take longer to solve formulas with more clauses. Such isolators are often described as ``short'', ``small'', or ``compact.''
+The most common way of reducing the impact of symmetries in a given formula is by adding a set of new clauses called a Symmetry-Breaking Predicate (SBP) to the formula before solving \cite{ref_SBP, ref_SBP2, ref_approxmc}. The goal of a SBP is to preserve the satisfiability of the formula while removing from consideration any regions of the search space known to be symmetric to other regions. In this work we focus on SBP's for \emph{graph existence problems}, which are problems that can be solved by checking if a graph with particular structure exists. Solving such problems is an active area of research \cite{ref_vdw, ref_ramseyk, ref_5cycle}. A large class of problem symmetries in graph existence problems naturally results from the existence of isomorphic labeled graphs. These symmetries exist independent of any desired graph property related to graph structure. Rather, they occur because SAT solvers must search the space of labeled graphs in order to prove the (non-)existence of an unlabeled graph. A SBP that targets graph isomorphisms is known as an isolator. Isolators that break many symmetries with few clauses are most useful in practice, as SAT solvers generally take longer to solve formulas with more clauses. Such isolators are often described as ``short'', ``small'', or ``compact.''
 
 %An isolator is \emph{trivial} if it admits all possible labeled graphs, and \emph{perfect} if it admits exactly one graph per equivalence class. Additionally, an isolator is \emph{optimal} if it uses the fewest possible clauses to admit a given number of graphs. An optimal perfect isolator is therefore the shortest list of clauses that admits exactly one member of each equivalence class in the set of graphs being searched over.
 
@@ -188,7 +188,7 @@ While the optimal isolators for $n=3,4$ are comprised entirely of unit clauses, 
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth]{iso_4.png}
-\caption{Isomorphism class representatives admitted by a perfect, optimal isolator for 4-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator, and the isolator has only unit clauses. Edge labels are the integers returned by the $\mathit{idx}$ function from the Arc Literal Numbering section.} \label{iso4}
+\caption{All isomorphism class representatives admitted by a perfect, optimal isolator for 4-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator, and the isolator has only unit clauses. Edge labels are the integers returned by the $\mathit{idx}$ function from the Arc Literal Numbering section.} \label{iso4}
 \end{figure}
 
 \subsection{Comparison of undirected graph and tournament isolators}
@@ -304,7 +304,7 @@ While constructing smaller isolators using the techniques above, we opted to man
 %It is worth noting that we do not have a proof that it is always possible to extend an encoded Hamiltonian path to an \textit{optimal} isolator.  However, building off a set of units can make searching for compact isolators much more efficient. In particular, we modified our map-file generation to optionally ignore graphs that are not admitted by a given set of units. Including these units reduces the map file size and generation time by a factor of $2^{n-1}$, which makes map file-based approaches still viable for up to $n = 8$.
 
 %Given the utility of unit clauses in isolators, a natural next question would be: can we bound the number of units in $n$-vertex isolators, either strictly or asymptotically? 
-Given the utility of unit clauses in isolators, it is natural to ask how many units there can possibly be in an $n$-vertex isolator. As it turns out, there is a long-known result from graph theory that implies that asymptotically there are at most $O(n\log n)$ units possible. By the orbit-stabilizer theorem, the size of the equivalence class of a graph $G$ on $n$ vertices is $\frac{n!}{|Aut(G)|}$, where $Aut(G)$ is the set of distinct automorphisms of $G$. In 1963 Erd\H{o}s and R{\'e}nyi proved that as $n$ approaches infinity, the proportion of tournaments of size $n$ with with nontrivial automorphisms approaches 0 \cite{ref_asymmetric}. Therefore, a proportion of graphs approaching 1 have equivalence classes of size $n!$, so the asymptotic number of equivalence classes is
+Given the utility of unit clauses in isolators, it is natural to ask how many units there can possibly be in an $n$-vertex isolator. As it turns out, there is a long-known result from graph theory that implies that asymptotically there are at most $O(n\log n)$ units possible. By the orbit-stabilizer theorem, the size of the equivalence class of a graph $G$ on $n$ vertices is $\frac{n!}{|Aut(G)|}$, where $Aut(G)$ is the set of distinct automorphisms of $G$. In 1963 Erd\H{o}s and R{\'e}nyi proved that as $n$ approaches infinity, the proportion of undirected graphs of size $n$ with with nontrivial automorphisms approaches 0 \cite{ref_asymmetric}. The same result for tournaments directly follows. Therefore, a proportion of tournaments approaching 1 has equivalence classes of size $n!$, so the asymptotic number of equivalence classes is
 \[
 \frac{2^{n \choose 2}}{n!} \in \Theta(\frac{2^{n \choose 2}}{2^{n\log n}}) = \Theta(2^{{n \choose 2} - n\log n}).
 \]
@@ -599,13 +599,13 @@ Finally, for each isomorphism class $I$, we add the following clauses representi
 \subsection{Symmetry Breaking}
 
 One symmetry in the above encoding is the order of the isolator clauses, as reordering clauses of an expression in CNF does not affect its satisfying assignments.  To break this symmetry, we added clauses that ensured a lexicographic ordering of the clauses in the resulting isolator.  For every adjacent pair of clauses $C_i$ and $C_{i+1}$, we fixed some ordering of every literal that may appear in them $l_1, l_2, \dots, l_n$, and then created variables $e_0, e_1, \dots, e_n$ where $e_j$ represents that clauses $C_i$ and $C_{i+1}$ are equivalent when considering only the first $j$ literals.  $e_0$ is always true, and to maintain the semantics of the other $e_j$ we added the clauses
-$$e_j \leftrightarrow (e_{j-1} \land (In(C_i, l_j) \leftrightarrow In(C_{i+1}, l_j)))$$
+$$e_j \leftrightarrow (e_{j-1} \land (\mathit{In}(C_i, l_j) \leftrightarrow \mathit{In}(C_{i+1}, l_j)))$$
 via the Tseitin transformation for every $1 \le i < k$ and $1 \le j\le n$.  Then, we enforced a lexicographic ordering by requiring that for every $j$ such that $C_i$ and $C_{i+1}$ were equal up to $j$, that if clause $C_i$ contained $l_j$ then $C_{i+1}$ must also contain $l_j$.  Explicitly, we added the following requirement via the Tseitin transformation for every $1 \le i < k$ and $1 \le j\le n$:
-$$e_{j-1} \land In(C_i, l_j) \implies In(C_{i+1}, l_j)$$
+$$e_{j-1} \land \mathit{In}(C_i, l_j) \implies \mathit{In}(C_{i+1}, l_j)$$
 and furthermore we required that $e_n$ is false to ensure a strict ordering.  When searching for an isolator with $k$ clauses, this reduces the search space by a factor of $k!$ as only one of the $k!$ permutations of a given distinct set of clauses will be considered.
 
 There is another symmetry in the vertex labeling.  For a given isolator, for each literal $l$ corresponding to arc index $I_{ab}$, we can change $l$ to correspond to arc index $I_{\pi(a),\pi(b)}$ where $\pi$ is a permutation of vertex labels. The resulting isolator accepts the same graphs that the original did, but under vertex permutation $\pi$.  To break this symmetry, note that any tournament isolator must admit exactly one transitive tournament.  So, we choose to admit only the canonical transitive graph with edges of the form $(v_i, v_j), i < j$.  Note that because every edge in this graph goes from a lower numbered vertex to a higher numbered vertex, the corresponding literals in our encoding are all positive.  As such, we know that for any isolator, there is a permuted isolator such that every clause has at least one positive literal in each clause.  We may add this to our encoding by requiring for all clauses $C$
-$$\bigvee_{l \in A_p} In(C, l)$$
+$$\bigvee_{l \in A_p} \mathit{In}(C, l)$$
 with $A_p$ being the set of all positive literals.    When trying to find an isolator for $n$ vertices, this reduces the search space by a factor of $n!$ since the solver is guaranteed to only consider isolators for which the canonical transitive graph is the one described above.
 
 \subsection{Encoding Unit Propagation}
@@ -677,26 +677,26 @@ The technique of combining disjoint isolators is practically useful for creating
 \subsection{Probing}
 In addition to the SAT encoding approach to isolator generation, we also generated isolators using a method from prior work called ``random probes''  \cite{ref_heule}. On a high level, this approach starts with an empty set of clauses and adds randomly generated clauses that preserve at least one member of each equivalence class until the isolator is perfect.  There were only two non-superficial changes needed to adapt the prior work on random probes for undirected graphs to the directed case; allowing unit clauses and allowing clauses with only positive literals. While not guaranteed to generate optimal isolators, the strength of this approach is the relative speed with which isolators are generated. This approach also benefited in efficiency from the technique of disallowing clauses with all negative literals and extending isolators from the unit clauses of smaller isolators.
 
-\subsection{Canonical set techniques}
-One major criticism of our approaches for producing \textit{perfect} isolators is that they do not scale to $n>9$. Already at n=9 there are $2^{36}$ labeled tournaments on $9$ vertices; this number can be reduced by enforcing all 13 known possible unit clauses during the generation of the CNF file, but the CNF produced by our SAT-based method is not solvable in several days, and probes for $n=8$ take $\sim 2$ days compared to several seconds for $n=7$. As such, we also experimented with a canonical-set-based approach that scales with the number of equivalence classes. 
+%\subsection{Canonical set techniques}
+%One major criticism of our approaches for producing \textit{perfect} isolators is that they do not scale to $n>9$. Already at n=9 there are $2^{36}$ labeled tournaments on $9$ vertices; this number can be reduced by enforcing all 13 known possible unit clauses during the generation of the CNF file, but the CNF produced by our SAT-based method is not solvable in several days, and probes for $n=8$ take $\sim 2$ days compared to several seconds for $n=7$. As such, we also experimented with a canonical-set-based approach that scales with the number of equivalence classes. 
 
-The canonical-set-based approach uses the well-known idea that one way to create an isolator is to generate one canonical representative for each equivalence class, then construct a formula that admits exactly those graphs \cite{ref_canon_set}. Our approach differed slightly from \cite{ref_canon_set}, as instead of using lexicographic ordering constraints from a carefully constructed ``canonizing set'' on the graph's adjacency matrix, we express any given set of canonical representatives in disjunctive normal form (DNF), then convert the DNF to CNF using Bica \cite{ref_bica}. Because this approach may lead to much larger isolators than the optimal ones, we first used the canonical sets induced by our optimal isolators as proofs of concept. As seen in the ``optimal'' column of  table \ref{tab:canon_set}, the resulting CNFs were equal in number of clauses to our optimal isolators up to n=6 (our isolators for n=7 and above are not optimal, and thus were not considered). Next, we tried the naive approach of using the canonical set produced by the NAUTY \cite{ref_nauty} program. The size of the isolators generated was very suboptimal, as the canonical form used by NAUTY does not enforce common edges (column ``arbitrary'' in table \ref{tab:canon_set} below).
+%The canonical-set-based approach uses the well-known idea that one way to create an isolator is to generate one canonical representative for each equivalence class, then construct a formula that admits exactly those graphs \cite{ref_canon_set}. Our approach differed slightly from \cite{ref_canon_set}, as instead of using lexicographic ordering constraints from a carefully constructed ``canonizing set'' on the graph's adjacency matrix, we express any given set of canonical representatives in disjunctive normal form (DNF), then convert the DNF to CNF using Bica \cite{ref_bica}. Because this approach may lead to much larger isolators than the optimal ones, we first used the canonical sets induced by our optimal isolators as proofs of concept. As seen in the ``optimal'' column of  table \ref{tab:canon_set}, the resulting CNFs were equal in number of clauses to our optimal isolators up to n=6 (our isolators for n=7 and above are not optimal, and thus were not considered). Next, we tried the naive approach of using the canonical set produced by the NAUTY \cite{ref_nauty} program. The size of the isolators generated was very suboptimal, as the canonical form used by NAUTY does not enforce common edges (column ``arbitrary'' in table \ref{tab:canon_set} below).
 
-A more promising approach involves modifying a given arbitrary canonical set to have certain properties. Given a canonical set, we detect a Hamiltonian path in each member of the set via an algorithm modeled on the proof of Hamiltonian path existence, then permute each member of the canonical set to have the path $(v_1,v_2),(v_2,v_3),... (v_{n-1},v_n)$. The motivation of this procedure is to cause the canonical set members to have more edges in common, which will lead to more unit clauses in the final CNF. These experiments gave better results than the naive approach, but did not succeed in matching the true optimal isolator length (see ``heuristic'' column of  table \ref{tab:canon_set}). A possible direction for future work is the development of heuristics for permuting canonical set representatives to produce canonical sets admitting short isolators.
+%A more promising approach involves modifying a given arbitrary canonical set to have certain properties. Given a canonical set, we detect a Hamiltonian path in each member of the set via an algorithm modeled on the proof of Hamiltonian path existence, then permute each member of the canonical set to have the path $(v_1,v_2),(v_2,v_3),... (v_{n-1},v_n)$. The motivation of this procedure is to cause the canonical set members to have more edges in common, which will lead to more unit clauses in the final CNF. These experiments gave better results than the naive approach, but did not succeed in matching the true optimal isolator length (see ``heuristic'' column of  table \ref{tab:canon_set}). A possible direction for future work is the development of heuristics for permuting canonical set representatives to produce canonical sets admitting short isolators.
 
-\begin{table}[ht]
-    \centering
-        \caption{Isolators found with canonical set techniques}
-    \begin{tabular}{c|c|c|c|c}
-        Vertices & Isomorphism classes & optimal & heuristic & arbitrary  \\ \hline
-        4&4&4&6&8\\
-        5&12&8&16&24\\ 
-        6&56&14&42&62\\ 
-        %7&456&n/a&47\\ 
-    \end{tabular}
-
-    \label{tab:canon_set}
-\end{table}
+%\begin{table}[ht]
+%    \centering
+%        \caption{Isolators found with canonical set techniques}
+%    \begin{tabular}{c|c|c|c|c}
+%        Vertices & Isomorphism classes & optimal & heuristic & arbitrary  \\ \hline
+%        4&4&4&6&8\\
+%        5&12&8&16&24\\ 
+%        6&56&14&42&62\\ 
+%        %7&456&n/a&47\\ 
+%    \end{tabular}
+%
+%    \label{tab:canon_set}
+%\end{table}
 
 \section{Results}
 
@@ -752,7 +752,7 @@ Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT so
 \begin{figure}
 \centering
 \includegraphics[width=0.5\textwidth]{iso_5.png}
-\caption{Isomorphism class representatives admitted by a particular isolator for 5-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator. The two non-unit clauses in the isolator are $2 \lor -5 \lor 9$ and $2 \lor 7 \lor -9$. \textbf{TODO: generate on ubuntu, it looks nicer}} \label{fig2}
+\caption{All isomorphism class representatives admitted by a particular isolator for 5-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator. The two non-unit clauses in the isolator are $2 \lor -5 \lor 9$ and $2 \lor 7 \lor -9$.} \label{fig2}
 \end{figure}
 
 \subsection{Tournament Ramsey Graphs}
