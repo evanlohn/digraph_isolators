@@ -785,7 +785,7 @@ We explored whether the suite of 5303 was complete or whether there are any othe
 
 While this formula does not disallow all ST$27$s (i.e. a solution might include an extension from ST$26$ that was not present in the original solution set), it disallows all currently known extensions, including the most common by far $1$-vertex extension from ST$26$ to ST$27$. Additionally, the $n=7$ perfect isolator plays a crucial role for finding new solutions in that without it, the SAT solver could find any tournament equivalent to one of the previously known 33-vertex $TT_7$-free tournaments  except for some non-automorphic permutation of the last 7 vertices (which would thus be isomorphic to the previously known solution). We claim that all solutions to our formula must be non-isomorphic to the original 5303 solutions. 
 
-We ran 640 shuffled (clause permuted) versions of the above formula on 640 cores for 6 hours using Kissat. We found three different satisfying assignments. These three solutions represented  a single new 33-vertex $TT_7$-free tournament. This tournament is special as it is self-complementary: reversing all arcs result in an isomorphic graph. Only a small fraction of tournaments has this self-complementary property~\cite{}. Note that all ST$n$ graphs have this property by definition. After finding this new tournament, we updated the formula to include the blocking clauses for the new tournaments and its isomorphisms. Kissat did not produce further solutions when using 640 shuffled (clause permuted) version of the updated formula on 640 cores in a day, so it is possible that the formula is simply unsatisfiable. In conclusion, the formula we produced allows efficient and effective way to find a new 33-vertex $TT_7$-free tournament. 
+We ran 640 shuffled (clause permuted) versions of the above formula on 640 cores for 6 hours using Kissat. We found three different satisfying assignments. These three solutions represented  a single new 33-vertex $TT_7$-free tournament. This tournament is special as it is self-complementary: reversing all arcs result in an isomorphic graph. Only a small fraction of tournaments has this self-complementary property~\cite{}. Note that all ST$n$ graphs have this property by definition. After finding this new tournament, we updated the formula to include the blocking clauses for the new tournaments and its isomorphisms. Kissat did not produce further solutions when using 640 shuffled (clause permuted) version of the updated formula on 640 cores in a day, so it is possible that the formula is simply unsatisfiable. In conclusion, the formula we produced allows an efficient and effective way to find a new 33-vertex $TT_7$-free tournament. 
 %\subsection{Maximal Unit Sets}
 %probably not needed, not actually interesting either without a bunch of figures to show the sets
 
@@ -819,6 +819,51 @@ We ran 640 shuffled (clause permuted) versions of the above formula on 640 cores
 
 \bibliographystyle{IEEEtran}
 \bibliography{main}
+
+\section{Appendix}
+\begin{figure*}[h]
+$$\left[
+\begin{array}{c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}|c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c}
+\zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \one & \zero & \zero \\
+\zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \one & \zero & \zero & \one & \one & \zero & \one \\
+\zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one \\
+\zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \one & \zero & \one & \zero & \one & \zero & \one \\
+\zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \one & \zero & \one & \zero & \zero & \one & \zero \\
+\one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \one & \one \\
+\zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \one & \zero & \zero \\
+\one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \zero & \zero & \one & \zero & \one \\
+\one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \zero & \one & \one & \one & \zero & \zero & \zero \\
+\zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \one & \one & \one & \zero & \zero & \one & \zero \\
+\zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \zero \\
+\one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \one & \zero & \zero & \one \\
+\zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \one & \zero & \zero & \one & \zero & \one & \zero \\
+\zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \one & \one & \one & \zero & \one & \zero & \zero \\
+\one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \zero \\
+\one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \one & \one & \one & \one & \one & \zero \\
+\one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \zero & \one & \zero \\
+\zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one \\
+\zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \zero & \one & \zero & \one & \one & \zero & \zero & \zero \\
+\one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \one & \zero & \zero & \one & \zero & \one & \zero & \one & \one \\
+\one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero \\
+\one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \zero & \one & \one & \one & \zero & \zero & \one \\
+\one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \zero & \zero & \one & \zero & \one & \one & \zero \\
+\zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \one & \one & \one & \one & \zero & \zero & \zero \\
+\one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \zero & \one & \one & \zero & \one & \zero & \zero \\
+\zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \one \\
+  \hline
+\zero & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \zero & \one & \zero & \zero & \zero & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \one & \one & \zero & \one & \zero & \one & \one & \one & \one \\
+\one & \one & \one & \one & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \one & \zero & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \one & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \one & \one \\
+\one & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \zero & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \zero & \one & \zero & \zero & \one & \one & \one & \one \\
+\zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \one & \zero & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one \\
+\zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \one & \one & \one & \one & \zero & \zero & \zero & \one & \one & \one & \one & \zero & \one & \zero & \one & \zero & \zero & \zero & \zero & \zero & \zero & \zero & \one & \one \\
+\one & \one & \one & \one & \zero & \zero & \one & \one & \one & \zero & \zero & \one & \zero & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \zero & \one \\
+\one & \zero & \zero & \zero & \one & \zero & \one & \zero & \one & \one & \one & \zero & \one & \one & \one & \one & \one & \zero & \one & \zero & \one & \zero & \one & \one & \one & \zero & \zero & \zero & \zero & \zero & \zero & \zero & \zero \\
+\end{array}
+\right]$$
+
+\caption{The new member of $TR(33,7)$ found using our perfect isolator for $n=7$. The upper-left section of the matrix is ST$26$, while the bottom-right section is a graph admitted by our $n=7$ isolator.}
+\end{figure*}
+
 
 \end{document}
 
