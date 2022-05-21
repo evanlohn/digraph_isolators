@@ -70,7 +70,6 @@ address = {USA},
 volume = {21},
 number = {3},
 issn = {1383-7133},
-url = {https://doi.org/10.1007/s10601-016-9244-z},
 doi = {10.1007/s10601-016-9244-z},
 abstract = {There are many complex combinatorial problems which involve searching for an undirected graph satisfying given constraints. Such problems are often highly challenging because of the large number of isomorphic representations of their solutions. This paper introduces effective and compact, complete symmetry breaking constraints for small graph search. Enumerating with these symmetry breaks generates all and only non-isomorphic solutions. For small search problems, with up to 10 vertices, we compute instance independent symmetry breaking constraints. For small search problems with a larger number of vertices we demonstrate the computation of instance dependent constraints which are complete. We illustrate the application of complete symmetry breaking constraints to extend two known sequences from the OEIS related to graph enumeration. We also demonstrate the application of a generalization of our approach to fully-interchangeable matrix search problems.},
 journal = {Constraints},
@@ -103,8 +102,6 @@ volume = {69},
 pages = {163-168},
 year = {2018},
 issn = {0195-6698},
-doi = {https://doi.org/10.1016/j.ejc.2017.10.007},
-url = {https://www.sciencedirect.com/science/article/pii/S019566981730166X},
 author = {Thomas Blankenship and Jay Cummings and Vladislav Taranchuk},
 abstract = {In this paper we prove a new recurrence relation on the van der {W}aerden numbers, w(r,k). In particular, if p is a prime and p≤k then w(r,k)>p⋅wr−rp,k−1. This recurrence gives the lower bound w(r,p+1)>pr−12p when r≤p, which generalizes Berlekamp’s theorem on 2-colorings, and gives the best known bound for a large interval of r. The recurrence can also be used to construct explicit valid colorings, and it improves known lower bounds on small van der {W}aerden numbers.}
 }
@@ -119,7 +116,6 @@ address = {USA},
 volume = {21},
 number = {3},
 issn = {1383-7133},
-url = {https://doi.org/10.1007/s10601-016-9240-3},
 doi = {10.1007/s10601-016-9240-3},
 abstract = {The number R(4, 3, 3) is often presented as the unknown Ramsey number with the best chances of being found "soon". Yet, its precise value has remained unknown for almost 50 years. This paper presents a methodology based on abstraction and symmetry breaking that applies to solve hard graph edge-coloring problems. The utility of this methodology is demonstrated by using it to compute the value R(4, 3, 3) = 30. Along the way it is required to first compute the previously unknown set (3,3,3;13)$mathcal {R}(3,3,3;13)$ consisting of 78,892 Ramsey colorings.},
 journal = {Constraints},
@@ -144,9 +140,6 @@ journal = {Proceedings of the London Mathematical Society},
 volume = {102},
 number = {4},
 pages = {731-766},
-doi = {https://doi.org/10.1112/plms/pdq035},
-url = {https://londmathsoc.onlinelibrary.wiley.com/doi/abs/10.1112/plms/pdq035},
-eprint = {https://londmathsoc.onlinelibrary.wiley.com/doi/pdf/10.1112/plms/pdq035},
 abstract = {Sumner's universal tournament conjecture states that any tournament on 2n−2 vertices contains any directed tree on n vertices. In this paper we prove that this conjecture holds for all sufficiently large n. The proof makes extensive use of results and ideas from a recent paper by the same authors, in which an approximate version of the conjecture was proved.},
 year = {2011}
 }
@@ -163,7 +156,6 @@ year = {2011}
   month     = {8},
   note      = {Survey Track},
   doi       = {10.24963/ijcai.2021/626},
-  url       = {https://doi.org/10.24963/ijcai.2021/626}
 }
 
 @inbook{ref_tournament_book, place={New York}, title={Topics on Tournaments}, pages = {28}, publisher={Holt, Rinehart and Winston}, author={Moon, John W.}, year={1968}} 
@@ -249,4 +241,48 @@ pages = {510-516},
 title = {Breaking symmetries in graph representation},
 journal = {IJCAI International Joint Conference on Artificial Intelligence},
 booktitle = {International Joint Conference on Artificial Intelligence}
+}
+
+@inproceedings{ref_SBP,
+author = {Crawford, James M. and Ginsberg, Matthew L. and Luks, Eugene M. and Roy, Amitabha},
+title = {Symmetry-Breaking Predicates for Search Problems},
+year = {1996},
+isbn = {1558604219},
+publisher = {Morgan Kaufmann Publishers Inc.},
+address = {San Francisco, CA, USA},
+booktitle = {Proceedings of the Fifth International Conference on Principles of Knowledge Representation and Reasoning},
+pages = {148–159},
+numpages = {12},
+location = {Cambridge, Massachusetts, USA},
+series = {KR'96}
+}
+
+@InProceedings{ref_approxmc,
+author="Wang, Wenxi
+and Usman, Muhammad
+and Almaawi, Alyas
+and Wang, Kaiyuan
+and Meel, Kuldeep S.
+and Khurshid, Sarfraz",
+editor="Biere, Armin
+and Parker, David",
+title="A Study of Symmetry Breaking Predicates and Model Counting",
+booktitle="Tools and Algorithms for the Construction and Analysis of Systems",
+year="2020",
+publisher="Springer International Publishing",
+address="Cham",
+pages="115--134",
+abstract="Propositional model counting is a classic problem that has recently witnessed many technical advances and novel applications. While the basic model counting problem requires computing the number of all solutions to the given formula, in some important application scenarios, the desired count is not of all solutions, but instead, of all unique solutions up to isomorphism. In such a scenario, the user herself must try to either use the full count that the model counter returns to compute the count up to isomorphism, or ensure that the input formula to the model counter adequately captures the symmetry breaking predicates so it can directly report the count she desires.",
+isbn="978-3-030-45190-5"
+}
+
+@article{ref_SBP2,
+author = {Shlyakhter, Ilya},
+year = {2007},
+month = {06},
+pages = {1539-1548},
+title = {Generating effective symmetry-breaking predicates for search problems},
+volume = {155},
+journal = {Discrete Applied Mathematics},
+doi = {10.1016/j.dam.2005.10.018}
 }
