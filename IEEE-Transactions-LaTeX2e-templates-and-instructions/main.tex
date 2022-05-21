@@ -68,7 +68,7 @@ The most common way of reducing the impact of symmetries in a given formula is b
 
 %An isolator is \emph{trivial} if it admits all possible labeled graphs, and \emph{perfect} if it admits exactly one graph per equivalence class. Additionally, an isolator is \emph{optimal} if it uses the fewest possible clauses to admit a given number of graphs. An optimal perfect isolator is therefore the shortest list of clauses that admits exactly one member of each equivalence class in the set of graphs being searched over.
 
-Prior work has shown that it is possible to generate small isolators for undirected graphs \cite{ref_heule}. The present work instead handles the generation of short isolators for tournaments (complete, directed graphs). There are several mathematically interesting questions one can ask about tournaments that motivate the generation of tournament isolators. For example, Sumner's conjecture and various election models in social choice theory rely on tournament properties \cite{ref_sumner, ref_social_choice}. However, the most well-known question about tournament structure is the Tournament Ramsey number problem, an analog to Ramsey numbers \cite{ref_ramsey_survey} that asks the question of ``in what size tournament $n$ must a transitive sub-tournament of size $k$ exist.'' A (sub)tournament is \emph{transitive} if it contains no cycles.
+Prior work has shown that it is possible to generate small isolators for undirected graphs \cite{ref_heule}. The present work instead handles the generation of short isolators for tournaments: complete, directed graphs. There are several mathematically interesting questions one can ask about tournaments that motivate the generation of tournament isolators. For example, Sumner's conjecture and various election models in social choice theory rely on tournament properties \cite{ref_sumner,ref_social_choice}. However, the most well-known question about tournament structure is the Tournament Ramsey number problem, an analog to Ramsey numbers \cite{ref_ramsey_survey} that asks the question of ``in what size tournament $n$ must a transitive sub-tournament of size $k$ exist.'' A (sub)tournament is \emph{transitive} if it contains no cycles.
 %A (sub-)tournament is transitive if for all triples of vertices $u,v,w$, the existence of arcs $(a,b)$ and $(b,c)$ implies the existence of $(a,c)$. 
 
 The first contribution of this work is the generation of compact tournament isolators that asymptotically match the search space reduction of a perfect isolator. Second, we present a methodology for the generation of compact isolators for small tournaments that extends prior work on undirected tournaments \cite{ref_heule}.  Finally, we demonstrate the practical usage of our small isolators for finding larger graphs relevant to the search for tournament Ramsey numbers.
@@ -110,7 +110,7 @@ We define the following common concepts from SAT literature:
 A \emph{literal} is either a variable or a negated variable. We use $\lnot$ to denote negation.
 A \emph{clause} is a disjunction of literals.
 A \emph{unit clause} (sometimes referred to as simply a \emph{unit}) is a clause containing exactly one literal.
-A \emph{CNF formula} is a conjunction of clauses (CNF=Conjunctive Normal Form). Unless otherwise specified, ``formula'' refers to ``CNF formula.''
+A \emph{Conjunctive Normal Form (CNF) formula} is a conjunction of clauses. Unless otherwise specified, ``formula'' refers to ``CNF formula.''
 An \emph{assignment} $\alpha$ is a function from variables to truth values (True/False). $\alpha$ satisfies a formula $F$ if the boolean function denoted by $F$ returns True given the inputs specified by $\alpha$.
 
 
@@ -144,14 +144,14 @@ Consider the following two labeled three-vertex tournaments.
 \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
 \tikzset{edge/.style = {->,> = latex'}}
 % vertices
-\node[vertex] (a) at  (0,0) {a};
-\node[vertex] (b) at  (0.5,1) {b};
-\node[vertex] (c) at  (1,0) {c};
+\node[vertex] (a) at  (0,0) {$\!a\!$};
+\node[vertex] (b) at  (0.5,1) {$\!b\!$};
+\node[vertex] (c) at  (1,0) {$\!c\!$};
 
 %edges
-\draw[edge][red] (a) to (b);
-\draw[edge] (a) to (c);
-\draw[edge][red] (b) to (c);
+\draw[edge, thick][red] (a) to (b);
+\draw[edge, thick] (a) to (c);
+\draw[edge, thick][red] (b) to (c);
 
 %\draw[edge] (a)  to[bend left] (a1);
 %\draw[edge] (a1) to[bend left] (a);
@@ -159,14 +159,14 @@ Consider the following two labeled three-vertex tournaments.
 %\node [shape=circle,minimum size=1.5em] (a3) at (4.5,0) {};
 %\node [shape=circle,minimum size=1.5em] (c1) at (6.5,0) {};
 
-\node[vertex] (d) at  (2,0) {a};
-\node[vertex] (e) at  (2.5,1) {b};
-\node[vertex] (f) at  (3,0) {c};
+\node[vertex] (d) at  (4,0) {$\!a\!$};
+\node[vertex] (e) at  (4.5,1) {$\!b\!$};
+\node[vertex] (f) at  (5,0) {$\!c\!$};
 
 %edges
-\draw[edge][red] (d) to (e);
-\draw[edge] (f) to (d);
-\draw[edge][red] (e) to (f);
+\draw[edge, thick][red] (d) to (e);
+\draw[edge, thick] (f) to (d);
+\draw[edge, thick][red] (e) to (f);
 
 \end{tikzpicture}
 \end{figure}
