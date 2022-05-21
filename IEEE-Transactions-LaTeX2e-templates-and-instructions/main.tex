@@ -172,14 +172,16 @@ Consider the following two labeled three-vertex tournaments.
 \end{figure}
 
 These tournaments represent the only two equivalence classes for $n=3$ tournaments: a cycle and a transitive tournament. While any combination of a cycle and transitive tournament would suffice to represent both equivalence classes, the tournaments chosen above have the interesting property of sharing two edges $ab$ and $bc$ (colored red). This property allows us to produce a short formula that admits both graphs:
-
-$ab \land bc$.
+\[
+ab \land bc.
+\]
 
 This formula admits exactly one of the two labeled cycles and one of the six labeled transitive tournaments on 3 vertices, and does so with the fewest number of clauses. Therefore, $ab \land bc$ is a perfect, optimal isolator for $n=3$ tournaments.
 
 Figure \ref{iso4} displays all 4 canonical representatives for $n=4$ tournaments. We note that once again all highlighted edges have the same edge labels across graphs, and all permutations of non-highlighted edges are present. So, a short formula that admits exactly the set of graphs in the figure is
-
-$ab \land bc \land cd \land ad$.
+\[
+ab \land bc \land cd \land ad.
+\]
 
 While the optimal isolators for $n=3,4$ are comprised entirely of unit clauses, this pattern does not hold for $n=5$. Table \ref{tab:smallest_isolators_found} contains the number of unit and non-unit clauses for $n \le 7$.
 
@@ -302,7 +304,12 @@ While constructing smaller isolators using the techniques above, we opted to man
 %It is worth noting that we do not have a proof that it is always possible to extend an encoded Hamiltonian path to an \textit{optimal} isolator.  However, building off a set of units can make searching for compact isolators much more efficient. In particular, we modified our map-file generation to optionally ignore graphs that are not admitted by a given set of units. Including these units reduces the map file size and generation time by a factor of $2^{n-1}$, which makes map file-based approaches still viable for up to $n = 8$.
 
 %Given the utility of unit clauses in isolators, a natural next question would be: can we bound the number of units in $n$-vertex isolators, either strictly or asymptotically? 
-Given the utility of unit clauses in isolators, it is natural to ask how many units there can possibly be in an $n$-vertex isolator. As it turns out, there is a long-known result from graph theory that implies that asymptotically there are at most $O(n\log n)$ units possible. By the orbit-stabilizer theorem, the size of the equivalence class of a graph $G$ on $n$ vertices is $\frac{n!}{|Aut(G)|}$, where $Aut(G)$ is the set of distinct automorphisms of $G$. In 1963 Erd\H{o}s and R{\'e}nyi proved that as $n$ approaches infinity, the proportion of tournaments of size $n$ with with nontrivial automorphisms approaches 0 \cite{ref_asymmetric}. Therefore, a proportion of graphs approaching 1 have equivalence classes of size $n!$, so the asymptotic number of equivalence classes is $\frac{2^{n \choose 2}}{n!} \in \Theta(\frac{2^{n \choose 2}}{2^{n\log n}}) = \Theta(2^{{n \choose 2} - n\log n})$. An isolator with $k$ unit clauses for $n$-vertex graphs admits at most $2^{{n \choose 2} - k}$ equivalence class representatives, so in order to admit at least one member of each equivalence class (by the definition of an isolator), the number of units in an isolator must also be asymptotically upper-bounded by $n \log n$.
+Given the utility of unit clauses in isolators, it is natural to ask how many units there can possibly be in an $n$-vertex isolator. As it turns out, there is a long-known result from graph theory that implies that asymptotically there are at most $O(n\log n)$ units possible. By the orbit-stabilizer theorem, the size of the equivalence class of a graph $G$ on $n$ vertices is $\frac{n!}{|Aut(G)|}$, where $Aut(G)$ is the set of distinct automorphisms of $G$. In 1963 Erd\H{o}s and R{\'e}nyi proved that as $n$ approaches infinity, the proportion of tournaments of size $n$ with with nontrivial automorphisms approaches 0 \cite{ref_asymmetric}. Therefore, a proportion of graphs approaching 1 have equivalence classes of size $n!$, so the asymptotic number of equivalence classes is
+\[
+\frac{2^{n \choose 2}}{n!} \in \Theta(\frac{2^{n \choose 2}}{2^{n\log n}}) = \Theta(2^{{n \choose 2} - n\log n}).
+\]
+
+An isolator with $k$ unit clauses for $n$-vertex graphs admits at most $2^{{n \choose 2} - k}$ equivalence class representatives, so in order to admit at least one member of each equivalence class (by the definition of an isolator), the number of units in an isolator must also be asymptotically upper-bounded by $n \log n$.
 
 In the next section, we provide a procedure that achieves this bound.
 
