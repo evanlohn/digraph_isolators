@@ -37,6 +37,8 @@ def from_edges(n, edges):
     g.add_edges_from(edges)
     return g
 
+alphabet = ' abcdefghijklmnopqrstuvwxyz'
+
 def plot_graph(g, n, units, arrowsize=25, use_edge_labels=True):
     edges= list(g.edges())
     e_colors = [('red' if (edge2ind(e) in units or -edge2ind(e) in units) else 'black') for e in edges]
@@ -48,9 +50,12 @@ def plot_graph(g, n, units, arrowsize=25, use_edge_labels=True):
         pos2[v] = pos[v2]
 
     #print(pos)
-    nx.draw(g, pos2, with_labels = True, edge_color=e_colors, font_color='white', arrowsize=arrowsize)
+    labels = {i : c for i, c in enumerate(alphabet) if i>0 and i <= n}
+    nx.draw(g, pos2, edge_color=e_colors, font_color='white', arrowsize=arrowsize) # with_labels = True,
+    nx.draw_networkx_labels(g, pos2, labels, font_color="white")
     if use_edge_labels:
-        nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=0.75)
+        lp = 0.75 if n != 6 else 0.8
+        nx.draw_networkx_edge_labels(g, pos2, edge_labels = {e:i + 1 for i, e in enumerate(edges)}, label_pos=lp)
 
 def visualize_graphs(graphs, units, n, n_to_plot):
     N = len(graphs) if n_to_plot is None else n_to_plot
