@@ -1,10 +1,20 @@
 \documentclass[conference]{IEEEtran}
 \usepackage{graphicx}
+\usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{cleveref}
+
+\usetikzlibrary{shapes}
+
+\newcommand{\zero}{\tikz[baseline=(char.base)]{
+            \node[fill=white,shape=circle,inner sep=1pt] (char) {\textcolor{black}{0}};}}
+\newcommand{\one}{\tikz[baseline=(char.base)]{
+            \node[fill=black,shape=circle,inner sep=1pt] (char) {\textcolor{white}{1}};}}
+\newcommand{\none}{\tikz[baseline=(char.base)]{
+            \node[fill=white,shape=circle,inner sep=1pt] (char) {\textcolor{white}{1}};}}
 
 \usepackage{multirow,bigdelim,blkarray}
 
@@ -17,8 +27,8 @@
     \begin{matrix}\phantom{\rule{0pt}{#1}}#3\end{matrix}}}^{#2}}$}#3}
 
 % We will externalize the figures
-\usepgfplotslibrary{external}
-\tikzexternalize
+%\usepgfplotslibrary{external}
+%\tikzexternalize
 \usetikzlibrary{arrows}
 \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -118,7 +128,7 @@ A \emph{perfect} isolator is an isolator that admits \textit{exactly} one tourna
 A perfect isolator $F$ is \emph{optimal} if there does not exist a perfect isolator with fewer non-unit clauses than $F$.
 A \emph{compact} or \emph{short} isolator is not rigorously defined. Rather, it describes an isolator with few enough non-unit clauses to be of practical use in solving SAT problems.
 
-In this work, vertices will be denoted with lowercase letters $a,b,c...$ or with $v_1, v_2, ... v_n$ when an ordering of the vertices is relevant. Arcs (directed edges) will be referred to with $(u,v)$, meaning ``there is an arc from $u$ to $v$.'' In our construction of isolators, each variable is written in the form $uv$ and has the semantics ``arc $(u,v)$ exists in the graph.'' Note that the literal $\lnot uv$ therefore means ``arc $(v,u)$ exists in the graph.'' 
+In this work, vertices will be denoted with lowercase letters $a,b,c, \dots$ or with $v_1, v_2, \dots, v_n$ when an ordering of the vertices is relevant. Arcs (directed edges) will be referred to with $(u,v)$, meaning ``there is an arc from $u$ to $v$.'' In our construction of isolators, each variable is written in the form $uv$ and has the semantics ``arc $(u,v)$ exists in the graph.'' Note that the literal $\lnot uv$ therefore means ``arc $(v,u)$ exists in the graph.'' 
 
 %Consider a tournament with three vertices labeled $a,b,c$. One such tournament can be represented equivalently as a picture, a list of arcs (directed edges), or an adjacency matrix as follows:
 
@@ -303,25 +313,31 @@ In situations where we know that every member of the class of $n$-vertex tournam
 
 %\textbf{add algorithm TBD}
 
+%\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+%            \node[fill=black,shape=circle,draw,inner sep=1pt] (char) {\textcolor{white}{#1}};}}
+%\newcommand{\zero}{ 0}
+%\newcommand{\one}{ \circled{1}}
+
+
 \[
 \left[
-\begin{array}{cccccccccccccccc}
-0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+\begin{array}{c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c}
+\zero & \one & \one & \one & \one & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none\\
+\zero & \zero & \one & \one & \one & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none\\
+\zero & \zero & \zero & \one & \one & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none\\
+\zero & \zero & \zero & \zero & \one & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none\\
+\zero & \zero & \zero & \zero & \zero & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \zero & \one & \one & \one & \none & \none & \none & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \zero & \zero & \one & \one & \none & \none & \none & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \zero & \zero & \zero & \one & \none & \none & \none & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \zero & \zero & \zero & \zero & \none & \none & \none & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \none & \none & \none & \none & \zero & \one & \one & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \none & \none & \none & \none & \zero & \zero & \one & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \none & \none & \none & \none & \zero & \zero & \zero & \none & \none & \none & \none\\
+\none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \zero & \one & \one & \none\\
+\none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \zero & \zero & \one & \none\\
+\none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \zero & \zero & \zero & \none\\
+\none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \zero\\
 \end{array}
 \right]
 \]
