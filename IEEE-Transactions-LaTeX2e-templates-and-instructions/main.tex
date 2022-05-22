@@ -823,7 +823,7 @@ In addition to the SAT encoding approach to isolator generation, we also generat
 
 \section{Results}
 
-Our experimental results include the sizes of known perfect isolators for small $n$, as well as experiments showing the practical utility of small $n=6,7$ perfect isolators for solving a tournament existence problem.
+Our experimental results include the sizes of known perfect isolators for small $n$, as well as experiments showing the practical utility of small $n=6,7$ perfect isolators for solving a tournament existence problem. All results and code will be made available in a public repository if the paper is accepted. 
 
 \subsection{Experimental Setup}
 Our SAT-based approach to generating isolators rely on the creation of ``map'' files: text files associating each tournament of size $n$ with a label representing that graph's isomorphism class. In order to generate a map file for tournaments on $n$ vertices, we began by enumerating all $2^{n(n-1)/2}$ graphs of size $n$. We converted each graph into an adjacency matrix and then into the ``.d6'' format specified in the NAUTY handbook, then fed the resulting graphs into the labelg script bundled with the NAUTY tool for graph isomorphisms \cite{ref_nauty}. labelg produced a file where each graph was converted to the canonical form used by nauty. We gave each canonical form a unique label and outputted the arc (directed edge) indices of each original graph alongside its canonical form. 
