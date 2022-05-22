@@ -185,9 +185,59 @@ ab \land bc \land cd \land ad.
 
 While the optimal isolators for $n=3,4$ are comprised entirely of unit clauses, this pattern does not hold for $n=5$. Table \ref{tab:smallest_isolators_found} contains the number of unit and non-unit clauses for $n \le 7$.
 
-\begin{figure}
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.4\textwidth]{iso_4.png}
+%\caption{All isomorphism class representatives admitted by a perfect, optimal isolator for 4-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator, and the isolator has only unit clauses. Edge labels are the integers returned by the $\mathit{idx}$ function from the Arc Literal Numbering section.} \label{iso4}
+%\end{figure}
+
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.4\textwidth]{iso_4.png}
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex'}}
+\node[vertex] (v_0_1) at (1.6,0.8) {$\!a\!$};
+\node[vertex] (v_0_2) at (0.8,1.36) {$\!b\!$};
+\node[vertex] (v_0_3) at (0.0,0.8) {$\!c\!$};
+\node[vertex] (v_0_4) at (0.8,0.24) {$\!d\!$};
+\draw[edge, thick][red] (v_0_1) to (v_0_2);
+\draw[edge, thick] (v_0_3) to (v_0_1);
+\draw[edge, thick][red] (v_0_2) to (v_0_3);
+\draw[edge, thick][red] (v_0_1) to (v_0_4);
+\draw[edge, thick] (v_0_4) to (v_0_2);
+\draw[edge, thick][red] (v_0_3) to (v_0_4);
+\node[vertex] (v_1_1) at (4.0,0.8) {$\!a\!$};
+\node[vertex] (v_1_2) at (3.2,1.36) {$\!b\!$};
+\node[vertex] (v_1_3) at (2.4,0.8) {$\!c\!$};
+\node[vertex] (v_1_4) at (3.2,0.24) {$\!d\!$};
+\draw[edge, thick][red] (v_1_1) to (v_1_2);
+\draw[edge, thick] (v_1_1) to (v_1_3);
+\draw[edge, thick][red] (v_1_2) to (v_1_3);
+\draw[edge, thick][red] (v_1_1) to (v_1_4);
+\draw[edge, thick] (v_1_4) to (v_1_2);
+\draw[edge, thick][red] (v_1_3) to (v_1_4);
+\node[vertex] (v_2_1) at (1.6,2.64) {$\!a\!$};
+\node[vertex] (v_2_2) at (0.8,3.2) {$\!b\!$};
+\node[vertex] (v_2_3) at (0.0,2.64) {$\!c\!$};
+\node[vertex] (v_2_4) at (0.8,2.08) {$\!d\!$};
+\draw[edge, thick][red] (v_2_1) to (v_2_2);
+\draw[edge, thick] (v_2_3) to (v_2_1);
+\draw[edge, thick][red] (v_2_2) to (v_2_3);
+\draw[edge, thick][red] (v_2_1) to (v_2_4);
+\draw[edge, thick] (v_2_2) to (v_2_4);
+\draw[edge, thick][red] (v_2_3) to (v_2_4);
+\node[vertex] (v_3_1) at (4.0,2.64) {$\!a\!$};
+\node[vertex] (v_3_2) at (3.2,3.2) {$\!b\!$};
+\node[vertex] (v_3_3) at (2.4,2.64) {$\!c\!$};
+\node[vertex] (v_3_4) at (3.2,2.08) {$\!d\!$};
+\draw[edge, thick][red] (v_3_1) to (v_3_2);
+\draw[edge, thick] (v_3_1) to (v_3_3);
+\draw[edge, thick][red] (v_3_2) to (v_3_3);
+\draw[edge, thick][red] (v_3_1) to (v_3_4);
+\draw[edge, thick] (v_3_2) to (v_3_4);
+\draw[edge, thick][red] (v_3_3) to (v_3_4);
+\end{tikzpicture}
+
 \caption{All isomorphism class representatives admitted by a perfect, optimal isolator for 4-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator, and the isolator has only unit clauses. Edge labels are the integers returned by the $\mathit{idx}$ function from the Arc Literal Numbering section.} \label{iso4}
 \end{figure}
 
@@ -319,6 +369,8 @@ In the next section, we provide a procedure that achieves this bound.
 %If a $TT_k$ is known to exist within every member of the class of $n$-vertex tournaments,
 In situations where we know that every member of the class of $n$-vertex tournaments contains a $TT_k$ (a transitive tournament of size k), we also know that every equivalence class must contain a member with the tournament fixed in some arbitrary position and orientation (i.e. vertices $1$ through $k$ in ascending order). Therefore, any formula that \emph{fixes} (i.e. asserts the existence of) a $TT_k$ on the class of $n$-vertex tournaments is a valid isolator. Because the remaining subset of $n-k$ non-fixed vertices also forms a tournament, further knowledge about the existence of a transitive tournament within the remaining $n-k$ vertices can be used to fix (via units) another transitive tournament within the $n-k$ vertex subtournament. This procedure can be repeated until all vertices of the original tournament are part of some fixed transitive subtournament. Tournament Ramsey numbers provide exactly the required information about the existence of a transitive subtournament. In fact, tournament Ramsey numbers (when known) provide the \textit{largest} transitive subtournament guaranteed to exist in a tournament of a given size. Therefore, tournament Ramsey numbers (as well as upper bounds, which exist for arbitrarily large $n$) can be used to iteratively construct large sets of unit clauses for tournament isolators: we will refer to this process as TT-fixing.
 
+TT-fixing is best understood via a small example like figure \ref{fig:TTfix}. For an arbitrary $16$-vertex tournament $G$, $R(5) = 14$ implies that $G$ must contain a $TT_5$ as a subtournament. Therefore, the arcs between vertices $v_1 ... v_5$ can be ``fixed'' to be a transitive tournament by generating all unit clauses corresponding to those arcs. However, the remaining $16-5=11$ vertices of $G$ also form an arbitrary subtournament $G'$ on $11$ vertices. Because $R(4) = 8$, a $TT_4$ is guaranteed to exist in $G'$, so we can add unit clauses corresponding to the specific location of that $TT_4$'s existence in vertices $v_6 ... v_9$. The repetition of this procedure down to 1 or 0 remaining vertices is TT-fixing.
+
 %\textbf{add algorithm TBD}
 
 %\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
@@ -348,6 +400,9 @@ $$\left[
 \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \none & \zero\\
 \end{array}
 \right]$$
+
+\caption{A visual depiction of the unit clauses provided TT-fixing in the adjacency matrix of an $n=16$ tournament. For entries with value $1$ at row $i$ and column $j$, the unit clause corresponding to $(v_i, v_j)$  is added by TT-fixing. Equivalently, the $1$'s and $0$'s shown will exist in the adjacency matrix of any graph admitted by a TT-fixing isolator. }
+\label{fig:TTfix}
 \end{figure}
 
 % add algorithm
@@ -535,19 +590,19 @@ Consider an arbitrary vertex $v$ in an arbitrary tournament $G$ on $2R(k-1)$ ver
 
 In Figure \ref{pracunits} the bottom two lines depict the strict lower bound used in the $n\log n$ units proof (blue), as well as the actual number of units TT-fixing would provide if we only used the $R(k) \leq 2^{k-1}$ bound from the proof (red). Above that (orange) is the number of units TT-fixing provides given the best currently known Ramsey number bounds.  The best known bound on $R(7)$ is $34 \leq R(7) \leq 47$ \cite{directedramsey}, so the black line describes the best case for how many unit clauses TT-fixing could provide if $R(7) = 34$ was proven. The recurrence relation $R(k) \le 2R(k-1)$ is what allows even improvements to small Ramsey number bounds to impact the efficacy of TT-fixing for large $n$. %Figure \ref{lowerboundlarge} provides visual evidence of the tightness of the lower bound used in the proof. For all $n$ in the interval $[2,1e5)$ the maximum deviation of the two functions was 48, while the average deviation was $\approx 30.1$.
 
-In Figure \ref{isosearchspace}, the top (orange) line is the total number of graphs a SAT solver must search in a tournament existence problem in the absence of an isolator.  The bottom (red) line is the number of unlabeled tournaments on $n$ vertices; this is the minimum number of graphs that any brute-force solver must search to solve a tournament existence problem. This data was taken from OEIS sequence A000568 \cite{ref_oeis}, which  limits the size of $n$ for which we can make this comparison to $n=19$. The middle (blue) line shows how many graphs are admitted by an isolator created by TT-fixing with the best known bounds on tournament Ramsey numbers. As $n$ grows large, the gap between the bottom two lines should grow small relative to the gap between the top two lines as per the $n \log n$ units upper bound proof.
+In Figure \ref{isosearchspace}, the top (orange) line is the total number of graphs a SAT solver must search in a tournament existence problem in the absence of an isolator.  The bottom (red) line is the number of unlabeled tournaments on $n$ vertices; this is the minimum number of graphs that any brute-force solver must search to solve a tournament existence problem. This data was taken from OEIS sequence A000568 \cite{ref_oeis}, which  limits the size of $n$ for which we can make this comparison to $n=19$. The middle (blue) line shows how many graphs are admitted by a TT-fixing isolator using the best known bounds on tournament Ramsey numbers. As $n$ grows large, the gap between the bottom two lines should grow small  as per the $n \log n$ units upper bound proof.
 
 
 \subsection{Undirected Isolators: Clique-fixing}
 %\textbf{I cleaned this up a bit, is the description more understandable now or do you still think I should go with the cyclic approach to the clauses?}
-As mentioned earlier, undirected isolators cannot have unit clauses. Therefore, undirected isolators cannot directly benefit from units via TT-fixing. However, a crossover result for undirected graphs does exist for binary clauses that uses the same ideas as TT-fixing; we term this process \emph{clique-fixing}. Undirected Ramsey number guarantee the existence of a red or blue colored $k$-clique for graphs with more than $R_u(k)$ vertices ($R_u$ used here for undirected Ramsey numbers). Clique-fixing uses the same iterative process as TT-fixing, but replaces the generation of units for $TT_k$ with the following clauses:
+As mentioned earlier, undirected isolators cannot have unit clauses. Therefore, undirected isolators cannot directly benefit from units via TT-fixing. However, a crossover result for undirected graphs does exist for binary clauses that uses the same ideas as TT-fixing; we term this process \emph{clique-fixing}. Undirected Ramsey number guarantee the existence of a red or blue colored $k$-clique for graphs with more than $R_u(k)$ vertices ($R_u$ used here for undirected Ramsey numbers). Clique-fixing uses the same iterative process as TT-fixing, but generates the following clauses instead of $TT_k$ units:
 
 $\{r \lor e, \lnot r \lor \lnot e | e \in \mathit{Edges}(K_k)\}$
 %$\{r \lor \mathit{idx}(b,c)  | (b, c) \in [1..k]\times[1..k] \text{ s.t. } b < c\}$
 
 %$\{\lnot r \lor \lnot \mathit{idx}(b,c)  | (b, c) \in [1..k]\times[1..k] \text{ s.t. } b < c\}$
 
-where $r$ is an auxiliary variable representing the concept ``the $k$-clique is red'' and $\mathit{Edges}(K_k)$ is the set of edge literals for the complete graph on $k$ vertices. We note that these clauses are ``almost'' units in the sense that after a solver makes a decision about whether to set $r$ to true or false, an entire $k(k-1)/2$ edges are set by unit propagation. Each step of clique-fixing therefore loses a single unit clause worth of search space reduction when compared to TT-fixing. Although not the focus of this work, it is plausible that a similar asymptotic optimality analysis could be done for clique-fixing given this small discrepancy. However, it is notable that undirected Ramsey numbers (necessary for clique-fixing) empirically grow much faster than tournament Ramsey numbers despite equal theoretical worst-case scaling, which implies that clique-fixing may not be as practically useful as TT-fixing.
+where $r$ is an auxiliary variable representing the concept ``the $k$-clique is red'' and $\mathit{Edges}(K_k)$ is the set of edge literals for the complete graph on $k$ vertices. We note that these clauses are ``almost'' units in the sense that after a solver makes a decision about whether to set $r$ to true or false, ${k \choose 2}$ edges are set by unit propagation. Therefore, clique-fixing steps reduce the search space by half as much as TT-fixing steps do. Although not the focus of this work, it is plausible that a similar asymptotic optimality analysis could be done for clique-fixing given this small discrepancy. However, undirected Ramsey numbers (necessary for clique-fixing) empirically grow much faster than tournament Ramsey numbers despite equal theoretical worst-case scaling, so clique-fixing may not be as practically useful as TT-fixing.
 
 
 %\begin{figure}
@@ -657,7 +712,7 @@ Prior work has already shown that any isolator for $n$-vertex tournaments is als
 %Consider an arbitrary $m+n$-vertex tournament $g_{mn}$; it contains disjoint subtournaments $g_m,g_n$ on $m$ and $n$ vertices selected by considering the ranges of $f_m, f_n$ as defined above. $g_m$ and $g_n$ are admitted by $m$ and $n$ vertex isolators respectively under some permutations $\pi_m,\pi_n$ on the ranges of $f_m, f_n$. Composing $\pi_m$ and $\pi_n$ and applying the resulting permutation to $g_{mn}$ produces a graph isomorphic to $g_{mn}$ admitted by the conjunction of the two isolators, proving that every equivalence class has at least one member admitted by said union.
 %\end{proof}
 
-The technique of combining disjoint isolators is practically useful for creating compact isolators for large $n$. Although TT-fixing guarantees asymptotic optimality, when the procedure reaches the point of generating units for $k=8$ or fewer remaining vertices, more units can be added by using the units from a known compact isolator for $k$ vertices. For example, TT-fixing will generate 9 units when processing 8-vertex (sub)tournaments, while our isolator for $n=8$ contains 11 units. 
+The technique of combining isolators is useful for creating compact isolators for large $n$. Although TT-fixing guarantees asymptotic optimality, it does not always add the optimal number of units for small $n$. For example, TT-fixing will generate 9 units when processing 8-vertex (sub)tournaments, while an isolator for $n=8$ with 11 units is possible. 
 
 %\textbf{figure describing the composite process TBD}
 
@@ -721,9 +776,40 @@ Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT so
 %\caption{Flowchart showing one-off relationships between n=5 equivalence classes} \label{flowchart}
 %\end{figure}
 
-\begin{figure}
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.4\textwidth]{iso6.png}
+%\caption{One of the 56 Isomorphism class representatives admitted by a particular isolator for 6-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator.} \label{fig3}
+%\end{figure}
+
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.4\textwidth]{iso6.png}
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex'}}
+\node[vertex] (v_0_1) at (3.0,1.5) {$\!a\!$};
+\node[vertex] (v_0_2) at (2.25,2.67) {$\!b\!$};
+\node[vertex] (v_0_3) at (0.75,2.67) {$\!c\!$};
+\node[vertex] (v_0_4) at (0.0,1.5) {$\!d\!$};
+\node[vertex] (v_0_5) at (0.75,0.33) {$\!e\!$};
+\node[vertex] (v_0_6) at (2.25,0.33) {$\!f\!$};
+\draw[edge, thick][red] (v_0_1) to (v_0_2);
+\draw[edge, thick] (v_0_1) to (v_0_3);
+\draw[edge, thick][red] (v_0_2) to (v_0_3);
+\draw[edge, thick][red] (v_0_1) to (v_0_4);
+\draw[edge, thick] (v_0_4) to (v_0_2);
+\draw[edge, thick][red] (v_0_3) to (v_0_4);
+\draw[edge, thick] (v_0_1) to (v_0_5);
+\draw[edge, thick][red] (v_0_2) to (v_0_5);
+\draw[edge, thick] (v_0_5) to (v_0_3);
+\draw[edge, thick][red] (v_0_4) to (v_0_5);
+\draw[edge, thick] (v_0_6) to (v_0_1);
+\draw[edge, thick] (v_0_6) to (v_0_2);
+\draw[edge, thick][red] (v_0_3) to (v_0_6);
+\draw[edge, thick] (v_0_6) to (v_0_4);
+\draw[edge, thick][red] (v_0_5) to (v_0_6);
+\end{tikzpicture}
+
 \caption{One of the 56 Isomorphism class representatives admitted by a particular isolator for 6-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator.} \label{fig3}
 \end{figure}
 %mention the number of unique isolators up to isomorphism
@@ -749,10 +835,200 @@ Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT so
     \label{tab:smallest_isolators_found}
 \end{table}
 
-\begin{figure}
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.5\textwidth]{iso_5.png}
+%\caption{All isomorphism class representatives admitted by a particular isolator for 5-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator. The two non-unit clauses in the isolator are $ac \lor \lnot bd \lor ce$ and $ac \lor ae \lor \lnot ce$.} \label{fig2}
+%\end{figure}
+
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{iso_5.png}
-\caption{All isomorphism class representatives admitted by a particular isolator for 5-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator. The two non-unit clauses in the isolator are $2 \lor -5 \lor 9$ and $2 \lor 7 \lor -9$.} \label{fig2}
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex'}}
+\node[vertex] (v_0_1) at (1.8,0.9) {$\!a\!$};
+\node[vertex] (v_0_2) at (1.18,1.67) {$\!b\!$};
+\node[vertex] (v_0_3) at (0.17,1.38) {$\!c\!$};
+\node[vertex] (v_0_4) at (0.17,0.42) {$\!d\!$};
+\node[vertex] (v_0_5) at (1.18,0.13) {$\!e\!$};
+\draw[edge, thick][red] (v_0_1) to (v_0_2);
+\draw[edge, thick] (v_0_3) to (v_0_1);
+\draw[edge, thick][red] (v_0_2) to (v_0_3);
+\draw[edge, thick][red] (v_0_1) to (v_0_4);
+\draw[edge, thick] (v_0_4) to (v_0_2);
+\draw[edge, thick][red] (v_0_3) to (v_0_4);
+\draw[edge, thick] (v_0_5) to (v_0_1);
+\draw[edge, thick][red] (v_0_2) to (v_0_5);
+\draw[edge, thick] (v_0_5) to (v_0_3);
+\draw[edge, thick][red] (v_0_4) to (v_0_5);
+\node[vertex] (v_1_1) at (4.5,0.9) {$\!a\!$};
+\node[vertex] (v_1_2) at (3.88,1.67) {$\!b\!$};
+\node[vertex] (v_1_3) at (2.87,1.38) {$\!c\!$};
+\node[vertex] (v_1_4) at (2.87,0.42) {$\!d\!$};
+\node[vertex] (v_1_5) at (3.88,0.13) {$\!e\!$};
+\draw[edge, thick][red] (v_1_1) to (v_1_2);
+\draw[edge, thick] (v_1_1) to (v_1_3);
+\draw[edge, thick][red] (v_1_2) to (v_1_3);
+\draw[edge, thick][red] (v_1_1) to (v_1_4);
+\draw[edge, thick] (v_1_4) to (v_1_2);
+\draw[edge, thick][red] (v_1_3) to (v_1_4);
+\draw[edge, thick] (v_1_5) to (v_1_1);
+\draw[edge, thick][red] (v_1_2) to (v_1_5);
+\draw[edge, thick] (v_1_5) to (v_1_3);
+\draw[edge, thick][red] (v_1_4) to (v_1_5);
+\node[vertex] (v_2_1) at (7.2,0.9) {$\!a\!$};
+\node[vertex] (v_2_2) at (6.58,1.67) {$\!b\!$};
+\node[vertex] (v_2_3) at (5.57,1.38) {$\!c\!$};
+\node[vertex] (v_2_4) at (5.57,0.42) {$\!d\!$};
+\node[vertex] (v_2_5) at (6.58,0.13) {$\!e\!$};
+\draw[edge, thick][red] (v_2_1) to (v_2_2);
+\draw[edge, thick] (v_2_1) to (v_2_3);
+\draw[edge, thick][red] (v_2_2) to (v_2_3);
+\draw[edge, thick][red] (v_2_1) to (v_2_4);
+\draw[edge, thick] (v_2_2) to (v_2_4);
+\draw[edge, thick][red] (v_2_3) to (v_2_4);
+\draw[edge, thick] (v_2_5) to (v_2_1);
+\draw[edge, thick][red] (v_2_2) to (v_2_5);
+\draw[edge, thick] (v_2_5) to (v_2_3);
+\draw[edge, thick][red] (v_2_4) to (v_2_5);
+\node[vertex] (v_3_1) at (1.8,3.51) {$\!a\!$};
+\node[vertex] (v_3_2) at (1.18,4.28) {$\!b\!$};
+\node[vertex] (v_3_3) at (0.17,3.99) {$\!c\!$};
+\node[vertex] (v_3_4) at (0.17,3.03) {$\!d\!$};
+\node[vertex] (v_3_5) at (1.18,2.74) {$\!e\!$};
+\draw[edge, thick][red] (v_3_1) to (v_3_2);
+\draw[edge, thick] (v_3_3) to (v_3_1);
+\draw[edge, thick][red] (v_3_2) to (v_3_3);
+\draw[edge, thick][red] (v_3_1) to (v_3_4);
+\draw[edge, thick] (v_3_4) to (v_3_2);
+\draw[edge, thick][red] (v_3_3) to (v_3_4);
+\draw[edge, thick] (v_3_1) to (v_3_5);
+\draw[edge, thick][red] (v_3_2) to (v_3_5);
+\draw[edge, thick] (v_3_5) to (v_3_3);
+\draw[edge, thick][red] (v_3_4) to (v_3_5);
+\node[vertex] (v_4_1) at (4.5,3.51) {$\!a\!$};
+\node[vertex] (v_4_2) at (3.88,4.28) {$\!b\!$};
+\node[vertex] (v_4_3) at (2.87,3.99) {$\!c\!$};
+\node[vertex] (v_4_4) at (2.87,3.03) {$\!d\!$};
+\node[vertex] (v_4_5) at (3.88,2.74) {$\!e\!$};
+\draw[edge, thick][red] (v_4_1) to (v_4_2);
+\draw[edge, thick] (v_4_1) to (v_4_3);
+\draw[edge, thick][red] (v_4_2) to (v_4_3);
+\draw[edge, thick][red] (v_4_1) to (v_4_4);
+\draw[edge, thick] (v_4_4) to (v_4_2);
+\draw[edge, thick][red] (v_4_3) to (v_4_4);
+\draw[edge, thick] (v_4_1) to (v_4_5);
+\draw[edge, thick][red] (v_4_2) to (v_4_5);
+\draw[edge, thick] (v_4_5) to (v_4_3);
+\draw[edge, thick][red] (v_4_4) to (v_4_5);
+\node[vertex] (v_5_1) at (7.2,3.51) {$\!a\!$};
+\node[vertex] (v_5_2) at (6.58,4.28) {$\!b\!$};
+\node[vertex] (v_5_3) at (5.57,3.99) {$\!c\!$};
+\node[vertex] (v_5_4) at (5.57,3.03) {$\!d\!$};
+\node[vertex] (v_5_5) at (6.58,2.74) {$\!e\!$};
+\draw[edge, thick][red] (v_5_1) to (v_5_2);
+\draw[edge, thick] (v_5_1) to (v_5_3);
+\draw[edge, thick][red] (v_5_2) to (v_5_3);
+\draw[edge, thick][red] (v_5_1) to (v_5_4);
+\draw[edge, thick] (v_5_2) to (v_5_4);
+\draw[edge, thick][red] (v_5_3) to (v_5_4);
+\draw[edge, thick] (v_5_1) to (v_5_5);
+\draw[edge, thick][red] (v_5_2) to (v_5_5);
+\draw[edge, thick] (v_5_5) to (v_5_3);
+\draw[edge, thick][red] (v_5_4) to (v_5_5);
+\node[vertex] (v_6_1) at (1.8,6.12) {$\!a\!$};
+\node[vertex] (v_6_2) at (1.18,6.89) {$\!b\!$};
+\node[vertex] (v_6_3) at (0.17,6.6) {$\!c\!$};
+\node[vertex] (v_6_4) at (0.17,5.64) {$\!d\!$};
+\node[vertex] (v_6_5) at (1.18,5.35) {$\!e\!$};
+\draw[edge, thick][red] (v_6_1) to (v_6_2);
+\draw[edge, thick] (v_6_1) to (v_6_3);
+\draw[edge, thick][red] (v_6_2) to (v_6_3);
+\draw[edge, thick][red] (v_6_1) to (v_6_4);
+\draw[edge, thick] (v_6_4) to (v_6_2);
+\draw[edge, thick][red] (v_6_3) to (v_6_4);
+\draw[edge, thick] (v_6_5) to (v_6_1);
+\draw[edge, thick][red] (v_6_2) to (v_6_5);
+\draw[edge, thick] (v_6_3) to (v_6_5);
+\draw[edge, thick][red] (v_6_4) to (v_6_5);
+\node[vertex] (v_7_1) at (4.5,6.12) {$\!a\!$};
+\node[vertex] (v_7_2) at (3.88,6.89) {$\!b\!$};
+\node[vertex] (v_7_3) at (2.87,6.6) {$\!c\!$};
+\node[vertex] (v_7_4) at (2.87,5.64) {$\!d\!$};
+\node[vertex] (v_7_5) at (3.88,5.35) {$\!e\!$};
+\draw[edge, thick][red] (v_7_1) to (v_7_2);
+\draw[edge, thick] (v_7_1) to (v_7_3);
+\draw[edge, thick][red] (v_7_2) to (v_7_3);
+\draw[edge, thick][red] (v_7_1) to (v_7_4);
+\draw[edge, thick] (v_7_2) to (v_7_4);
+\draw[edge, thick][red] (v_7_3) to (v_7_4);
+\draw[edge, thick] (v_7_5) to (v_7_1);
+\draw[edge, thick][red] (v_7_2) to (v_7_5);
+\draw[edge, thick] (v_7_3) to (v_7_5);
+\draw[edge, thick][red] (v_7_4) to (v_7_5);
+\node[vertex] (v_8_1) at (7.2,6.12) {$\!a\!$};
+\node[vertex] (v_8_2) at (6.58,6.89) {$\!b\!$};
+\node[vertex] (v_8_3) at (5.57,6.6) {$\!c\!$};
+\node[vertex] (v_8_4) at (5.57,5.64) {$\!d\!$};
+\node[vertex] (v_8_5) at (6.58,5.35) {$\!e\!$};
+\draw[edge, thick][red] (v_8_1) to (v_8_2);
+\draw[edge, thick] (v_8_3) to (v_8_1);
+\draw[edge, thick][red] (v_8_2) to (v_8_3);
+\draw[edge, thick][red] (v_8_1) to (v_8_4);
+\draw[edge, thick] (v_8_4) to (v_8_2);
+\draw[edge, thick][red] (v_8_3) to (v_8_4);
+\draw[edge, thick] (v_8_1) to (v_8_5);
+\draw[edge, thick][red] (v_8_2) to (v_8_5);
+\draw[edge, thick] (v_8_3) to (v_8_5);
+\draw[edge, thick][red] (v_8_4) to (v_8_5);
+\node[vertex] (v_9_1) at (1.8,8.73) {$\!a\!$};
+\node[vertex] (v_9_2) at (1.18,9.5) {$\!b\!$};
+\node[vertex] (v_9_3) at (0.17,9.21) {$\!c\!$};
+\node[vertex] (v_9_4) at (0.17,8.25) {$\!d\!$};
+\node[vertex] (v_9_5) at (1.18,7.96) {$\!e\!$};
+\draw[edge, thick][red] (v_9_1) to (v_9_2);
+\draw[edge, thick] (v_9_1) to (v_9_3);
+\draw[edge, thick][red] (v_9_2) to (v_9_3);
+\draw[edge, thick][red] (v_9_1) to (v_9_4);
+\draw[edge, thick] (v_9_4) to (v_9_2);
+\draw[edge, thick][red] (v_9_3) to (v_9_4);
+\draw[edge, thick] (v_9_1) to (v_9_5);
+\draw[edge, thick][red] (v_9_2) to (v_9_5);
+\draw[edge, thick] (v_9_3) to (v_9_5);
+\draw[edge, thick][red] (v_9_4) to (v_9_5);
+\node[vertex] (v_10_1) at (4.5,8.73) {$\!a\!$};
+\node[vertex] (v_10_2) at (3.88,9.5) {$\!b\!$};
+\node[vertex] (v_10_3) at (2.87,9.21) {$\!c\!$};
+\node[vertex] (v_10_4) at (2.87,8.25) {$\!d\!$};
+\node[vertex] (v_10_5) at (3.88,7.96) {$\!e\!$};
+\draw[edge, thick][red] (v_10_1) to (v_10_2);
+\draw[edge, thick] (v_10_3) to (v_10_1);
+\draw[edge, thick][red] (v_10_2) to (v_10_3);
+\draw[edge, thick][red] (v_10_1) to (v_10_4);
+\draw[edge, thick] (v_10_2) to (v_10_4);
+\draw[edge, thick][red] (v_10_3) to (v_10_4);
+\draw[edge, thick] (v_10_1) to (v_10_5);
+\draw[edge, thick][red] (v_10_2) to (v_10_5);
+\draw[edge, thick] (v_10_3) to (v_10_5);
+\draw[edge, thick][red] (v_10_4) to (v_10_5);
+\node[vertex] (v_11_1) at (7.2,8.73) {$\!a\!$};
+\node[vertex] (v_11_2) at (6.58,9.5) {$\!b\!$};
+\node[vertex] (v_11_3) at (5.57,9.21) {$\!c\!$};
+\node[vertex] (v_11_4) at (5.57,8.25) {$\!d\!$};
+\node[vertex] (v_11_5) at (6.58,7.96) {$\!e\!$};
+\draw[edge, thick][red] (v_11_1) to (v_11_2);
+\draw[edge, thick] (v_11_1) to (v_11_3);
+\draw[edge, thick][red] (v_11_2) to (v_11_3);
+\draw[edge, thick][red] (v_11_1) to (v_11_4);
+\draw[edge, thick] (v_11_2) to (v_11_4);
+\draw[edge, thick][red] (v_11_3) to (v_11_4);
+\draw[edge, thick] (v_11_1) to (v_11_5);
+\draw[edge, thick][red] (v_11_2) to (v_11_5);
+\draw[edge, thick] (v_11_3) to (v_11_5);
+\draw[edge, thick][red] (v_11_4) to (v_11_5);
+\end{tikzpicture}
+
+\caption{All isomorphism class representatives admitted by a particular isolator for 5-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator. The two non-unit clauses in the isolator are $ac \lor \lnot bd \lor ce$ and $ac \lor ae \lor \lnot ce$.} \label{fig2}
 \end{figure}
 
 \subsection{Tournament Ramsey Graphs}
