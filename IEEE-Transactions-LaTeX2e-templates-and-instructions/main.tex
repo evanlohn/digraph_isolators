@@ -663,8 +663,9 @@ In Figure \ref{isosearchspace}, the top (orange) line is the total number of gra
 \subsection{Undirected Isolators: Clique-fixing}
 %\textbf{I cleaned this up a bit, is the description more understandable now or do you still think I should go with the cyclic approach to the clauses?}
 As mentioned earlier, undirected isolators cannot have unit clauses. Therefore, undirected isolators cannot directly benefit from units via TT-fixing. However, a crossover result for undirected graphs does exist for binary clauses that uses the same ideas as TT-fixing; we term this process \emph{clique-fixing}. Undirected Ramsey number guarantee the existence of a red or blue colored $k$-clique for graphs with more than $R_u(k)$ vertices ($R_u$ used here for undirected Ramsey numbers). Clique-fixing uses the same iterative process as TT-fixing, but generates the following clauses instead of $TT_k$ units:
-
-$\{r \lor e, \lnot r \lor \lnot e | e \in \mathit{Edges}(K_k)\}$
+\[
+\{r \lor e, \lnot r \lor \lnot e | e \in \mathit{Edges}(K_k)\}
+\]
 %$\{r \lor \mathit{idx}(b,c)  | (b, c) \in [1..k]\times[1..k] \text{ s.t. } b < c\}$
 
 %$\{\lnot r \lor \lnot \mathit{idx}(b,c)  | (b, c) \in [1..k]\times[1..k] \text{ s.t. } b < c\}$
@@ -854,12 +855,12 @@ Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT so
 \begin{tikzpicture}
 \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
 \tikzset{edge/.style = {->,> = latex'}}
-\node[vertex] (v_0_1) at (3.0,1.5) {$\!a\!$};
-\node[vertex] (v_0_2) at (2.25,2.67) {$\!b\!$};
-\node[vertex] (v_0_3) at (0.75,2.67) {$\!c\!$};
-\node[vertex] (v_0_4) at (0.0,1.5) {$\!d\!$};
-\node[vertex] (v_0_5) at (0.75,0.33) {$\!e\!$};
-\node[vertex] (v_0_6) at (2.25,0.33) {$\!f\!$};
+\node[vertex] (v_0_1) at (-3.0,1.5) {$\!a\!$};
+\node[vertex] (v_0_2) at (-2.25,2.67) {$\!b\!$};
+\node[vertex] (v_0_3) at (-0.75,2.67) {$\!c\!$};
+\node[vertex] (v_0_4) at (-0.0,1.5) {$\!d\!$};
+\node[vertex] (v_0_5) at (-0.75,0.33) {$\!e\!$};
+\node[vertex] (v_0_6) at (-2.25,0.33) {$\!\!\!f\!\!\!$};
 \draw[edge, thick][red] (v_0_1) to (v_0_2);
 \draw[edge, thick] (v_0_1) to (v_0_3);
 \draw[edge, thick][red] (v_0_2) to (v_0_3);
@@ -877,7 +878,7 @@ Our SAT encoding allowed us to compute optimal isolators up to $n=6$. The SAT so
 \draw[edge, thick][red] (v_0_5) to (v_0_6);
 \end{tikzpicture}
 
-\caption{One of the 56 Isomorphism class representatives admitted by a particular isolator for 6-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator.} \label{fig3}
+\caption{One of the 56 isomorphism class representatives admitted by a particular isolator for 6-vertex tournaments. Red edges are edges fixed by unit clauses of the isolator.} \label{fig3}
 \end{figure}
 %mention the number of unique isolators up to isomorphism
 
