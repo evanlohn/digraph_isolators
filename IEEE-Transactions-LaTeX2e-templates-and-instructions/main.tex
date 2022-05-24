@@ -69,7 +69,7 @@ Satisfiability, Symmetry-breaking, Directed-graphs, Tournaments, Isolators.
 
 In recent years, SAT solvers have been used to solve several difficult combinatorial problems \cite{ref_keller,ref_schur,ref_pythagorean}. However, naive encodings of SAT problems often include undesired symmetries, i.e. certain matching subsets of variables that result in equivalent subproblems when given equivalent assignments. To prove the original formula unsatisfiable, in the worst case a solver must search through all possible symmetric parts of the problem space, which slows the generation of unsatisfiable proofs unnecessarily. Similarly, while the solver tries to find a satisfying assignment, symmetries in the input formula may cause the solver to effectively re-explore the same part of the search space even after proving the lack of a solution in a symmetric part of the problem.
 
-The most common way of reducing the impact of symmetries in a given formula is by adding a set of new clauses called a Symmetry-Breaking Predicate (SBP) to the formula before solving \cite{ref_SBP, ref_SBP2, ref_approxmc}. The goal of a SBP is to preserve the satisfiability of the formula while removing from consideration any regions of the search space known to be symmetric to other regions. In this work we focus on SBP's for \emph{graph existence problems}, which are problems that can be solved by checking if a graph with particular structure exists. Solving such problems is an active area of research \cite{ref_vdw, ref_ramseyk, ref_5cycle}. A large class of problem symmetries in graph existence problems naturally results from the existence of isomorphic labeled graphs. These symmetries exist independent of any desired graph property related to graph structure. Rather, they occur because SAT solvers must search the space of labeled graphs in order to prove the (non-)existence of an unlabeled graph. A SBP that targets graph isomorphisms is known as an isolator. Isolators that break many symmetries with few clauses are most useful in practice, as SAT solvers generally take longer to solve formulas with more clauses. Such isolators are often described as ``short'', ``small'', or ``compact.''
+The most common way of reducing the impact of symmetries in a given formula is by adding a set of new clauses called a Symmetry-Breaking Predicate (SBP) to the formula before solving \cite{ref_SBP, ref_SBP2, ref_approxmc}. The goal of a SBP is to preserve the satisfiability of the formula while removing from consideration any regions of the search space known to be symmetric to other regions. In this work we focus on SBP's for \emph{graph existence problems}, which are problems that can be solved by checking if a graph with a particular structure exists. Solving such problems is an active area of research \cite{ref_vdw, ref_ramseyk, ref_5cycle}. A large class of problem symmetries in graph existence problems naturally results from the existence of isomorphic labeled graphs. These symmetries exist independent of any desired graph property related to graph structure. Rather, they occur because SAT solvers must search the space of labeled graphs in order to prove the (non-)existence of an unlabeled graph. A SBP that targets graph isomorphisms is known as an isolator. Isolators that break many symmetries with few clauses are most useful in practice, as SAT solvers generally take longer to solve formulas with more clauses. Such isolators are often described as ``short'', ``small'', or ``compact.''
 
 %An isolator is \emph{trivial} if it admits all possible labeled graphs, and \emph{perfect} if it admits exactly one graph per equivalence class. Additionally, an isolator is \emph{optimal} if it uses the fewest possible clauses to admit a given number of graphs. An optimal perfect isolator is therefore the shortest list of clauses that admits exactly one member of each equivalence class in the set of graphs being searched over.
 
@@ -181,14 +181,14 @@ These tournaments represent the only two equivalence classes for $n=3$ tournamen
 ab \land bc.
 \]
 
-This formula admits exactly one of the two labeled cycles and one of the six labeled transitive tournaments on 3 vertices, and does so with the fewest number of clauses. Therefore, $ab \land bc$ is a perfect, optimal isolator for $n=3$ tournaments.
+This formula admits exactly one of the two labeled cycles and one of the six labeled transitive tournaments on 3 vertices, and does so with the fewest possible clauses. Therefore, $ab \land bc$ is a perfect, optimal isolator for $n=3$ tournaments.
 
-Figure \ref{iso4} displays all 4 canonical representatives for $n=4$ tournaments. We note that once again all highlighted edges have the same edge labels across graphs, and all permutations of non-highlighted edges are present. So, a short formula that admits exactly the set of graphs in the figure is
+Figure \ref{iso4} displays canonical representatives of all 4 isomorphism classes for $n=4$ tournaments. We note that once again all highlighted edges have the same edge labels across graphs, and all permutations of non-highlighted edges are present. So, a short formula that admits exactly the set of graphs in the figure is
 \[
 ab \land bc \land cd \land ad.
 \]
 
-While the optimal isolators for $n=3,4$ are comprised entirely of unit clauses, this pattern does not hold for $n=5$. Table \ref{tab:smallest_isolators_found} contains the number of unit and non-unit clauses for $n \le 7$.
+While the optimal isolators for $n=3,4$ are comprised entirely of unit clauses, this pattern does not hold for $n=5$. Table \ref{tab:smallest_isolators_found} contains the number of unit and non-unit clauses for our isolators on $n \le 7$ vertices.
 
 %\begin{figure}
 %\centering
@@ -1135,11 +1135,11 @@ On the Pittsburgh Supercomputing Center~\cite{cluster}, we ran 640 shuffled (cla
 
 \section{Conclusions}
 
-Our techniques allow the generation of isolators with asymptotically optimal numbers of unit clauses, as well as perfect, optimal isolators for $n \le 6$ and compact perfect isolators for $n\le 8$. We further demonstrate how small isolators can be effectively used in the search for much larger graphs relevant to tournament existence problems. Future work using our results may lead to further improvements on bounds for the tournament Ramsey number problem.
+Our techniques allow the generation of isolators with asymptotically optimal numbers of unit clauses, as well as perfect, optimal isolators for $n \le 6$ and a compact isolator for $n=7$ found by random probing. We further demonstrate how small isolators can be effectively used in the search for much larger graphs relevant to tournament existence problems. Future work using our results may lead to further improvements on bounds for the tournament Ramsey number problem.
 
 \section*{Acknowledgements}
 
-This work was partially supported by the Hoskinson Center for Formal Mathematics and the National Science Foundation under grant CCF-2015445. We thank Jeremy Avigad for his comments on earlier drafts and John Mackey for his advise on the graph theoretical parts of the paper. 
+This work was partially supported by the Hoskinson Center for Formal Mathematics and the National Science Foundation under grant CCF-2015445. We thank Jeremy Avigad for his comments on earlier drafts and John Mackey for his advice on the graph theoretical parts of the paper. 
 
 
 %\subsection{Maximal Unit Sets}
@@ -1177,16 +1177,9 @@ This work was partially supported by the Hoskinson Center for Formal Mathematics
 
 \bibliographystyle{IEEEtran}
 \bibliography{main}
-
-
-
-
+\clearpage
 \appendix
-
-
-
-
-\begin{figure*}[h]
+\begin{figure}[h!]
 $$\left[
 \begin{array}{c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}|c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c}
 \zero & \one & \one & \one & \one & \zero & \one & \zero & \zero & \one & \one & \zero & \one & \one & \zero & \zero & \zero & \one & \one & \zero & \zero & \zero & \zero & \one & \zero & \one & \one & \zero & \zero & \one & \one & \zero & \zero \\
@@ -1228,12 +1221,7 @@ $$\left[
 
 \caption{The new 33-vertex $TT_7$-free tournament found using our perfect isolator for $n=7$. The upper-left section of the matrix is ST$26$, while the bottom-right section is a graph admitted by our $n=7$ isolator.}
 \label{newtournament}
-\end{figure*}
-
-
-
-
-
+\end{figure}
 
 \end{document}
 
