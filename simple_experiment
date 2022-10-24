@@ -1,4 +1,4 @@
 #!/bin/bash
-python3 tocnf.py ${1} ${2} --filename di_sbp_${1}_${2}
+python3 src/tocnf.py ${1} ${2} --filename di_sbp_${1}_${2}
 ~/Desktop/ToySAT/kissat/build/kissat di_sbp_${1}_${2}.cnf > di_sbp_${1}_${2}.out
-python3 decode_clauses.py di_sbp_${1}_${2}
+python3 src/decode_clauses.py di_sbp_${1}_${2}
