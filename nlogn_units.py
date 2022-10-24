@@ -35,6 +35,13 @@ def produce_table(ramsey_cond, upto=100):
 		ret[i] = units_added
 	return ret
 
+def print_for_latex(xs, y_pairs):
+	for y_name, ys in y_pairs:
+		print(y_name)
+		print(''.join([f'({x},{y})' for x, y in zip(xs, ys)]))
+		print()
+
+
 def plot_unit_counts(upto=100000):
 
 	tab_naive = produce_table(naive_ramsey_cond, upto=upto)
@@ -75,6 +82,7 @@ def plot_unit_counts(upto=100000):
 	plt.xlabel('n')
 
 	plt.show()
+	print_for_latex(xs,[('units_naive(n)', ys), ('units_hope(n)', ys_hope), ('units_known(n)', ys_known), ('LB(n)', met2ys)])
 	#print('units(n)')
 	#print(''.join([f'({x},{y})' for x, y in zip(xs, ys)]))
 	#print()
@@ -109,6 +117,6 @@ def compare_bounds(upto=1000000):
 	print(f'pct satisfying lower bound: {pct_correct/(upto-2)}')
 
 if __name__ == '__main__':
-	#compare_bounds(1000000)
-	plot_unit_counts(200)
+	compare_bounds(18)
+	#plot_unit_counts(200)
 	#plot_unit_counts(100000)

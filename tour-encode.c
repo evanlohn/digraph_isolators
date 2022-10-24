@@ -6,7 +6,7 @@
 
 #define MAX	50
 
-int n, k, limit, aux;
+int n, k, limit, aux, upto;
 
 int **matrix;
 
@@ -213,6 +213,11 @@ int main (int argc, char** argv) {
   assert (argc > 2);
   n = atoi (argv[1]);
   k = atoi (argv[2]);
+  if (argc > 3) {
+    upto = atoi (argv[3]);
+  } else {
+    upto = 0;
+  }
 
   int *order = malloc (sizeof (int) * n);
 
@@ -224,8 +229,9 @@ int main (int argc, char** argv) {
       else        matrix[i][j] =  0;
   }
 
-  if (argc > 3) {
-    FILE* input = fopen (argv[3], "r");
+  
+  if (argc > 4) {
+    FILE* input = fopen (argv[4], "r");
 
     int l = 1;
     while (1) {
@@ -247,8 +253,8 @@ int main (int argc, char** argv) {
     }
   }
 
-  if (argc > 4) {
-    limit = atoi (argv[4]); }
+  if (argc > 5) {
+    limit = atoi (argv[5]); }
 
   int nVar = n * (n-1) / 2 + n * (n-1) * (n-2) / 6;
 
@@ -275,6 +281,11 @@ int main (int argc, char** argv) {
     int a, b, c;
     for (a = 1; a <= n; a++)
       for (b = a+1; b <= n; b++)
+       {
+       if (b > a + 1 && b <= upto) { 
+         printf("%i %i %i 0\n", -getEdge(a,b), getEdge(a+1, b), getEdge(a,b-1));
+         printf("%i %i %i 0\n", getEdge(a,b), -getEdge(a+1, b), -getEdge(a,b-1));
+       }
         for (c = b+1; c <= n; c++) {
           printf ("%i %i %i 0\n", -getTriangle (a, b, c), -getEdge (a,b), getEdge (b,c));
           printf ("%i %i %i 0\n", -getTriangle (a, b, c), -getEdge (b,c), getEdge (c,a));
@@ -282,5 +293,6 @@ int main (int argc, char** argv) {
           printf ("%i %i %i 0\n", -getTriangle (a, b, c), -getEdge (a,b), getEdge (c,a));
           printf ("%i %i %i 0\n", -getTriangle (a, b, c), -getEdge (c,a), getEdge (b,c));
           printf ("%i %i %i 0\n", -getTriangle (a, b, c), -getEdge (b,c), getEdge (a,b)); }
+       }
   }
 }

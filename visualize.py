@@ -39,6 +39,89 @@ def from_edges(n, edges):
 
 alphabet = ' abcdefghijklmnopqrstuvwxyz'
 
+def gen_tikz(g, ind, w, units):
+    edges= list(g.edges())
+    e_colors = [('red' if (edge2ind(e) in units or -edge2ind(e) in units) else 'black') for e in edges]
+    edges.sort(key=lambda e: edge2ind(e))
+    scale = 1.5  #(0.8, 0.7) for n=4, (0.9, 0.9) for n=5
+    vscale = 0.9
+    pos = nx.circular_layout(g, scale=scale)
+    pos2 = {}
+    for v, v2 in zip(range(1, n+1), pos):
+        pos2[v] = pos[v2]
+
+    #print(pos)
+    labels = {i : c for i, c in enumerate(alphabet) if i>0 and i <= n}
+
+    # each graph gets a unit circle of space to work with, i.e. a bounding box of side length 2
+    # 1 unit of buffer
+    x, y = ind % w, ind // w # inds into the grid
+    xc, yc = (3*x+1)*scale, ((2 + vscale)*y + 1)*scale  # coordinate centers
+
+    for v in range(1, n+1):
+        vpos = np.round(pos2[v], decimals=2)
+        xpos = np.round(xc + vpos[0], decimals=2)
+        ypos = np.round(yc + vscale*vpos[1], decimals = 2)
+        s = f'^node[vertex] (v_{ind}_{v}) at ({xpos},{ypos}) &$^!{labels[v]}^!$*;'
+        s = s.replace('^','\\').replace('&', '{').replace('*','}')
+        print(s)
+
+        #print(v, np.round(pos2[v], decimals=2))
+
+    for e in edges:
+        #print(e)
+        color = '[red]' if (edge2ind(e) in units or -edge2ind(e) in units) else ''
+        print(f'\\draw[edge, thick]{color} (v_{ind}_{e[0]}) to (v_{ind}_{e[1]});')
+
+def gen_graphs_tikz(graphs, units, n, n_to_plot):
+    N = len(graphs) if n_to_plot is None else n_to_plot
+    w = int(N**0.5)
+    h = w if w*w == N else w + 1
+    print("\\begin{figure}[h]")
+    print("\\centering")
+    print("\\begin{tikzpicture}")
+    print("\\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}")
+    print("\\tikzset{edge/.style = {->,> = latex'}}")
+    #print(h,w,units)
+    for ind, g in enumerate(graphs[:N]):
+        gen_tikz(g, ind, w, units)
+    print('\\end{tikzpicture}')
+    print('\\end{figure}')
+r"""
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex'}}
+% vertices
+\node[vertex] (a) at  (0,0) {$\!a\!$};
+\node[vertex] (b) at  (0.5,1) {$\!b\!$};
+\node[vertex] (c) at  (1,0) {$\!c\!$};
+
+%edges
+\draw[edge, thick][red] (a) to (b);
+\draw[edge, thick] (a) to (c);
+\draw[edge, thick][red] (b) to (c);
+
+%\draw[edge] (a)  to[bend left] (a1);
+%\draw[edge] (a1) to[bend left] (a);
+%\path (a2) to node {\dots} (c);
+%\node [shape=circle,minimum size=1.5em] (a3) at (4.5,0) {};
+%\node [shape=circle,minimum size=1.5em] (c1) at (6.5,0) {};
+
+\node[vertex] (d) at  (4,0) {$\!a\!$};
+\node[vertex] (e) at  (4.5,1) {$\!b\!$};
+\node[vertex] (f) at  (5,0) {$\!c\!$};
+
+%edges
+\draw[edge, thick][red] (d) to (e);
+\draw[edge, thick] (f) to (d);
+\draw[edge, thick][red] (e) to (f);
+
+\end{tikzpicture}
+\end{figure}
+"""
+
 def plot_graph(g, n, units, arrowsize=25, use_edge_labels=True):
     edges= list(g.edges())
     e_colors = [('red' if (edge2ind(e) in units or -edge2ind(e) in units) else 'black') for e in edges]
@@ -195,8 +278,10 @@ def main(n, iso_file, n_to_plot):
 
 
 
-    visualize_graphs(graphs, units, n, n_to_plot)
-    visualize_similarity(n, all_edges)
+    #visualize_graphs(graphs, units, n, n_to_plot)
+    #visualize_similarity(n, all_edges)
+
+    gen_graphs_tikz(graphs, units, n, n_to_plot)
 
 if __name__ == '__main__':
     n = int(sys.argv[1])

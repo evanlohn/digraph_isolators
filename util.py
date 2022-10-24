@@ -222,9 +222,7 @@ def count_degrees():
     graphs = map_graphs(n, mapname=map_file)
     print_degree_counts(graphs, n)
 
-def filter_map_file():
-    map_file = sys.argv[1]
-    filter_cnf = sys.argv[2]
+def filter_map_file(map_file, filter_cnf):
     fcnf = CNF()
 
     with open(filter_cnf, 'r') as f:
@@ -243,14 +241,20 @@ def filter_map_file():
     #print(fcnf)
 
 def nauty_R(bits):
-    #print(bits)
-    #bit_str = ''.join(format(x, 'b') for x in bits)
     bit_str = ''.join([''.join(x) for x in bits])
+    return nauty_R_impl(bit_str)
 
+def nauty_R_impl(bit_str):
     if len(bit_str) % 6 != 0:
         bit_str += '0'*(6 - len(bit_str)%6)
     #print(bit_str)
     return [chr(int(bit_str[6*i:6*(i+1)], 2) + 63) for i in range(len(bit_str)//6)]
+
+def nauty_string(n, adj_mat):
+    return '&{}'.format(chr(63+n)) + ''.join(nauty_R(adj_mat))
+
+def nauty_string2(n, bit_str):
+    return '&{}'.format(chr(63+n)) + ''.join(nauty_R_impl(bit_str))
 
 def nauty_R_inv(nauty_str, n):
     bit_str = ''
@@ -276,13 +280,42 @@ def read_d6(fname):
         graphs.append([[int(x) for x in row] for row in g])
     return graphs
 
+def bin_int(x, n_edges):
+    return format(x,'0{}b'.format(n_edges))[::-1]
+
+def matches_units_pred(g_bin_int, units):
+    if len(units) == 0:
+        return True
+    if units[0] > 0:
+        return all([g_bin_int[unit - 1] == '1' for unit in units])
+    else:
+        return not any([g_bin_int[-unit - 1] == '1' for unit in units])
+
+def get_all_binary_graphs(n_edges, units=[]):
+    assert all([unit > 0 for unit in units]) or all([unit < 0 for unit in units])
+    return [bin_int(x, n_edges) for x in range(2**n_edges) if matches_units_pred(bin_int(x, n_edges), units)]
+
+def graph_from_int(g_int, n):
+    ctr = 0
+    adj_mat = [['0' for _ in range(n)] for _ in range(n)]
+    for end in range(1, n):
+        for start in range(end):
+            val = g_int[ctr]
+            ctr += 1
+            if val == '1':
+                adj_mat[start][end] = '1'
+            elif val == '0':
+                adj_mat[end][start] = '1'
+    return adj_mat
+
+
 def gen_graphs(n, units):
     n_edges = n*(n-1)//2
     graphs = get_all_binary_graphs(n_edges, units)
     adj_mats = []
     for g in graphs:
         adj_mat = graph_from_int(g, n)
-        adj_mats.append('&{}'.format(chr(63+n)) + ''.join(nauty_R(adj_mat)) + '\n')
+        adj_mats.append(nauty_string(n, adj_mat) + '\n')
     return adj_mats
 
 def print_adjmat(graph, cut=None):
@@ -291,8 +324,37 @@ def print_adjmat(graph, cut=None):
     for row in graph[:cut]:
         print(' '.join([str(x) for x in row[:cut]]))
 
+def print_canon_reps(n):
+    edges = n*(n-1)//2
+    iso = isolator_clauses(n)
+    graphs = get_all_binary_graphs(edges)
+    i2e = convert_edge_ind(n)
+
+    for g in graphs:
+        adj_mat = graph_from_int(g, n)
+        edge_assignment = {}
+        for i in range(1,edges+1):
+            r,c = i2e[i]
+            assert r >= 1 and c >= 1 and r <= edges and c <= edges
+            assert (adj_mat[r-1][c-1] == '1') or (adj_mat[r-1][c-1] == '0')
+            edge_assignment[i] = (adj_mat[r-1][c-1] == '1')
+        if iso.satisfies(edge_assignment):
+            print(nauty_string(n, adj_mat))
+
+def dumb_filter(s):
+    for sub in s.strip().split(' '):
+        if sub[0] == '&':
+            ret.append(sub)
+    keys = set(ret)
+    dct = {k: 0 for k in keys}
+    for k in ret:
+        dct[k] += 1
+    print(len(keys))
+    for k in dct:
+        print(k, dct[k])
+
 if __name__ == '__main__':
-    # filter_map_file()
+    # filter_map_file(sys.argv[1], sys.argv[2])
     #count_degrees()
     graphs = read_d6('tt7free33some.d6')
     print_adjmat(graphs[0],cut=25)

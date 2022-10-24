@@ -3,6 +3,7 @@ import util
 import sys
 from nlogn_units import known_ramsey_nums_cond, naive_ramsey_cond
 
+LATEX_MODE = True
 def make_big_iso(N, use_iso_at):
     ret = []
     remaining = N
@@ -10,15 +11,31 @@ def make_big_iso(N, use_iso_at):
     while remaining > use_iso_at:
         TT_verts = known_ramsey_nums_cond(remaining)
         #print('r',remaining, 'v', TT_verts)
-        start = remaining - TT_verts + 1
+
+        # iso in UL version
+        #start = remaining - TT_verts + 1
+        #for src in range(start, start + TT_verts - 1):
+        #    for snk in range(src + 1, start + TT_verts):
+        #        #print(src, snk)
+        #        ret.append([util.edge2ind((src,snk))])
+        #        mat[src-1][snk-1] = 1
+
+        start = N - remaining
         for src in range(start, start + TT_verts - 1):
             for snk in range(src + 1, start + TT_verts):
                 #print(src, snk)
                 ret.append([util.edge2ind((src,snk))])
-                mat[src-1][snk-1] = 1
+                mat[src][snk] = 1 
+
         remaining -= TT_verts
+    if LATEX_MODE:
+        print(r'\begin{array}{' + 'c'*N + '}')
+
     for row in mat:
-        print(row)
+        if LATEX_MODE:
+            print(' & '.join([str(x) for x in row]) + r'\\')
+        else:
+            print(row)
     curr_iso = util.CNF(ret)
     if remaining > 2:
         remaining_iso = util.isolator_clauses(remaining)
