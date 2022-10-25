@@ -2,6 +2,9 @@ import sys
 import pickle
 import util
 
+# given an open file corresponding to a DIMACs output file,
+# returns a mapping from each variable to True/False based on the 'v' lines if
+# the problem was satsifiable, or None otherwise.
 def extract_kissat(fd):
     soln = {}
     for line in fd:
@@ -16,6 +19,7 @@ def extract_kissat(fd):
             soln[abs(int(lit))] = int(lit) > 0
     return soln
 
+# same as above, but gives a list of solutions from allsat (https://github.com/marijnheule/allsat) output
 def extract_allsat(fd):
     solns = []
     for line in fd:
@@ -27,6 +31,8 @@ def extract_allsat(fd):
         solns += [asn]
     return solns
 
+# given a solution dictionary asn (from some extract_* above) and a pickled dictionary created during the encoding step,
+# get and optionally print out the clauses of the isolator found by search via SAT.
 def from_asn(asn, pkl_dct, should_print=False):
     C, N, cnf, edges = pkl_dct['C'], pkl_dct['N'], pkl_dct['cnf'], pkl_dct['edges'],
     use_last = 'last_isolator' in pkl_dct
@@ -78,6 +84,7 @@ def to_edgelabel(start, end):
 edgedict = {}
 nextstart, nextend = 1, 2
 
+#lazily calculates the start and end vertices of an edge literal
 def from_edgelabel(edge):
     global nextstart, nextend, edgedict
     while abs(edge) not in edgedict:
@@ -88,6 +95,7 @@ def from_edgelabel(edge):
     fst, snd = edgedict[abs(edge)]
     return (fst, snd) if edge > 0 else  (snd, fst)
 
+# print out all isolators returned by allsat (not used in paper)
 def process_allsat(outfile, loadfile):
     with open(outfile) as fd:
         asns = extract_allsat(fd)

@@ -127,11 +127,6 @@ int main (int argc, char** argv) {
   if ((nEdge == 21) && (nClass != 456)) { printf("ERROR: not all classes are present\n"); exit (0); }
   if ((nEdge == 28) && (nClass != 6880)) { printf("ERROR: not all classes are present\n"); exit (0); }
 
-  //CHANGE: Double free??
-  //fclose(map);
-
-//  printf("c finished parsing map: %i graphs\n", nGraph);
-
   FILE *cnf;
   cnf = fopen (argv[2], "r");
 
@@ -139,7 +134,6 @@ int main (int argc, char** argv) {
   long posMask = 0;
   long negMask = 0;
   long tmp = fscanf(cnf, " p cnf %ld %ld ", &a, &b);
-  //int meh = 0;
   while (1) {
     tmp = fscanf (cnf, " %ld ", &lit);
     if (tmp == EOF) break;
@@ -151,11 +145,6 @@ int main (int argc, char** argv) {
 
     if (lit == 0) {
       long removed = filter (posMask, negMask);
-      /*
-      if (meh == 0) {
-	printf("removed: %ld\n", removed);
-	meh = 1;
-      }*/
       if (removed == -1) {
         printf("ERROR: at least one class was eliminated\n");
         exit(0); }

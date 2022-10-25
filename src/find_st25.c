@@ -1,6 +1,10 @@
 #include "nauty_util_evan.h"
 #define MAX_CLAUSE_LENGTH 16
 
+/* Purpose: permute some given graphs (in a d6 file) such that the top left of the adjacency matrix is
+a given subgraph. Also permutes the bottom right of the adjacency matrix to satisfy a given isolator.
+The file name is from an older version where ST25 was the only subgraph to be found. */
+
 graph stn[MAXN*MAXM];
 graph canon_stn[MAXN*MAXM];
 int tot_checked = 0;
@@ -15,6 +19,7 @@ bool isPrefix(char *s1, char *s2) {
   return true;
 }
 
+// given a filename and isolator size, store the isolator in `isolator`
 int readIsolator(char *fname, int n, int** isolator) {
   char * graphline = (char *) malloc (LINE_LENGTH * sizeof(char));
   FILE * input = fopen(fname, "r");
@@ -596,9 +601,7 @@ int main (int argc, char** argv) {
 
       
       //fprintf(stderr, "\ncardinality: %d\n", POPCOUNT(init_verts[0]));
-      //char outname[
 
-      
       //printf("graph isomorphic to original? %d\n", graphsIso(n, g, g_ulstn));
 
       int iso_units_perm[n - stn_size];
